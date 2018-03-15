@@ -1,0 +1,56 @@
+// Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.MetaCache;
+using WAYWF.Agent.Source;
+
+namespace WAYWF.Agent.Data
+{
+	[DebuggerDisplay("Frame: {Method.Name,nq} +{ILOffset}")]
+	sealed class RuntimeILFrame : RuntimeFrame, IMetaGenericContext
+	{
+		public RuntimeILFrame(
+			MetaMethod method,
+			int ilOffset,
+			CorDebugMappingResult ilMapping,
+			SourceRef source,
+			RuntimeValue @this,
+			MetaTypeBase[] typeArgs,
+			RuntimeValue[] arguments,
+			RuntimeValue[] locals,
+			string[] localNames)
+		{
+			Method = method;
+			ILOffset = ilOffset;
+			ILMapping = ilMapping;
+			Source = source;
+			This = @this;
+			TypeArgs = typeArgs.MakeReadOnly();
+			Arguments = arguments.MakeReadOnly();
+			Locals = locals.MakeReadOnly();
+			LocalNames = localNames.MakeReadOnly();
+
+			if (method.DeclaringType != null)
+			{
+				StartOfMethodArgs = method.DeclaringType.TypeArgs;
+			}
+		}
+
+		public MetaMethod Method { get; }
+		public int StartOfMethodArgs { get; }
+		public int ILOffset { get; }
+		public CorDebugMappingResult ILMapping { get; }
+		public SourceRef Source { get; }
+		public RuntimeValue This { get; }
+
+		public double? Duration { get; set; }
+
+		public ReadOnlyCollection<MetaTypeBase> TypeArgs { get; }
+		public ReadOnlyCollection<RuntimeValue> Arguments { get; }
+		public ReadOnlyCollection<RuntimeValue> Locals { get; }
+		public ReadOnlyCollection<string> LocalNames { get; }
+
+		public override void Apply(IRuntimeFrameVisitor visitor) => visitor.Visit(this);
+	}
+}

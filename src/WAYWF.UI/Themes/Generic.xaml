@@ -1,0 +1,258 @@
+<!-- Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:WAYWF.UI"
+	xmlns:vf="clr-namespace:WAYWF.UI.VirtualFile"
+	>
+	<PathGeometry x:Key="UpArrow">M0,3 L5,3 L3,0 Z</PathGeometry>
+	<PathGeometry x:Key="DownArrow">M0,0 L5,0 L3,3 Z</PathGeometry>
+
+	<Style TargetType="{x:Type local:ProcessSelector}">
+		<Setter Property="Width" Value="15" />
+		<Setter Property="Height" Value="15" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type local:ProcessSelector}">
+					<Border
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						Padding="{TemplateBinding Padding}"
+						>
+						<Grid>
+							<Image Source="..\Resources\Crosshair.ico" />
+							<Popup
+								Name="PART_Popup"
+								DataContext="{TemplateBinding CurrentProcess}"
+								IsOpen="True"
+								>
+								<Border
+									Background="LightYellow"
+									BorderBrush="Black"
+									BorderThickness="1"
+									UseLayoutRounding="True"
+									Padding="2"
+									>
+									<Grid>
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<TextBlock Grid.Row="0" Text="{Binding ProcessID}" FontWeight="Bold" />
+										<TextBlock Grid.Row="1" Text="{Binding ProcessName}" />
+									</Grid>
+								</Border>
+							</Popup>
+						</Grid>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsDragging" Value="True">
+							<Setter Property="Cursor" Value="\Resources\Crosshair.cur" />
+						</Trigger>
+						<Trigger Property="CurrentProcess" Value="{x:Null}">
+							<Setter TargetName="PART_Popup" Property="IsOpen" Value="False" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style TargetType="{x:Type local:FileSourceSet}">
+		<Setter Property="Background" Value="{x:Null}" />
+		<Setter Property="BorderBrush" Value="{x:Null}" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type local:FileSourceSet}">
+					<local:MultiDragList
+						x:Name="PART_List"
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						ItemsSource="{TemplateBinding FileList}"
+						>
+						<local:MultiDragList.ContextMenu>
+							<ContextMenu>
+								<MenuItem
+									Header="Copy"
+									Command="Copy"
+									CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+									InputGestureText=""
+									/>
+							</ContextMenu>
+						</local:MultiDragList.ContextMenu>
+					</local:MultiDragList>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style TargetType="{x:Type local:FileSource}">
+		<Setter Property="IsHitTestVisible" Value="False" />
+		<Setter Property="Padding" Value="2" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type local:FileSource}">
+					<Border
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						Padding="{TemplateBinding Padding}"
+						>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition />
+							</Grid.ColumnDefinitions>
+
+							<Image Source="{TemplateBinding Icon}" />
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{TemplateBinding Filename}"
+								Margin="2,0"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+								/>
+						</Grid>
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style TargetType="{x:Type local:MultiDragList}">
+		<Setter Property="Focusable" Value="False" />
+		<Setter Property="ItemsPanel">
+			<Setter.Value>
+				<ItemsPanelTemplate>
+					<WrapPanel />
+				</ItemsPanelTemplate>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type local:MultiDragList}">
+					<Border
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						>
+						<ScrollViewer
+							HorizontalScrollBarVisibility="Disabled"
+							VerticalScrollBarVisibility="Auto"
+							>
+							<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+						</ScrollViewer>
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style TargetType="{x:Type local:MultiDragListItem}">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderBrush" Value="{x:Null}" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="VerticalContentAlignment" Value="Stretch" />
+		<Setter Property="Margin" Value="1,2,1,0" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type local:MultiDragListItem}">
+					<Border
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						>
+						<ContentPresenter
+							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							/>
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+		<Style.Triggers>
+			<Trigger Property="Selector.IsSelected" Value="True">
+				<Setter Property="Background" Value="{x:Static SystemColors.HighlightBrush}" />
+				<Setter Property="Foreground" Value="{x:Static SystemColors.HighlightTextBrush}" />
+			</Trigger>
+		</Style.Triggers>
+	</Style>
+
+	<Style TargetType="{x:Type ButtonBase}" x:Key="SpinnerButton">
+		<Setter Property="VerticalAlignment" Value="Stretch" />
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="Focusable" Value="False" />
+		<Style.Triggers>
+			<Trigger Property="IsMouseOver" Value="false">
+				<Setter Property="BorderBrush" Value="Transparent" />
+				<Setter Property="Background" Value="Transparent" />
+			</Trigger>
+		</Style.Triggers>
+	</Style>
+
+	<Style TargetType="{x:Type local:Spinner}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type local:Spinner}">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+
+						<Grid.InputBindings>
+							<MouseBinding Gesture="{x:Static local:WheelGesture.Up}" Command="{x:Static local:Spinner.RollUp}" />
+							<MouseBinding Gesture="{x:Static local:WheelGesture.Down}" Command="{x:Static local:Spinner.RollDown}" />
+						</Grid.InputBindings>
+
+						<local:NumberBox
+							x:Name="PART_TextBox"
+							Grid.RowSpan="2"
+							VerticalAlignment="Stretch"
+							HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Right"
+							>
+							<local:NumberBox.InputBindings>
+								<KeyBinding Gesture="Alt+Up" Command="{x:Static local:Spinner.RollUp}" />
+								<KeyBinding Gesture="Alt+Down" Command="{x:Static local:Spinner.RollDown}" />
+							</local:NumberBox.InputBindings>
+						</local:NumberBox>
+
+						<RepeatButton
+							Name="UpButton"
+							Grid.Column="1"
+							Style="{StaticResource SpinnerButton}"
+							Command="{x:Static local:Spinner.RollUp}"
+							>
+							<Path Data="{StaticResource UpArrow}" Fill="Black" Stroke="Black" />
+						</RepeatButton>
+
+						<RepeatButton
+							Name="DownButton"
+							Grid.Column="1"
+							Grid.Row="1"
+							Style="{StaticResource SpinnerButton}"
+							Command="{x:Static local:Spinner.RollDown}"
+							>
+							<Path Data="{StaticResource DownArrow}" Fill="Black" Stroke="Black" />
+						</RepeatButton>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<DataTemplate DataType="{x:Type vf:VirtualFileBase}">
+		<local:FileSource File="{Binding}" />
+	</DataTemplate>
+</ResourceDictionary>

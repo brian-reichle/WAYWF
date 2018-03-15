@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Agent", "WAYWF.Agent\WAYWF.Agent.csproj", "{B734593F-F71B-4260-8D62-6C94F3AE5042}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.UI", "WAYWF.UI\WAYWF.UI.csproj", "{A93D43AE-BECA-4360-9B0D-F213204189F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Api", "WAYWF.Api\WAYWF.Api.csproj", "{9B496C20-D30E-4C6D-87FD-ED1C26544BD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Console", "WAYWF.Console\WAYWF.Console.csproj", "{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WAYWF.Options", "WAYWF.Options\WAYWF.Options.shproj", "{DB6BDC53-AFEF-4963-A48F-543907905EB5}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		WAYWF.Options\WAYWF.Options.projitems*{b734593f-f71b-4260-8d62-6c94f3ae5042}*SharedItemsImports = 4
+		WAYWF.Options\WAYWF.Options.projitems*{d1dec5a4-2fbb-416e-9c17-e97ed662a147}*SharedItemsImports = 4
+		WAYWF.Options\WAYWF.Options.projitems*{db6bdc53-afef-4963-a48f-543907905eb5}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B734593F-F71B-4260-8D62-6C94F3AE5042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B734593F-F71B-4260-8D62-6C94F3AE5042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B734593F-F71B-4260-8D62-6C94F3AE5042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B734593F-F71B-4260-8D62-6C94F3AE5042}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A93D43AE-BECA-4360-9B0D-F213204189F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A93D43AE-BECA-4360-9B0D-F213204189F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A93D43AE-BECA-4360-9B0D-F213204189F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A93D43AE-BECA-4360-9B0D-F213204189F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B496C20-D30E-4C6D-87FD-ED1C26544BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B496C20-D30E-4C6D-87FD-ED1C26544BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B496C20-D30E-4C6D-87FD-ED1C26544BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B496C20-D30E-4C6D-87FD-ED1C26544BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58324E02-108A-4336-AA7C-3112204D0CCF}
+	EndGlobalSection
+EndGlobal

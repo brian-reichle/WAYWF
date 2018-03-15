@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<xs:schema
+	attributeFormDefault="unqualified"
+	elementFormDefault="qualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:w="waywf-capture"
+	targetNamespace="waywf-capture"
+	>
+
+	<xs:simpleType name="platformType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Win32NT" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="versionType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d+(\.\d+){3}" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="methodToken">
+		<xs:restriction base="xs:hexBinary">
+			<xs:length value="4" />
+			<xs:pattern value="06.*" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="publicKeyTokenType">
+		<xs:restriction base="xs:hexBinary">
+			<xs:length value="8" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="memoryAddress">
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:simpleType name="internalFrameType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="STUBFRAME_NONE" />
+			<xs:enumeration value="STUBFRAME_M2U" />
+			<xs:enumeration value="STUBFRAME_U2M" />
+			<xs:enumeration value="STUBFRAME_APPDOMAIN_TRANSITION" />
+			<xs:enumeration value="STUBFRAME_LIGHTWEIGHT_FUNCTION" />
+			<xs:enumeration value="STUBFRAME_FUNC_EVAL" />
+			<xs:enumeration value="STUBFRAME_INTERNALCALL" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="ilMappingType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Prolog" />
+			<xs:enumeration value="Epilog" />
+			<xs:enumeration value="Approx" />
+			<xs:enumeration value="Exact" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="threadUserStateType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="USER_STOP_REQUESTED" />
+			<xs:enumeration value="USER_SUSPEND_REQUESTED" />
+			<xs:enumeration value="USER_BACKGROUND" />
+			<xs:enumeration value="USER_UNSTARTED" />
+			<xs:enumeration value="USER_STOPPED" />
+			<xs:enumeration value="USER_WAIT_SLEEP_JOIN" />
+			<xs:enumeration value="USER_SUSPENDED" />
+			<xs:enumeration value="USER_UNSAFE_POINT" />
+			<xs:enumeration value="USER_THREADPOOL" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="threadUserStateListType">
+		<xs:list itemType="w:threadUserStateType" />
+	</xs:simpleType>
+
+	<xs:simpleType name="chainReasonType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="CHAIN_NONE" />
+			<xs:enumeration value="CHAIN_CLASS_INIT" />
+			<xs:enumeration value="CHAIN_EXCEPTION_FILTER" />
+			<xs:enumeration value="CHAIN_SECURITY" />
+			<xs:enumeration value="CHAIN_CONTEXT_POLICY" />
+			<xs:enumeration value="CHAIN_INTERCEPTION" />
+			<xs:enumeration value="CHAIN_PROCESS_START" />
+			<xs:enumeration value="CHAIN_THREAD_START" />
+			<xs:enumeration value="CHAIN_ENTER_MANAGED" />
+			<xs:enumeration value="CHAIN_ENTER_UNMANAGED" />
+			<xs:enumeration value="CHAIN_CONTEXT_SWITCH" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="chainReasonListType">
+		<xs:list itemType="w:chainReasonType" />
+	</xs:simpleType>
+
+	<xs:simpleType name="languageType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Unknown" />
+			<xs:enumeration value="C" />
+			<xs:enumeration value="CPlusPlus" />
+			<xs:enumeration value="CSharp" />
+			<xs:enumeration value="Basic" />
+			<xs:enumeration value="Java" />
+			<xs:enumeration value="Cobol" />
+			<xs:enumeration value="Pascal" />
+			<xs:enumeration value="ILAssembly" />
+			<xs:enumeration value="JScript" />
+			<xs:enumeration value="SMC" />
+			<xs:enumeration value="MCPlusPlus" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="documentTypeType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Unknown" />
+			<xs:enumeration value="Text" />
+			<xs:enumeration value="MC" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="blockingReasonType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="BLOCKING_MONITOR_CRITICAL_SECTION" />
+			<xs:enumeration value="BLOCKING_MONITOR_EVENT" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="moduleIdListType">
+		<xs:list itemType="xs:unsignedInt" />
+	</xs:simpleType>
+
+	<xs:complexType name="credentialType">
+		<xs:attribute name="user" type="xs:string" use="required" />
+		<xs:attribute name="domain" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="moduleType">
+		<xs:attribute name="moduleId" type="xs:unsignedInt" use="required" />
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="path" type="xs:string" use="required" />
+		<xs:attribute name="mvid" type="xs:string" use="required" />
+		<xs:attribute name="isInMemory" type="xs:boolean" use="optional" default="false" />
+		<xs:attribute name="isDynamic" type="xs:boolean" use="optional" default="false" />
+	</xs:complexType>
+
+	<xs:complexType name="assemblyType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" name="module" type="w:moduleType" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="version" type="w:versionType" use="optional" />
+		<xs:attribute name="publicKeyToken" type="w:publicKeyTokenType" use="optional" />
+		<xs:attribute name="locale" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="appDomainType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" name="assembly" type="w:assemblyType" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:unsignedInt" use="required" />
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="documentType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="documentId" type="xs:unsignedInt" use="required" />
+				<xs:attribute name="language" type="w:languageType" use="required" />
+				<xs:attribute name="documentType" type="w:documentTypeType" use="optional" default="Text" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="documentListType">
+		<xs:sequence>
+			<xs:element name="document" type="w:documentType" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="path" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="nullType">
+		<xs:sequence />
+	</xs:complexType>
+
+	<xs:complexType name="valueType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="objectId" type="xs:unsignedInt" use="optional" />
+				<xs:attribute name="type" type="xs:string" use="required" />
+				<xs:attribute name="suppressed" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="valueRefType">
+		<xs:attribute name="objectId" type="xs:unsignedInt" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name ="rcwValue">
+		<xs:sequence>
+			<xs:element name="managed">
+				<xs:complexType>
+					<xs:attribute name="type" type="xs:string" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="native">
+				<xs:complexType>
+					<xs:attribute name="ptr" type="w:memoryAddress" />
+					<xs:attribute name="vtbl" type="w:memoryAddress" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="objectId" type="xs:unsignedInt" use="optional" />
+		<xs:attribute name="type" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="pointerValueType">
+		<xs:group ref="w:localValueElementGroup" minOccurs="0" />
+		<xs:attribute name="objectId" type="xs:unsignedInt" use="optional" />
+		<xs:attribute name="type" type="xs:string" use="required" />
+		<xs:attribute name="address" type="w:memoryAddress" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="variableType">
+		<xs:group ref="w:localValueElementGroup" minOccurs="0" />
+		<xs:attribute name="type" type="xs:string" use="optional" />
+		<xs:attribute name="name" type="xs:string" use="optional" />
+		<xs:attribute name="byRef" type="xs:boolean" use="optional" default="false" />
+		<xs:attribute name="pinned" type="xs:boolean" use="optional" default="false" />
+	</xs:complexType>
+
+	<xs:complexType name="sourceType">
+		<xs:attribute name="documentId" type="xs:unsignedInt" use="required" />
+		<xs:attribute name="line" type="xs:unsignedInt" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="frameType">
+		<xs:sequence>
+			<xs:element name="source" type="w:sourceType" minOccurs="0" />
+			<xs:element name="result" type="w:variableType" />
+			<xs:element name="this" type="w:variableType" minOccurs="0" />
+			<xs:element name="param" type="w:variableType" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="local" type="w:variableType" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="moduleId" type="xs:unsignedInt" use="required" />
+		<xs:attribute name="token" type="w:methodToken" use="required" />
+		<xs:attribute name="typeDisplayText" type="xs:string" use="optional" />
+		<xs:attribute name="methodDisplayText" type="xs:string" use="required" />
+		<xs:attribute name="duration" type="xs:decimal" use="optional" />
+		<xs:attribute name="ilOffset" type="xs:unsignedShort" use="optional" />
+		<xs:attribute name="ilMapping" type="w:ilMappingType" use="optional" default="Exact" />
+	</xs:complexType>
+
+	<xs:complexType name="chainType">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="internalFrame" type="w:internalFrameType" />
+			<xs:element name="frame" type="w:frameType" />
+		</xs:choice>
+		<xs:attribute name="reason" type="w:chainReasonListType" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="blockingObjectType">
+		<xs:group ref="w:blockingValueElementGroup" />
+		<xs:attribute name="reason" type="w:blockingReasonType" use="required" />
+		<xs:attribute name="ownerThread" type="xs:unsignedInt" use="optional" />
+		<xs:attribute name="timeout" type="xs:unsignedInt" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="threadType">
+		<xs:sequence>
+			<xs:element name="blockingObject" type="w:blockingObjectType" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="chain" type="w:chainType" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="tid" type="xs:unsignedShort" use="required" />
+		<xs:attribute name="state" type="w:threadUserStateListType" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="pendingTasksType">
+		<xs:sequence>
+			<xs:element name="pendingSMTask" type="w:pendingSMTaskType" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="pendingSMTaskType">
+		<xs:sequence>
+			<xs:element name="source" type="w:sourceType" minOccurs="0" />
+			<xs:element name="result" type="w:variableType" />
+			<xs:element name="this" type="w:variableType" minOccurs="0" />
+			<xs:element name="param" type="w:variableType" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="local" type="w:variableType" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="moduleId" type="w:moduleIdListType" use="required" />
+		<xs:attribute name="token" type="w:methodToken" use="required" />
+		<xs:attribute name="typeDisplayText" type="xs:string" use="optional" />
+		<xs:attribute name="methodDisplayText" type="xs:string" use="required" />
+		<xs:attribute name="state" type="xs:int" use="optional" />
+		<xs:attribute name="ilOffset" type="xs:int" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="windowType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="hwnd" type="xs:long" use="required" />
+				<xs:attribute name="ownerThread" type="xs:unsignedInt" use="required" />
+				<xs:attribute name="ownerHwnd" type="xs:long" use="optional" />
+				<xs:attribute name="className" type="xs:string" use="optional" />
+				<xs:attribute name="visible" type="xs:boolean" use="optional" default="false" />
+				<xs:attribute name="enabled" type="xs:boolean" use="optional" default="true" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="processType">
+		<xs:sequence>
+			<xs:element name="user" type="w:credentialType" minOccurs="0" />
+			<xs:element name="appDomain" type="w:appDomainType" maxOccurs="unbounded" />
+			<xs:element name="source" type="w:documentListType" minOccurs="0" />
+			<xs:group ref="w:globalValueElementGroup" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="thread" type="w:threadType" maxOccurs="unbounded" />
+			<xs:element name="pendingTasks" type="w:pendingTasksType" minOccurs="0" />
+			<xs:element name="window" type="w:windowType" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="pid" type="xs:unsignedShort" use="required" />
+		<xs:attribute name="is64bit" type="xs:boolean" use="required" />
+		<xs:attribute name="clrVersion" type="w:versionType" use="optional" />
+		<xs:attribute name="imagePath" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:group name="globalValueElementGroup">
+		<xs:choice>
+			<xs:element name="value" type="w:valueType" />
+			<xs:element name="rcwValue" type="w:rcwValue" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="blockingValueElementGroup">
+		<xs:choice>
+			<xs:element name="value" type="w:valueType" />
+			<xs:element name="rcwValue" type="w:rcwValue" />
+			<xs:element name="valueRef" type="w:valueRefType" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="localValueElementGroup">
+		<xs:choice>
+			<xs:group ref="w:globalValueElementGroup" />
+			<xs:element name="null" type="w:nullType" />
+			<xs:element name="pointerValue" type="w:pointerValueType" />
+			<xs:element name="valueRef" type="w:valueRefType" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:element name="waywf">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="os">
+					<xs:complexType>
+						<xs:attribute name="platform" type="w:platformType" use="required" />
+						<xs:attribute name="version" type="w:versionType" use="required" />
+						<xs:attribute name="servicePack" type="xs:string" use="required" />
+						<xs:attribute name="is64bit" type="xs:boolean" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="login">
+					<xs:complexType>
+						<xs:attribute name="user" type="xs:string" use="required" />
+						<xs:attribute name="domain" type="xs:string" use="required" />
+						<xs:attribute name="machine" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="process" type="w:processType" />
+			</xs:sequence>
+			<xs:attribute name="version" type="w:versionType" use="required" />
+			<xs:attribute name="timestamp" type="xs:string" use="required" />
+			<xs:attribute name="timezone" type="xs:string" use="required" />
+			<xs:attribute name="wait" type="xs:unsignedInt" use="optional" default="0" />
+			<xs:attribute name="walkheap" type="xs:boolean" use="optional" default="false" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

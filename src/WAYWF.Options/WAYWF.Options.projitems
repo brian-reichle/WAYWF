@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>db6bdc53-afef-4963-a48f-543907905eb5</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>WAYWF.Options</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CmdLineOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CmdLineOptionLookup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CmdLineOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptionException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptionReport.cs" />
+  </ItemGroup>
+</Project>

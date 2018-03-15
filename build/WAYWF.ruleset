@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="WAYWF" ToolsVersion="15.0">
+  <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
+  <Include Path="basicdesignguidelinerules.ruleset" Action="Default" />
+  <Include Path="managedminimumrules.ruleset" Action="Default" />
+  <Include Path="minimumrecommendedrules.ruleset" Action="Default" />
+  <Include Path="securityrules.ruleset" Action="Default" />
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1001" Action="None" />
+    <Rule Id="CA1040" Action="Warning" />
+    <Rule Id="CA1064" Action="None" />
+    <Rule Id="CA1300" Action="Warning" />
+    <Rule Id="CA1302" Action="Warning" />
+    <Rule Id="CA1304" Action="Warning" />
+    <Rule Id="CA1306" Action="Warning" />
+    <Rule Id="CA1307" Action="Warning" />
+    <Rule Id="CA1309" Action="Warning" />
+    <Rule Id="CA1402" Action="Warning" />
+    <Rule Id="CA1406" Action="Warning" />
+    <Rule Id="CA1407" Action="Warning" />
+    <Rule Id="CA1408" Action="Warning" />
+    <Rule Id="CA1409" Action="Warning" />
+    <Rule Id="CA1411" Action="Warning" />
+    <Rule Id="CA1412" Action="Warning" />
+    <Rule Id="CA1413" Action="Warning" />
+    <Rule Id="CA1414" Action="Warning" />
+    <Rule Id="CA1502" Action="None" />
+    <Rule Id="CA1504" Action="Warning" />
+    <Rule Id="CA1700" Action="Warning" />
+    <Rule Id="CA1713" Action="Warning" />
+    <Rule Id="CA1714" Action="Warning" />
+    <Rule Id="CA1717" Action="Warning" />
+    <Rule Id="CA1721" Action="Warning" />
+    <Rule Id="CA1724" Action="Warning" />
+    <Rule Id="CA1725" Action="Warning" />
+    <Rule Id="CA1800" Action="Warning" />
+    <Rule Id="CA1802" Action="Warning" />
+    <Rule Id="CA1810" Action="None" />
+    <Rule Id="CA1811" Action="None" />
+    <Rule Id="CA2003" Action="Warning" />
+    <Rule Id="CA2151" Action="Warning" />
+    <Rule Id="CA2202" Action="None" />
+    <Rule Id="CA2210" Action="None" />
+    <Rule Id="CA2218" Action="Warning" />
+    <Rule Id="CA2228" Action="Warning" />
+    <Rule Id="CA2233" Action="Warning" />
+    <Rule Id="CA2243" Action="Warning" />
+    <Rule Id="CA5122" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0016" Action="None" />
+    <Rule Id="IDE0016WithoutSuggestion" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1008" Action="None" />
+    <Rule Id="SA1027" Action="None" />
+
+    <Rule Id="SA1101" Action="None" />
+    <Rule Id="SA1119" Action="None" />
+    <Rule Id="SA1124" Action="None" />
+    <Rule Id="SA1129" Action="None" />
+    <Rule Id="SA1130" Action="None" />
+
+    <Rule Id="SA1200" Action="None" />
+    <Rule Id="SA1201" Action="None" />
+    <Rule Id="SA1202" Action="None" />
+    <Rule Id="SA1204" Action="None" />
+    <Rule Id="SA1205" Action="None" />
+    <Rule Id="SA1214" Action="None" />
+
+    <Rule Id="SA1307" Action="None" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1310" Action="None" />
+
+    <Rule Id="SA1400" Action="None" />
+    <Rule Id="SA1401" Action="None" />
+    <Rule Id="SA1402" Action="None" />
+    <Rule Id="SA1404" Action="None" />
+    <Rule Id="SA1407" Action="None" />
+
+    <Rule Id="SA1501" Action="None" />
+    <Rule Id="SA1503" Action="None" />
+    <Rule Id="SA1512" Action="None" />
+    <Rule Id="SA1513" Action="None" />
+    <Rule Id="SA1515" Action="None" />
+    <Rule Id="SA1516" Action="None" />
+
+    <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1652" Action="None" />
+
+    <Rule Id="SX1309" Action="Warning" />
+    <Rule Id="SX1309S" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="WTG.Analyzers" RuleNamespace="WTG.Analyzers">
+    <Rule Id="WTG1001" Action="Warning" />
+    <Rule Id="WTG1002" Action="Warning" />
+    <Rule Id="WTG1004" Action="Warning" />
+    <Rule Id="WTG1005" Action="Warning" />
+    <Rule Id="WTG1006" Action="Warning" />
+    <Rule Id="WTG1007" Action="Warning" />
+    <Rule Id="WTG1008" Action="Warning" />
+    <Rule Id="WTG1009" Action="Warning" />
+    <Rule Id="WTG1010" Action="Warning" />
+    <Rule Id="WTG1011" Action="Warning" />
+    <Rule Id="WTG1012" Action="Warning" />
+    <Rule Id="WTG2001" Action="Warning" />
+    <Rule Id="WTG2002" Action="Warning" />
+    <Rule Id="WTG2003" Action="Warning" />
+    <Rule Id="WTG3001" Action="Warning" />
+    <Rule Id="WTG3002" Action="Warning" />
+    <Rule Id="WTG3003" Action="Warning" />
+    <Rule Id="WTG3004" Action="Info" />
+    <Rule Id="WTG3101" Action="Warning" />
+    <Rule Id="WTG3102" Action="Warning" />
+    <Rule Id="WTG3103" Action="Warning" />
+  </Rules>
+</RuleSet>

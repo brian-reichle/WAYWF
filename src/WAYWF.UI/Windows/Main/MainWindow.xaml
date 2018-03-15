@@ -1,0 +1,113 @@
+<!-- Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Window
+	x:Class="WAYWF.UI.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:WAYWF.UI"
+	Title="WAYWF UI"
+	Height="350"
+	Width="525"
+	MinHeight="200"
+	MinWidth="250"
+	Icon="/Resources/WAYWF.ico"
+	Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+	>
+	<Window.Resources>
+		<Style TargetType="{x:Type TextBox}" x:Key="fixedwidthtextbox">
+			<Setter Property="AcceptsReturn" Value="True" />
+			<Setter Property="IsReadOnly" Value="True" />
+			<Setter Property="IsReadOnlyCaretVisible" Value="True" />
+			<Setter Property="FontFamily" Value="Lucida Console" />
+			<Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+			<Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+			<Setter Property="ContextMenu">
+				<Setter.Value>
+					<ContextMenu>
+						<MenuItem Header="Copy" Command="Copy" />
+					</ContextMenu>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
+	<Window.InputBindings>
+		<KeyBinding Gesture="F5" Command="{x:Static local:MainWindow.QueryProcess}" />
+	</Window.InputBindings>
+	<Window.CommandBindings>
+		<CommandBinding Command="{x:Static local:MainWindow.QueryProcess}" Executed="OnQueryProcessExecuted" />
+		<CommandBinding Command="Help" Executed="OnHelpExecuted" />
+		<CommandBinding Command="Save" Executed="OnSaveExecuted" />
+		<CommandBinding Command="Close" Executed="OnCloseExecuted" />
+	</Window.CommandBindings>
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="File">
+				<MenuItem Header="Exit" Command="Close" />
+			</MenuItem>
+			<MenuItem Header="Help">
+				<MenuItem Header="About WAYWF" Command="Help" />
+			</MenuItem>
+		</Menu>
+		<ToolBarTray DockPanel.Dock="Top">
+			<ToolBar>
+				<local:ProcessSelector
+					ToolTip="Drag onto window to select process."
+					ProcessSelected="ProcessSelector_ProcessSelected"
+					/>
+				<Button
+					ToolTip="Select process by process id."
+					Command="{x:Static local:MainWindow.QueryProcess}"
+					Content="PID"
+					/>
+			</ToolBar>
+			<ToolBar>
+				<ToggleButton
+					Name="WalkHeapButton"
+					ToolTip="Walk Heap"
+					>
+					<Image Source="\Resources\WalkHeap.ico" />
+				</ToggleButton>
+				<local:Spinner
+					x:Name="WaitSpinner"
+					Width="50"
+					MaxValue="999"
+					ToolTip="Wait Time (seconds)"
+					/>
+			</ToolBar>
+			<ToolBar>
+				<Button
+					ToolTip="Save"
+					Command="Save"
+					>
+					<Image Source="\Resources\Save.ico" />
+				</Button>
+			</ToolBar>
+		</ToolBarTray>
+		<TabControl KeyboardNavigation.TabNavigation="Cycle">
+			<TabItem Header="Log" RequestBringIntoView="BringTabIntoView">
+				<TextBox
+					Name="Log"
+					Style="{StaticResource fixedwidthtextbox}"
+					/>
+			</TabItem>
+			<TabItem Header="Output" RequestBringIntoView="BringTabIntoView">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+
+					<TextBox
+						Name="Output"
+						Style="{StaticResource fixedwidthtextbox}"
+						/>
+
+					<local:FileSourceSet
+						x:Name="FilesListBox"
+						Grid.Row="1"
+						MaxHeight="60"
+						/>
+				</Grid>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</Window>
