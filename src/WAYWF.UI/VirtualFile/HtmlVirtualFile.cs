@@ -6,12 +6,12 @@ namespace WAYWF.UI.VirtualFile
 	sealed class HtmlVirtualFile : VirtualFileBase
 	{
 		public HtmlVirtualFile(string baseFileName, string xmlContent)
-			: base(baseFileName + ".html")
+			: base(baseFileName + ".xhtml")
 		{
 			_xmlContent = xmlContent;
 		}
 
-		public override string Extension => ".html";
+		public override string Extension => ".xhtml";
 
 		public override byte[] GenerateContent()
 		{
