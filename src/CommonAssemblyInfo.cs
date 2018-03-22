@@ -13,4 +13,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // If you update this version number, then don't forget to also update the app.manifest version numbers.
-[assembly: AssemblyVersion("0.14.*")]
+[assembly: AssemblyVersion("0.15.*")]
