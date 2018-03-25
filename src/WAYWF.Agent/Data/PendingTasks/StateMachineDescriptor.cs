@@ -17,8 +17,8 @@ namespace WAYWF.Agent.PendingTasks
 			StateMachineType = stateMachineType;
 			StateField = stateField;
 			ThisField = thisField;
-			ParamFields = new ReadOnlyCollection<SMField>(paramFields);
-			LocalFields = new ReadOnlyCollection<MetaField>(localFields);
+			ParamFields = paramFields.MakeReadOnly();
+			LocalFields = localFields.MakeReadOnly();
 		}
 
 		public MetaMethod AsyncMethod { get; }

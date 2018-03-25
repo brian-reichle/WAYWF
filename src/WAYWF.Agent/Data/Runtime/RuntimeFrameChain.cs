@@ -9,7 +9,7 @@ namespace WAYWF.Agent.Data
 		public RuntimeFrameChain(CorDebugChainReason reason, RuntimeFrame[] frames)
 		{
 			Reason = reason;
-			Frames = new ReadOnlyCollection<RuntimeFrame>(frames);
+			Frames = frames.MakeReadOnly();
 		}
 
 		public CorDebugChainReason Reason { get; }

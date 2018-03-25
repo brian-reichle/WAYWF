@@ -116,7 +116,7 @@ namespace WAYWF.Agent.PendingTasks
 			var type = process.GetTypeForTypeID(typeID);
 			var e = type.EnumerateTypeParameters();
 			var typeArgs = _mdCache.GetTypes(e).ToArray();
-			return new ReadOnlyCollection<MetaTypeBase>(typeArgs);
+			return typeArgs.MakeReadOnly();
 		}
 
 		StateMachineDescriptor GetStateMachineType(ICorDebugProcess5 process, COR_TYPEID typeID)

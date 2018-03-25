@@ -25,8 +25,8 @@ namespace WAYWF.Agent.PendingTasks
 			TypeArgs = typeArgs;
 			StateValue = stateValue;
 			ThisValue = thisValue;
-			ParameterValues = new ReadOnlyCollection<RuntimeValue>(parameterValues);
-			LocalValues = new ReadOnlyCollection<RuntimeValue>(localValues);
+			ParameterValues = parameterValues.MakeReadOnly();
+			LocalValues = localValues.MakeReadOnly();
 			State = state;
 		}
 
