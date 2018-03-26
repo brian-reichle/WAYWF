@@ -570,34 +570,22 @@ table
 		</xsl:for-each>
 	</xsl:template>
 
-	<xsl:template match="w:param">
+	<xsl:template match="w:param|w:local">
 		<span>
-			<xsl:if test="w:value|w:valueRef|w:rcwValue|w:pointerValue|w:null">
-				<xsl:attribute name="class">paramKnownValue</xsl:attribute>
-				<xsl:attribute name="title">
-					<xsl:apply-templates select="w:value|w:valueRef|w:rcwValue|w:pointerValue|w:null" />
+			<xsl:variable name="value" select="w:value|w:valueRef|w:rcwValue|w:pointerValue|w:null" />
+			<xsl:if test="$value">
+				<xsl:attribute name="class">
+					<xsl:value-of select="local-name(.)" />
+					<xsl:text>KnownValue</xsl:text>
 				</xsl:attribute>
-			</xsl:if>
-			<xsl:value-of select="@type" />
-			<xsl:if test="@byRef = 'true'">
-				<xsl:text>&amp;</xsl:text>
-			</xsl:if>
-			<xsl:if test="@name">
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="@name" />
-			</xsl:if>
-		</span>
-	</xsl:template>
-
-	<xsl:template match="w:local">
-		<span>
-			<xsl:if test="w:value|w:valueRef|w:rcwValue|w:pointerValue|w:null">
-				<xsl:attribute name="class">localKnownValue</xsl:attribute>
 				<xsl:attribute name="title">
-					<xsl:apply-templates select="w:value|w:valueRef|w:rcwValue|w:pointerValue|w:null" />
+					<xsl:apply-templates select="$value" />
 				</xsl:attribute>
 			</xsl:if>
 			<xsl:value-of select="translate(@type,' ','&#160;')" />
+			<xsl:if test="@byRef = 'true'">
+				<xsl:text>&amp;</xsl:text>
+			</xsl:if>
 			<xsl:if test="@name">
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="@name" />
