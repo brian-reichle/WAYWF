@@ -88,7 +88,7 @@ table
 	background-color: White;
 }
 
-.paramKnownValue, .localKnownValue, .hasSource { background-color: lightgray; }
+.paramKnownValue, .localKnownValue, .taskKnownValue, .hasSource { background-color: lightgray; }
 .hilight { background-color: yellow; }
 
 .localContainer
@@ -536,10 +536,32 @@ table
 				<td>
 					<xsl:apply-templates select="." mode="locals" />
 					<xsl:if test="@typeDisplayText">
-						<xsl:value-of select="@typeDisplayText" />
+						<span>
+							<xsl:variable name="value" select="w:this/w:*" />
+							<xsl:if test="$value">
+								<xsl:attribute name="class">paramKnownValue</xsl:attribute>
+								<xsl:attribute name="title">
+									<xsl:apply-templates select="$value" />
+								</xsl:attribute>
+							</xsl:if>
+							<xsl:value-of select="@typeDisplayText" />
+						</span>
 						<xsl:text>.</xsl:text>
 					</xsl:if>
-					<xsl:value-of select="@methodDisplayText" />
+					<xsl:if test="w:task">
+						<span>
+							<xsl:variable name="value" select="w:task/w:*" />
+							<xsl:if test="$value">
+								<xsl:attribute name="class">
+									<xsl:text>taskKnownValue</xsl:text>
+								</xsl:attribute>
+								<xsl:attribute name="title">
+									<xsl:apply-templates select="$value" />
+								</xsl:attribute>
+							</xsl:if>
+							<xsl:value-of select="@methodDisplayText" />
+						</span>
+					</xsl:if>
 					<xsl:text>(</xsl:text>
 					<xsl:for-each select="w:param">
 						<xsl:if test="position() != 1">
