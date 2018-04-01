@@ -431,10 +431,11 @@ table
 				<xsl:apply-templates select="." mode="locals" />
 				<xsl:if test="@typeDisplayText">
 					<span>
-						<xsl:if test="w:this/w:value|w:this/w:valueRef|w:this/w:rcwValue|w:this/w:pointerValue|w:this/w:null">
+						<xsl:variable name="value" select="w:this/w:*" />
+						<xsl:if test="$value">
 							<xsl:attribute name="class">paramKnownValue</xsl:attribute>
 							<xsl:attribute name="title">
-								<xsl:apply-templates select="w:this/w:value|w:this/w:valueRef|w:this/w:rcwValue|w:this/w:pointerValue|w:this/w:null" />
+								<xsl:apply-templates select="$value" />
 							</xsl:attribute>
 						</xsl:if>
 						<xsl:value-of select="@typeDisplayText" />
@@ -471,7 +472,8 @@ table
 	</xsl:template>
 
 	<xsl:template match="w:frame|w:pendingSMTask" mode="locals">
-		<xsl:if test="w:local/w:value|w:local/valueRef|w:local/w:rcwValue|w:local/w:pointerValue|w:local/w:null">
+		<xsl:variable name="value" select="w:local/w:*" />
+		<xsl:if test="$value">
 			<div class="localContainer">
 				<svg:svg width="16" height="16">
 					<svg:use xlink:href="#LocalsIcon" />
@@ -572,7 +574,7 @@ table
 
 	<xsl:template match="w:param|w:local">
 		<span>
-			<xsl:variable name="value" select="w:value|w:valueRef|w:rcwValue|w:pointerValue|w:null" />
+			<xsl:variable name="value" select="w:*" />
 			<xsl:if test="$value">
 				<xsl:attribute name="class">
 					<xsl:value-of select="local-name(.)" />
@@ -702,7 +704,7 @@ table
 				</xsl:call-template>
 			</td>
 			<td>
-				<xsl:apply-templates select="w:value|w:valueRef|w:rcwValue" />
+				<xsl:apply-templates select="w:*" />
 			</td>
 		</tr>
 	</xsl:template>
