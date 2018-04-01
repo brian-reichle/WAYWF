@@ -289,6 +289,7 @@
 			<xs:element name="source" type="w:sourceType" minOccurs="0" />
 			<xs:element name="result" type="w:variableType" />
 			<xs:element name="this" type="w:variableType" minOccurs="0" />
+			<xs:element name="task" type="w:variableType" minOccurs="0" />
 			<xs:element name="param" type="w:variableType" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="local" type="w:variableType" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>

@@ -19,6 +19,21 @@ namespace WAYWF.Agent
 			return new string(buffer, 0, size - 1);
 		}
 
+		public static bool IsAssembly(this ICorDebugAssembly assembly, string assemblyName)
+		{
+			var modules = assembly.EnumerateModules();
+
+			while (modules.Next(1, out var module))
+			{
+				if (!module.IsInMemory())
+				{
+					return module.IsAssembly(assemblyName);
+				}
+			}
+
+			return false;
+		}
+
 		public static bool HasAppDomainInfo(this ICorDebugAssembly assembly)
 		{
 			var domain = assembly.GetAppDomain();

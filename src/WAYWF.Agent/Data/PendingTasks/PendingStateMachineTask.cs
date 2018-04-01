@@ -14,6 +14,7 @@ namespace WAYWF.Agent.PendingTasks
 			ReadOnlyCollection<MetaTypeBase> typeArgs,
 			RuntimeSimpleValue stateValue,
 			RuntimeValue thisValue,
+			RuntimeValue taskValue,
 			RuntimeValue[] parameterValues,
 			RuntimeValue[] localValues,
 			SourceAsyncState state)
@@ -25,6 +26,7 @@ namespace WAYWF.Agent.PendingTasks
 			TypeArgs = typeArgs;
 			StateValue = stateValue;
 			ThisValue = thisValue;
+			TaskValue = taskValue;
 			ParameterValues = parameterValues.MakeReadOnly();
 			LocalValues = localValues.MakeReadOnly();
 			State = state;
@@ -34,6 +36,7 @@ namespace WAYWF.Agent.PendingTasks
 		public ReadOnlyCollection<MetaTypeBase> TypeArgs { get; }
 		public RuntimeSimpleValue StateValue { get; }
 		public RuntimeValue ThisValue { get; }
+		public RuntimeValue TaskValue { get; }
 		public ReadOnlyCollection<RuntimeValue> ParameterValues { get; }
 		public ReadOnlyCollection<RuntimeValue> LocalValues { get; }
 		public SourceAsyncState State { get; }

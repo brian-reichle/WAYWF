@@ -56,6 +56,7 @@ namespace WAYWF.Agent.PendingTasks
 
 			RuntimeSimpleValue stateValue = null;
 			RuntimeValue thisValue = null;
+			RuntimeValue taskValue = null;
 			var parameterValues = new RuntimeValue[descriptor.ParamFields.Count];
 			var localValues = new RuntimeValue[descriptor.LocalFields.Count];
 			SourceAsyncState state = null;
@@ -64,6 +65,11 @@ namespace WAYWF.Agent.PendingTasks
 			{
 				stateValue = descriptor.StateField == null ? null : GetValue(objectValue, descriptor.StateField.FieldToken) as RuntimeSimpleValue;
 				thisValue = descriptor.ThisField == null ? null : GetValue(objectValue, descriptor.ThisField.FieldToken);
+
+				if (descriptor.TaskFieldSequence.Count > 0)
+				{
+					taskValue = GetIndirectValue(objectValue, descriptor.TaskFieldSequence);
+				}
 
 				for (var i = 0; i < parameterValues.Length; i++)
 				{
@@ -85,8 +91,40 @@ namespace WAYWF.Agent.PendingTasks
 				}
 			}
 
-			result = new PendingStateMachineTask(descriptor, GetTypeArgs(process, obj.type), stateValue, thisValue, parameterValues, localValues, state);
+			result = new PendingStateMachineTask(descriptor, GetTypeArgs(process, obj.type), stateValue, thisValue, taskValue, parameterValues, localValues, state);
 			return true;
+		}
+
+		RuntimeValue GetIndirectValue(ICorDebugObjectValue objectValue, ReadOnlyCollection<MetaDataToken> taskSequence)
+		{
+			for (var i = 0; i < taskSequence.Count; i++)
+			{
+				var value = objectValue.GetFieldValue(taskSequence[i]);
+
+				if (value is ICorDebugReferenceValue reference)
+				{
+					if (reference.IsNull())
+					{
+						return RuntimeNullValue.Instance;
+					}
+
+					value = reference.Dereference();
+
+					if (value == null)
+					{
+						return RuntimeNullValue.Instance;
+					}
+				}
+
+				objectValue = value as ICorDebugObjectValue;
+
+				if (objectValue == null)
+				{
+					return null;
+				}
+			}
+
+			return _objects.GetValue(objectValue);
 		}
 
 		RuntimeValue GetValue(ICorDebugObjectValue value, MetaDataToken token)

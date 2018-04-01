@@ -412,6 +412,18 @@ namespace WAYWF.Agent
 				_writer.WriteEndElement();
 			}
 
+			if (pendingTask.Descriptor.TaskFieldSequence != null)
+			{
+				_writer.WriteStartElement("task");
+
+				if (pendingTask.TaskValue != null)
+				{
+					pendingTask.TaskValue.Apply(_localValueFormatter);
+				}
+
+				_writer.WriteEndElement();
+			}
+
 			var parameters = signature.Parameters;
 
 			for (var i = 0; i < parameters.Count; i++)

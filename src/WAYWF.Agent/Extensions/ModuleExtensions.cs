@@ -268,6 +268,17 @@ namespace WAYWF.Agent
 			}
 		}
 
+		public static unsafe bool IsAssembly(this ICorDebugModule module, string assemblyName)
+		{
+			if (module.IsInMemory())
+			{
+				return false;
+			}
+
+			var aImport = module.GetMetaDataAssemblyImport();
+			return aImport.IsMatching(assemblyName);
+		}
+
 		public static unsafe IEnumerable<Instruction> GetMethodIL(this ICorDebugModule module, MetaDataToken mb)
 		{
 			var import = module.GetMetaDataImport();
@@ -392,61 +403,68 @@ namespace WAYWF.Agent
 				}
 
 				var aImport = module.GetMetaDataAssemblyImport();
-
-				int size;
-				var hr = aImport.GetAssemblyFromScope(out var assemblyToken);
-
-				if (hr < 0)
-				{
-					return false;
-				}
-
-				aImport.GetAssemblyProps(
-					assemblyToken,
-					pchName: &size);
-
-				if (size != assemblyName.Length + 1)
-				{
-					return false;
-				}
-
-				var buffer = stackalloc char[assemblyName.Length + 1];
-
-				aImport.GetAssemblyProps(
-					assemblyToken,
-					szName: buffer,
-					cchName: assemblyName.Length + 1);
-
-				return IsMatch(assemblyName, buffer, size);
+				return aImport.IsMatching(assemblyName);
 			}
 			else if (token.TokenType == TokenType.AssemblyRef)
 			{
-				int size;
-
 				var aImport = module.GetMetaDataAssemblyImport();
-
-				aImport.GetAssemblyRefProps(
-					token,
-					pchName: &size);
-
-				if (size != assemblyName.Length + 1)
-				{
-					return false;
-				}
-
-				var buffer = stackalloc char[assemblyName.Length + 1];
-
-				aImport.GetAssemblyRefProps(
-					token,
-					szName: buffer,
-					cchName: assemblyName.Length + 1);
-
-				return IsMatch(assemblyName, buffer, size);
+				return aImport.IsMatching(token, assemblyName);
 			}
 			else
 			{
 				return false;
 			}
+		}
+
+		static unsafe bool IsMatching(this IMetaDataAssemblyImport aImport, string assemblyName)
+		{
+			int size;
+			var hr = aImport.GetAssemblyFromScope(out var assemblyToken);
+
+			if (hr < 0)
+			{
+				return false;
+			}
+
+			aImport.GetAssemblyProps(
+				assemblyToken,
+				pchName: &size);
+
+			if (size != assemblyName.Length + 1)
+			{
+				return false;
+			}
+
+			var buffer = stackalloc char[assemblyName.Length + 1];
+
+			aImport.GetAssemblyProps(
+				assemblyToken,
+				szName: buffer,
+				cchName: assemblyName.Length + 1);
+
+			return IsMatch(assemblyName, buffer, size);
+		}
+
+		static unsafe bool IsMatching(this IMetaDataAssemblyImport aImport, MetaDataToken assemblyToken, string assemblyName)
+		{
+			int size;
+			aImport.GetAssemblyRefProps(
+				assemblyToken,
+				pchName: &size);
+
+			if (size != assemblyName.Length + 1)
+			{
+				return false;
+			}
+
+			var buffer = stackalloc char[assemblyName.Length + 1];
+
+			aImport.GetAssemblyRefProps(
+				assemblyToken,
+				szName: buffer,
+				cchName: assemblyName.Length + 1);
+
+			return IsMatch(assemblyName, buffer, size);
 		}
 
 		static unsafe bool IsMatch(string str, char* buffer, int len)

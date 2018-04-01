@@ -37,8 +37,10 @@ namespace WAYWF.Agent.PendingTasks
 		StateMachineDescriptor CreateDescriptor(ICorDebugModule module, MetaResolvedType smType, MetaMethod method, IEnumerable<Instruction> il)
 		{
 			var paramFields = new SMField[method.Signature.Parameters.Count];
+			var nonLocal = new HashSet<MetaDataToken>();
 			SMField stateField = null;
 			SMField thisField = null;
+			MetaDataToken[] taskFieldSequence = null;
 
 			Instruction prevInstruction = null;
 
@@ -62,22 +64,31 @@ namespace WAYWF.Agent.PendingTasks
 						{
 							paramFields[value - 1] = new SMField(fieldToken, name);
 						}
+
+						nonLocal.Add(fieldToken);
 					}
 					else if (LoadsConstantInt(prevInstruction))
 					{
 						stateField = new SMField(fieldToken, name);
+						nonLocal.Add(fieldToken);
+					}
+					else if (CallsCreateBuilder(module, prevInstruction))
+					{
+						taskFieldSequence = FindTaskFieldSequence(module, fieldToken);
+						nonLocal.Add(fieldToken);
 					}
 				}
 
 				prevInstruction = instruction;
 			}
 
-			var seen = new HashSet<MetaDataToken>(paramFields.Concat(new[] { thisField, stateField }).Where(x => x != null).Select(x => x.FieldToken));
-			var localFields = _mdCache.GetFields(module, smType.Token);
-			localFields = localFields.Where(x => !seen.Contains(x.Token)).ToArray();
+			var localFields = _mdCache
+				.GetFields(module, smType.Token)
+				.Where(x => !nonLocal.Contains(x.Token))
+				.ToArray();
 
 			var moveNextMethod = module.GetMethodBody(smType.Token, "mscorlib", "System.Runtime.CompilerServices.IAsyncStateMachine", "MoveNext");
-			return new StateMachineDescriptor(method, moveNextMethod, smType, stateField, thisField, paramFields, localFields);
+			return new StateMachineDescriptor(method, moveNextMethod, smType, stateField, thisField, taskFieldSequence, paramFields, localFields);
 		}
 
 		static bool IsSettingField(Instruction instruction, out MetaDataToken fieldToken)
@@ -198,6 +209,134 @@ namespace WAYWF.Agent.PendingTasks
 				|| instruction.OpCode == OpCodes.Ldc_I4_8
 				|| instruction.OpCode == OpCodes.Ldc_I4_M1
 				|| instruction.OpCode == OpCodes.Ldc_I4_S;
+		}
+
+		static bool CallsCreateBuilder(ICorDebugModule module, Instruction instruction)
+		{
+			if (instruction.OpCode == OpCodes.Call && instruction is Instruction<MetaDataToken> tokenInstruction)
+			{
+				var import = module.GetMetaDataImport();
+				var token = tokenInstruction.Value;
+				string name;
+
+				switch (token.TokenType)
+				{
+					case TokenType.MemberRef:
+						import.GetMemberRefProps(token, out var classToken, out name);
+						break;
+
+					case TokenType.MethodDef:
+						import.GetMethodProps(token, out var _, out name, out var _, out var _, out var _);
+						break;
+
+					default:
+						return false;
+				}
+
+				if (name == "Create")
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		static MetaDataToken[] FindTaskFieldSequence(ICorDebugModule module, MetaDataToken firstField)
+		{
+			var result = new List<MetaDataToken>();
+			result.Add(firstField);
+
+			while (true)
+			{
+				var import = module.GetMetaDataImport();
+				import.GetFieldTypeInfo(firstField, out var elementType, out var classToken);
+
+				switch (elementType)
+				{
+					case CorElementType.ELEMENT_TYPE_CLASS:
+					case CorElementType.ELEMENT_TYPE_VALUETYPE:
+						break;
+
+					default:
+						return null;
+				}
+
+				switch (classToken.TokenType)
+				{
+					case TokenType.TypeDef:
+						break;
+
+					case TokenType.TypeRef:
+						if (Resolver.TryResolve(ref module, ref classToken) != ResolutionResult.Success)
+						{
+							return null;
+						}
+						break;
+
+					default:
+						return null;
+				}
+
+				var field = FindNextField(module, classToken, out var fieldType);
+
+				if (field.IsNil)
+				{
+					return null;
+				}
+
+				result.Add(field);
+
+				if (fieldType.IsNil)
+				{
+					return result.ToArray();
+				}
+
+				classToken = fieldType;
+			}
+		}
+
+		static MetaDataToken FindNextField(ICorDebugModule module, MetaDataToken classToken, out MetaDataToken builderType)
+		{
+			var import = module.GetMetaDataImport();
+			var e = IntPtr.Zero;
+
+			RuntimeHelpers.PrepareConstrainedRegions();
+			try
+			{
+				while (import.EnumFields(ref e, classToken, out var field))
+				{
+					import.GetFieldTypeInfo(field, out var _, out var fieldTypeToken);
+
+					if (fieldTypeToken.IsNil)
+					{
+						continue;
+					}
+
+					if (module.IsType(fieldTypeToken, "mscorlib", "System.Threading.Tasks.Task") ||
+						module.IsType(fieldTypeToken, "mscorlib", "System.Threading.Tasks.Task`1"))
+					{
+						builderType = MetaDataToken.Nil;
+						return field;
+					}
+					else if (module.IsType(fieldTypeToken, "mscorlib", "System.Runtime.CompilerServices.AsyncValueTaskMethodBuilder`1")
+						|| module.IsType(fieldTypeToken, "mscorlib", "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1")
+						|| module.IsType(fieldTypeToken, "mscorlib", "System.Runtime.CompilerServices.AsyncTaskMethodBuilder"))
+					{
+						builderType = fieldTypeToken;
+						return field;
+					}
+				}
+			}
+			finally
+			{
+				if (e != IntPtr.Zero)
+				{
+					import.CloseEnum(e);
+				}
+			}
+
+			return builderType = MetaDataToken.Nil;
 		}
 
 		static MetaDataToken GetMethodToken(ICorDebugModule module, MetaResolvedType smType)

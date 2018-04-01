@@ -7,7 +7,7 @@ namespace WAYWF.Agent.PendingTasks
 {
 	sealed class StateMachineDescriptor
 	{
-		public StateMachineDescriptor(MetaMethod asyncMethod, MetaDataToken moveNextMethod, MetaResolvedType stateMachineType, SMField stateField, SMField thisField, SMField[] paramFields, MetaField[] localFields)
+		public StateMachineDescriptor(MetaMethod asyncMethod, MetaDataToken moveNextMethod, MetaResolvedType stateMachineType, SMField stateField, SMField thisField, MetaDataToken[] taskFieldSequence, SMField[] paramFields, MetaField[] localFields)
 		{
 			if (asyncMethod == null) throw new ArgumentNullException(nameof(asyncMethod));
 			if (stateMachineType == null) throw new ArgumentNullException(nameof(stateMachineType));
@@ -17,6 +17,7 @@ namespace WAYWF.Agent.PendingTasks
 			StateMachineType = stateMachineType;
 			StateField = stateField;
 			ThisField = thisField;
+			TaskFieldSequence = taskFieldSequence.MakeReadOnly();
 			ParamFields = paramFields.MakeReadOnly();
 			LocalFields = localFields.MakeReadOnly();
 		}
@@ -26,6 +27,7 @@ namespace WAYWF.Agent.PendingTasks
 		public MetaResolvedType StateMachineType { get; }
 		public SMField StateField { get; }
 		public SMField ThisField { get; }
+		public ReadOnlyCollection<MetaDataToken> TaskFieldSequence { get; }
 		public ReadOnlyCollection<SMField> ParamFields { get; }
 		public ReadOnlyCollection<MetaField> LocalFields { get; }
 	}

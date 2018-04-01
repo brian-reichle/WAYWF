@@ -145,6 +145,14 @@ namespace WAYWF.Agent
 			}
 		}
 
+		public static unsafe bool EnumFields(this IMetaDataImport import, ref IntPtr phEnum, MetaDataToken cl, out MetaDataToken field)
+		{
+			MetaDataToken tmp;
+			var result = import.EnumFields(ref phEnum, cl, &tmp, 1) == 1;
+			field = tmp;
+			return result;
+		}
+
 		public static unsafe MetaDataToken[] GetFields(this IMetaDataImport import, MetaDataToken td)
 		{
 			var hEnum = IntPtr.Zero;
@@ -201,7 +209,7 @@ namespace WAYWF.Agent
 					pcchValue: valueLenPtr);
 			}
 
-			type = DistilFieldType(sigPtr, sigLen);
+			DistilFieldType(sigPtr, sigLen, out type, out var _);
 
 			if (size <= 1)
 			{
@@ -270,7 +278,7 @@ namespace WAYWF.Agent
 			name = new string(buffer, 0, size - 1);
 		}
 
-		public static unsafe void GetFieldProps(this IMetaDataImport import, MetaDataToken mb, out CorElementType type)
+		public static unsafe void GetFieldTypeInfo(this IMetaDataImport import, MetaDataToken mb, out CorElementType type, out MetaDataToken token)
 		{
 			IntPtr sigPtr;
 			int sigLen;
@@ -280,7 +288,7 @@ namespace WAYWF.Agent
 				ppvSigBlob: &sigPtr,
 				pcbSigBlob: &sigLen);
 
-			type = DistilFieldType(sigPtr, sigLen);
+			DistilFieldType(sigPtr, sigLen, out type, out token);
 		}
 
 		public static unsafe void GetMemberRefProps(this IMetaDataImport import, MetaDataToken mr, out MetaDataToken classToken, out string name)
@@ -397,41 +405,37 @@ namespace WAYWF.Agent
 			}
 		}
 
-		static unsafe CorElementType DistilFieldType(IntPtr sigPtr, int sigLen)
+		static unsafe void DistilFieldType(IntPtr sigPtr, int sigLen, out CorElementType elementType, out MetaDataToken token)
 		{
 			const byte FIELD = 0x06;
 
 			if (sigLen <= 0) throw new InvalidSignatureException();
 
-			var ptr = (byte*)sigPtr;
-			var end = ptr + sigLen;
-			if (*(ptr++) != FIELD) throw new InvalidSignatureException();
+			var reader = new BlobReader(sigPtr, sigLen);
+			if (reader.ReadByte() != FIELD) throw new InvalidSignatureException();
 
-			while (true)
+			var type = (CorElementType)reader.ReadByte();
+
+			while (type == CorElementType.ELEMENT_TYPE_CMOD_OPT || type == CorElementType.ELEMENT_TYPE_CMOD_REQD)
 			{
-				if (ptr >= end) throw new InvalidSignatureException();
+				reader.ReadCompressedUInt();
+				type = (CorElementType)reader.ReadByte();
+			}
 
-				var type = (CorElementType)(*ptr++);
+			if (type == CorElementType.ELEMENT_TYPE_GENERICINST)
+			{
+				type = (CorElementType)reader.ReadByte();
+			}
 
-				if (type != CorElementType.ELEMENT_TYPE_CMOD_OPT && type != CorElementType.ELEMENT_TYPE_CMOD_REQD)
-				{
-					return type;
-				}
-
-				if (ptr >= end) throw new InvalidSignatureException();
-				var lead = *(ptr++);
-
-				if (lead >= 0x80)
-				{
-					if (lead < 0xC0)
-					{
-						ptr++;
-					}
-					else if (lead < 0xE0)
-					{
-						ptr += 3;
-					}
-				}
+			if (type == CorElementType.ELEMENT_TYPE_CLASS || type == CorElementType.ELEMENT_TYPE_VALUETYPE)
+			{
+				elementType = type;
+				token = reader.ReadTypeDefOrRefOrSpecEncoded();
+			}
+			else
+			{
+				elementType = type;
+				token = MetaDataToken.Nil;
 			}
 		}
 	}

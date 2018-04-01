@@ -430,7 +430,7 @@ namespace WAYWF.Agent.MetaCache
 			{
 				while (import.EnumFields(ref hEnum, token, &fieldToken, 1) == 1)
 				{
-					import.GetFieldProps(fieldToken, out var type);
+					import.GetFieldTypeInfo(fieldToken, out var type, out var _);
 
 					switch (type)
 					{
@@ -484,7 +484,7 @@ namespace WAYWF.Agent.MetaCache
 			{
 				while (import.EnumFields(ref hEnum, token, &fieldToken, 1) == 1)
 				{
-					import.GetFieldProps(fieldToken, out var type);
+					import.GetFieldTypeInfo(fieldToken, out var type, out var _);
 
 					switch (type)
 					{

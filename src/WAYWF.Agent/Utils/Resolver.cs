@@ -52,13 +52,57 @@ namespace WAYWF.Agent
 			{
 				var assembly = module.ResolveAssembly(scope);
 
-				if (assembly == null)
+				if (assembly != null)
 				{
-					return ResolutionResult.NotFound;
+					return TryResolveTypeByName(assembly, className, out module, out token);
 				}
 
-				return TryResolveTypeByName(assembly, className, out module, out token);
+				// Objects retrieved from walking the heap don't have app-domain information and so
+				// ResolveAssembly() doesn't work. So see if we can resolve it ourselves in any
+				// of the app domains.
+
+				var aImport = module.GetMetaDataAssemblyImport();
+				aImport.GetAssemblyRefProps(scope, out var assemblyName, out var _, out var _, out var _);
+
+				var process = module.GetProcess();
+				return TryResolveTypeByName(process, assemblyName, className, out module, out token);
 			}
+		}
+
+		static ResolutionResult TryResolveTypeByName(ICorDebugProcess process, string assemblyName, string className, out ICorDebugModule module, out MetaDataToken token)
+		{
+			var appDomains = process.EnumerateAppDomains();
+
+			while (appDomains.Next(1, out var appDomain))
+			{
+				var result = TryResolveTypeByName(appDomain, assemblyName, className, out module, out token);
+
+				if (result != ResolutionResult.NotFound)
+				{
+					return result;
+				}
+			}
+
+			module = null;
+			token = MetaDataToken.Nil;
+			return ResolutionResult.NotFound;
+		}
+
+		static ResolutionResult TryResolveTypeByName(ICorDebugAppDomain appDomain, string assemblyName, string className, out ICorDebugModule module, out MetaDataToken token)
+		{
+			var assemblies = appDomain.EnumerateAssemblies();
+
+			while (assemblies.Next(1, out var assembly))
+			{
+				if (assembly.IsAssembly(assemblyName))
+				{
+					return TryResolveTypeByName(assembly, className, out module, out token);
+				}
+			}
+
+			module = null;
+			token = MetaDataToken.Nil;
+			return ResolutionResult.NotFound;
 		}
 
 		static ResolutionResult TryResolveTypeByName(ICorDebugAssembly assembly, string className, out ICorDebugModule module, out MetaDataToken token)
