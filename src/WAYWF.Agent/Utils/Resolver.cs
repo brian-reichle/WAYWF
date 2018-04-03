@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System.Runtime.InteropServices;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.MetaDataApi;
 
 namespace WAYWF.Agent
 {
@@ -65,38 +66,28 @@ namespace WAYWF.Agent
 				aImport.GetAssemblyRefProps(scope, out var assemblyName, out var _, out var _, out var _);
 
 				var process = module.GetProcess();
-				return TryResolveTypeByName(process, assemblyName, className, out module, out token);
+				var import = module.GetMetaDataImport();
+
+				return TryResolveTypeByName(process, import, scope, className, out module, out token);
 			}
 		}
 
-		static ResolutionResult TryResolveTypeByName(ICorDebugProcess process, string assemblyName, string className, out ICorDebugModule module, out MetaDataToken token)
+		static ResolutionResult TryResolveTypeByName(ICorDebugProcess process, IMetaDataImport import, MetaDataToken assemblyToken, string className, out ICorDebugModule module, out MetaDataToken token)
 		{
 			var appDomains = process.EnumerateAppDomains();
 
 			while (appDomains.Next(1, out var appDomain))
 			{
-				var result = TryResolveTypeByName(appDomain, assemblyName, className, out module, out token);
+				var assembly = appDomain.GetModuleFromMetaDataInterface(import)?.ResolveAssembly(assemblyToken);
 
-				if (result != ResolutionResult.NotFound)
+				if (assembly != null)
 				{
-					return result;
-				}
-			}
+					var result = TryResolveTypeByName(assembly, className, out module, out token);
 
-			module = null;
-			token = MetaDataToken.Nil;
-			return ResolutionResult.NotFound;
-		}
-
-		static ResolutionResult TryResolveTypeByName(ICorDebugAppDomain appDomain, string assemblyName, string className, out ICorDebugModule module, out MetaDataToken token)
-		{
-			var assemblies = appDomain.EnumerateAssemblies();
-
-			while (assemblies.Next(1, out var assembly))
-			{
-				if (assembly.IsAssembly(assemblyName))
-				{
-					return TryResolveTypeByName(assembly, className, out module, out token);
+					if (result != ResolutionResult.NotFound)
+					{
+						return result;
+					}
 				}
 			}
 

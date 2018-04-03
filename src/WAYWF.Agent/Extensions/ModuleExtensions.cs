@@ -268,17 +268,6 @@ namespace WAYWF.Agent
 			}
 		}
 
-		public static unsafe bool IsAssembly(this ICorDebugModule module, string assemblyName)
-		{
-			if (module.IsInMemory())
-			{
-				return false;
-			}
-
-			var aImport = module.GetMetaDataAssemblyImport();
-			return aImport.IsMatching(assemblyName);
-		}
-
 		public static unsafe IEnumerable<Instruction> GetMethodIL(this ICorDebugModule module, MetaDataToken mb)
 		{
 			var import = module.GetMetaDataImport();
