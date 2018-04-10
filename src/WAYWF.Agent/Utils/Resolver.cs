@@ -62,9 +62,6 @@ namespace WAYWF.Agent
 				// ResolveAssembly() doesn't work. So see if we can resolve it ourselves in any
 				// of the app domains.
 
-				var aImport = module.GetMetaDataAssemblyImport();
-				aImport.GetAssemblyRefProps(scope, out var assemblyName, out var _, out var _, out var _);
-
 				var process = module.GetProcess();
 				var import = module.GetMetaDataImport();
 
