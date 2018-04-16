@@ -20,6 +20,7 @@ namespace WAYWF.Agent
 				case HResults.CORDBG_E_CLASS_NOT_LOADED: // WTF??
 				case HResults.CORDBG_E_FIELD_NOT_AVAILABLE:
 				case HResults.CORDBG_E_BAD_REFERENCE_VALUE: // can happen when trying to dereference an invalid pointer. eg. (byte*)1
+				case HResults.CORDBG_E_READVIRTUAL_FAILURE:
 					return null;
 
 				default:
@@ -64,6 +65,7 @@ namespace WAYWF.Agent
 				{
 					case HResults.E_FAIL: // WTF??
 					case HResults.CORDBG_E_FIELD_NOT_AVAILABLE:
+					case HResults.CORDBG_E_READVIRTUAL_FAILURE:
 						return null;
 
 					default:
