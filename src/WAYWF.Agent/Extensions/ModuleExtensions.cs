@@ -315,7 +315,7 @@ namespace WAYWF.Agent
 
 			byte[] result;
 
-			if ((process.ReadInt(methodAddress) & 0x03) != 0x03)
+			if ((firstInt & 0x03) != 0x03)
 			{
 				var length = firstInt >> 2 & 0x1F;
 				result = process.ReadBytes(methodAddress + 1, length);
