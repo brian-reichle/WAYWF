@@ -24,12 +24,15 @@
 		<html>
 			<head>
 				<title>
+					<xsl:variable name="imagePath" select="w:waywf/w:process/@imagePath" />
 					<xsl:text>Process: </xsl:text>
 					<xsl:value-of select="w:waywf/w:process/@pid" />
-					<xsl:text> - </xsl:text>
-					<xsl:call-template name="filename">
-						<xsl:with-param name="sub" select="w:waywf/w:process/@imagePath" />
-					</xsl:call-template>
+					<xsl:if test="$imagePath">
+						<xsl:text> - </xsl:text>
+						<xsl:call-template name="filename">
+							<xsl:with-param name="sub" select="$imagePath" />
+						</xsl:call-template>
+					</xsl:if>
 				</title>
 				<script type="text/javascript">
 					<![CDATA[
@@ -138,10 +141,12 @@ table
 		<b>Process:</b>
 		<xsl:text> </xsl:text>
 		<xsl:value-of select="@pid"/>
-		<xsl:text> - </xsl:text>
-		<xsl:call-template name="filename">
-			<xsl:with-param name="sub" select="@imagePath" />
-		</xsl:call-template>
+		<xsl:if test="@imagePath">
+			<xsl:text> - </xsl:text>
+			<xsl:call-template name="filename">
+				<xsl:with-param name="sub" select="@imagePath" />
+			</xsl:call-template>
+		</xsl:if>
 		<xsl:text> (</xsl:text>
 		<xsl:choose>
 			<xsl:when test="/w:waywf/w:os/@is64bit = 'false'">

@@ -23,6 +23,7 @@ namespace WAYWF.Agent
 		public const int CORDBG_E_SYMBOLS_NOT_AVAILABLE = unchecked((int)0x80131C3B);
 		public const int CORDBG_E_READVIRTUAL_FAILURE = unchecked((int)0x80131C49);
 
+		public const int ERROR_GEN_FAILURE = unchecked((int)0x8007001F);
 		public const int ERROR_PARTIAL_COPY = unchecked((int)0x8007012B);
 	}
 }

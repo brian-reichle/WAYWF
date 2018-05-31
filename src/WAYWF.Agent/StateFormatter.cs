@@ -86,7 +86,10 @@ namespace WAYWF.Agent
 				_writer.WriteAttributeString("clrVersion", process.ClrVersion.ToString());
 			}
 
-			_writer.WriteAttributeString("imagePath", process.Native.ImageName);
+			if (process.Native.ImageName != null)
+			{
+				_writer.WriteAttributeString("imagePath", process.Native.ImageName);
+			}
 
 			WriteUser(process.Native.User);
 

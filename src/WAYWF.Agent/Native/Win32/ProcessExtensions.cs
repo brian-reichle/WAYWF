@@ -17,7 +17,15 @@ namespace WAYWF.Agent.Win32
 
 			if (!NativeMethods.QueryFullProcessImageName(handle, 0, buffer, ref size))
 			{
-				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+				var hr = Marshal.GetHRForLastWin32Error();
+
+				if (hr == HResults.ERROR_GEN_FAILURE)
+				{
+					// Can fail occasionally if the target process crashed.
+					return null;
+				}
+
+				throw Marshal.GetExceptionForHR(hr);
 			}
 
 			if (size == 0)

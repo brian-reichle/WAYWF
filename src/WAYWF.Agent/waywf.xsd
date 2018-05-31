@@ -327,7 +327,7 @@
 		<xs:attribute name="pid" type="xs:unsignedShort" use="required" />
 		<xs:attribute name="is64bit" type="xs:boolean" use="required" />
 		<xs:attribute name="clrVersion" type="w:versionType" use="optional" />
-		<xs:attribute name="imagePath" type="xs:string" use="required" />
+		<xs:attribute name="imagePath" type="xs:string" use="optional" />
 	</xs:complexType>
 
 	<xs:group name="globalValueElementGroup">
