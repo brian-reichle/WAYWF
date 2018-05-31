@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace WAYWF.Agent
 {
 	[StructLayout(LayoutKind.Sequential)]
-	struct MetaDataToken : IEquatable<MetaDataToken>
+	readonly struct MetaDataToken : IEquatable<MetaDataToken>
 	{
 		public static readonly MetaDataToken Nil = new MetaDataToken(0);
 		public static readonly MetaDataToken Module = new MetaDataToken(1);

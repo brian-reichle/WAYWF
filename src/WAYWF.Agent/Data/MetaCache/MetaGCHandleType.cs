@@ -1,4 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System;
 using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
@@ -26,7 +27,7 @@ namespace WAYWF.Agent.MetaCache
 				return false;
 			}
 
-			result = ValueExtensions.GetIntPtr((ICorDebugGenericValue)handleObj).ToString();
+			result = ValueExtensions.GetValue<IntPtr>((ICorDebugGenericValue)handleObj).ToString();
 			return true;
 		}
 	}

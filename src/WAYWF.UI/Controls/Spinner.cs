@@ -38,20 +38,20 @@ namespace WAYWF.UI
 
 		public int Value
 		{
-			get { return (int)GetValue(ValueProperty); }
-			set { SetValue(ValueProperty, value); }
+			get => (int)GetValue(ValueProperty);
+			set => SetValue(ValueProperty, value);
 		}
 
 		public int MinValue
 		{
-			get { return (int)GetValue(MinValueProperty); }
-			set { SetValue(MinValueProperty, value); }
+			get => (int)GetValue(MinValueProperty);
+			set => SetValue(MinValueProperty, value);
 		}
 
 		public int MaxValue
 		{
-			get { return (int)GetValue(MaxValueProperty); }
-			set { SetValue(MaxValueProperty, value); }
+			get => (int)GetValue(MaxValueProperty);
+			set => SetValue(MaxValueProperty, value);
 		}
 
 		public override void OnApplyTemplate()

@@ -35,7 +35,7 @@ namespace WAYWF.Agent.MetaCache
 				return false;
 			}
 
-			if (!ValueExtensions.GetBoolean((ICorDebugGenericValue)hasValueValue))
+			if (!ValueExtensions.GetValue<bool>((ICorDebugGenericValue)hasValueValue))
 			{
 				result = null;
 				return true;

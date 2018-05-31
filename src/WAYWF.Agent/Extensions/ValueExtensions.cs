@@ -1,10 +1,11 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System;
 using System.Runtime.InteropServices;
 using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent
 {
-	static partial class ValueExtensions
+	static class ValueExtensions
 	{
 		public static ICorDebugValue Dereference(this ICorDebugReferenceValue reference)
 		{
@@ -84,6 +85,16 @@ namespace WAYWF.Agent
 			value.GetCachedInterfacePointers(false, size, out size, result);
 
 			return result;
+		}
+
+		public static unsafe T GetValue<T>(this ICorDebugGenericValue value)
+			where T : unmanaged
+		{
+			if (value.GetSize() != sizeof(T)) throw new ArgumentNullException(nameof(value), "size mismatch");
+
+			T tmp;
+			value.GetValue((IntPtr)(&tmp));
+			return tmp;
 		}
 	}
 }

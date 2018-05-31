@@ -41,20 +41,20 @@ namespace WAYWF.UI
 
 		public bool IsDragging
 		{
-			get { return (bool)GetValue(IsDraggingProperty); }
-			private set { SetValue(IsDraggingPropertyKey, value); }
+			get => (bool)GetValue(IsDraggingProperty);
+			private set => SetValue(IsDraggingPropertyKey, value);
 		}
 
 		public ProcessData CurrentProcess
 		{
-			get { return (ProcessData)GetValue(CurrentProcessProperty); }
-			private set { SetValue(CurrentProcessPropertyKey, value); }
+			get => (ProcessData)GetValue(CurrentProcessProperty);
+			private set => SetValue(CurrentProcessPropertyKey, value);
 		}
 
 		public event EventHandler<ProcessSelectedEventArgs> ProcessSelected
 		{
-			add { AddHandler(ProcessSelectedEvent, value); }
-			remove { RemoveHandler(ProcessSelectedEvent, value); }
+			add => AddHandler(ProcessSelectedEvent, value);
+			remove => RemoveHandler(ProcessSelectedEvent, value);
 		}
 
 		public override void OnApplyTemplate()

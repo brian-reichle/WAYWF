@@ -31,8 +31,8 @@ namespace WAYWF.UI
 
 		public IEnumerable<VirtualFileBase> FileList
 		{
-			get { return (IEnumerable<VirtualFileBase>)GetValue(FileListProperty); }
-			set { SetValue(FileListProperty, value); }
+			get => (IEnumerable<VirtualFileBase>)GetValue(FileListProperty);
+			set => SetValue(FileListProperty, value);
 		}
 
 		public override void OnApplyTemplate()

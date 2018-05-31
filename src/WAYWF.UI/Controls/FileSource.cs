@@ -39,14 +39,14 @@ namespace WAYWF.UI
 
 		public VirtualFileBase File
 		{
-			get { return (VirtualFileBase)GetValue(FileProperty); }
-			set { SetValue(FileProperty, value); }
+			get => (VirtualFileBase)GetValue(FileProperty);
+			set => SetValue(FileProperty, value);
 		}
 
 		public string Filename
 		{
-			get { return (string)GetValue(FilenameProperty); }
-			private set { SetValue(FilenamePropertyKey, value); }
+			get => (string)GetValue(FilenameProperty);
+			private set => SetValue(FilenamePropertyKey, value);
 		}
 
 		public ImageSource Icon

@@ -162,9 +162,8 @@ namespace WAYWF.Agent.Source
 		AsyncMethodInfo GetAsyncMethodInfo(ModuleInfo module, MetaDataToken token)
 		{
 			var method = module.Reader.GetMethod(token);
-			var aMethod = method as ISymUnmanagedAsyncMethod;
 
-			if (aMethod == null || !aMethod.IsAsyncMethod())
+			if (!(method is ISymUnmanagedAsyncMethod aMethod) || !aMethod.IsAsyncMethod())
 			{
 				return null;
 			}

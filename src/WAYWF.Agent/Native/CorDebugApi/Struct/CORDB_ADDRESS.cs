@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace WAYWF.Agent.CorDebugApi
 {
-	struct CORDB_ADDRESS : IEquatable<CORDB_ADDRESS>, IComparable<CORDB_ADDRESS>, IComparable
+	readonly struct CORDB_ADDRESS : IEquatable<CORDB_ADDRESS>, IComparable<CORDB_ADDRESS>, IComparable
 	{
 		public CORDB_ADDRESS(long address)
 		{

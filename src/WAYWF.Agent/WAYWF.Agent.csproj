@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\WTG.Analyzers.2.0.4\build\WTG.Analyzers.props" Condition="Exists('..\packages\WTG.Analyzers.2.0.4\build\WTG.Analyzers.props')" />
   <PropertyGroup>
@@ -27,6 +27,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -100,11 +103,6 @@
     <Compile Include="Extensions\SymDocumentExtensions.cs" />
     <Compile Include="Extensions\ThreadExtensions.cs" />
     <Compile Include="Extensions\ValueExtensions.cs" />
-    <Compile Include="Extensions\ValueExtensions.g.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ValueExtensions.tt</DependentUpon>
-    </Compile>
     <Content Include="IL\ILReader.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ILReader.g.cs</LastGenOutput>
@@ -258,10 +256,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Include="Extensions\ValueExtensions.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ValueExtensions.g.cs</LastGenOutput>
-    </None>
     <None Include="Data\MetaCache\MetaKnownType.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MetaKnownType.g.cs</LastGenOutput>

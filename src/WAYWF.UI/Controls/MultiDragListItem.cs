@@ -17,8 +17,8 @@ namespace WAYWF.UI
 
 		public bool IsSelected
 		{
-			get { return (bool)GetValue(IsSelectedProperty); }
-			set { SetValue(IsSelectedProperty, value); }
+			get => (bool)GetValue(IsSelectedProperty);
+			set => SetValue(IsSelectedProperty, value);
 		}
 
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

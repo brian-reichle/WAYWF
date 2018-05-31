@@ -1,6 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Diagnostics;
 using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
@@ -77,28 +76,24 @@ namespace WAYWF.Agent.MetaCache
 		}
 
 		sealed class MetaValueType<T> : MetaKnownType
-			where T : struct
+			where T : unmanaged
 		{
-			public MetaValueType(string fullName, int size, Func<ICorDebugGenericValue, T> accessor)
-				: base(fullName, size)
+			public unsafe MetaValueType()
+				: base(typeof(T).FullName, sizeof(T))
 			{
-				_accessor = accessor;
 			}
 
 			public override bool TryGetValue(ICorDebugValue value, out object result)
 			{
 				if (value is ICorDebugGenericValue gValue)
 				{
-					result = _accessor(gValue);
+					result = ValueExtensions.GetValue<T>(gValue);
 					return true;
 				}
 
 				result = null;
 				return false;
 			}
-
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			readonly Func<ICorDebugGenericValue, T> _accessor;
 		}
 	}
 }

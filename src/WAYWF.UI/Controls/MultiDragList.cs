@@ -21,8 +21,8 @@ namespace WAYWF.UI
 
 		public event RoutedEventHandler StartDrag
 		{
-			add { AddHandler(StartDragEvent, value); }
-			remove { RemoveHandler(StartDragEvent, value); }
+			add => AddHandler(StartDragEvent, value);
+			remove => RemoveHandler(StartDragEvent, value);
 		}
 
 		protected override DependencyObject GetContainerForItemOverride() => new MultiDragListItem();

@@ -72,7 +72,7 @@ namespace WAYWF.UI
 
 		public void GetData(ref FORMATETC format, out STGMEDIUM medium)
 		{
-			medium = default(STGMEDIUM);
+			medium = default;
 			medium.tymed = GetPreferredTYMED(format.tymed);
 
 			if (format.cfFormat == CF_FILEDESCRIPTORW)

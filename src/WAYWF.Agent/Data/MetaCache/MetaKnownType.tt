@@ -28,7 +28,7 @@ foreach (var type in knownValueTypes)
 	}
 
 #>
-		public static readonly MetaKnownType <#=type.Name#> = new MetaValueType<<#=shortName#>>("<#=type.FullName#>", sizeof(<#=shortName#>), ValueExtensions.Get<#=type.Name#>);
+		public static readonly MetaKnownType <#=type.Name#> = new MetaValueType<<#=shortName#>>();
 <#
 }
 
