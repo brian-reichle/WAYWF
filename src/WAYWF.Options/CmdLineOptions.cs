@@ -42,8 +42,7 @@ namespace WAYWF.Options
 				{
 					throw new OptionException("Unknown option \"--" + optionName + "\".");
 				}
-
-				if (!option.TakesArgs)
+				else if (!option.TakesArgs)
 				{
 					if (arg != null)
 					{
@@ -68,7 +67,7 @@ namespace WAYWF.Options
 			ValidateOptions();
 		}
 
-		static void Set_PID(CmdLineOptions options, string arg)
+		static void SetPID(CmdLineOptions options, string arg)
 		{
 			if (!int.TryParse(arg, out var pid) || pid == 0)
 			{
@@ -82,7 +81,7 @@ namespace WAYWF.Options
 			options.ProcessID = pid;
 		}
 
-		static void Set_Output(CmdLineOptions options, string arg)
+		static void SetOutput(CmdLineOptions options, string arg)
 		{
 			if (options.OutputFileName != null)
 			{
@@ -94,19 +93,19 @@ namespace WAYWF.Options
 
 		static void SetWaitSeconds(CmdLineOptions options, string arg)
 		{
-			int seconds;
-
 			if (options._waitSpecified)
 			{
 				throw new OptionException("--wait specified mulitiple times.");
 			}
-			else if (!int.TryParse(arg, out seconds))
+			else if (!int.TryParse(arg, out var seconds))
 			{
 				throw new OptionException("Invalid wait duration.");
 			}
-
-			options._waitSpecified = true;
-			options.WaitSeconds = seconds;
+			else
+			{
+				options._waitSpecified = true;
+				options.WaitSeconds = seconds;
+			}
 		}
 
 		static void SetWalkHeap(CmdLineOptions options, string arg)
@@ -139,9 +138,9 @@ namespace WAYWF.Options
 
 		static readonly CmdLineOptionLookup _lookup = new CmdLineOptionLookup()
 		{
-			{ "pid",      true, Set_PID },
-			{ "output",   true, Set_Output },
-			{ "wait",     true, SetWaitSeconds },
+			{ "pid",      true,  SetPID },
+			{ "output",   true,  SetOutput },
+			{ "wait",     true,  SetWaitSeconds },
 			{ "walkheap", false, SetWalkHeap },
 			{ "verbose",  false, SetVerbose },
 		};
