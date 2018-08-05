@@ -148,6 +148,18 @@ namespace WAYWF.UI
 			base.OnMouseMove(e);
 		}
 
+		protected override void OnGotMouseCapture(MouseEventArgs e)
+		{
+			InputManager.Current.PreProcessInput += PreProcessDraggingInput;
+			base.OnGotMouseCapture(e);
+		}
+
+		protected override void OnLostMouseCapture(MouseEventArgs e)
+		{
+			InputManager.Current.PreProcessInput -= PreProcessDraggingInput;
+			base.OnLostMouseCapture(e);
+		}
+
 		void UpdatePopupPlacement(Point current)
 		{
 			const int PopupDeltaX = 16;
@@ -161,19 +173,17 @@ namespace WAYWF.UI
 		{
 			CurrentProcess = null;
 			IsDragging = true;
-			InputManager.Current.PreProcessInput += PreProcessDraggingInput;
 		}
 
 		void EndDragging()
 		{
 			CurrentProcess = null;
 			IsDragging = false;
-			InputManager.Current.PreProcessInput -= PreProcessDraggingInput;
 		}
 
 		void PreProcessDraggingInput(object sender, PreProcessInputEventArgs e)
 		{
-			if (e.StagingItem.Input is KeyEventArgs args && args.Key == Key.Escape)
+			if (e.StagingItem.Input is KeyEventArgs args && args.Key == Key.Escape && IsMouseCaptured)
 			{
 				EndDragging();
 				ReleaseMouseCapture();
