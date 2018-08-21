@@ -88,7 +88,6 @@ namespace WAYWF.UI
 			{
 				e.Handled = true;
 				var tmp = CurrentProcess;
-				EndDragging();
 				ReleaseMouseCapture();
 
 				if (tmp != null)
@@ -116,7 +115,8 @@ namespace WAYWF.UI
 					if (Math.Abs(vector.X) > SystemParameters.MinimumHorizontalDragDistance ||
 						Math.Abs(vector.Y) > SystemParameters.MinimumVerticalDragDistance)
 					{
-						BeginDragging();
+						CurrentProcess = null;
+						IsDragging = true;
 						UpdatePopupPlacement(current);
 					}
 				}
@@ -157,6 +157,9 @@ namespace WAYWF.UI
 		protected override void OnLostMouseCapture(MouseEventArgs e)
 		{
 			InputManager.Current.PreProcessInput -= PreProcessDraggingInput;
+			CurrentProcess = null;
+			IsDragging = false;
+
 			base.OnLostMouseCapture(e);
 		}
 
@@ -169,23 +172,10 @@ namespace WAYWF.UI
 			_popup.VerticalOffset = current.Y + PopupDeltaY;
 		}
 
-		void BeginDragging()
-		{
-			CurrentProcess = null;
-			IsDragging = true;
-		}
-
-		void EndDragging()
-		{
-			CurrentProcess = null;
-			IsDragging = false;
-		}
-
 		void PreProcessDraggingInput(object sender, PreProcessInputEventArgs e)
 		{
 			if (e.StagingItem.Input is KeyEventArgs args && args.Key == Key.Escape && IsMouseCaptured)
 			{
-				EndDragging();
 				ReleaseMouseCapture();
 				e.Cancel();
 			}
