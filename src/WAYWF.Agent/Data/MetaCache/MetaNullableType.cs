@@ -29,12 +29,6 @@ namespace WAYWF.Agent.MetaCache
 			var objValue = (ICorDebugObjectValue)value;
 			var hasValueValue = objValue.GetFieldValue(HasValueToken);
 
-			if (HasValueToken == null)
-			{
-				result = null;
-				return false;
-			}
-
 			if (!ValueExtensions.GetValue<bool>((ICorDebugGenericValue)hasValueValue))
 			{
 				result = null;
