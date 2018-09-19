@@ -12,7 +12,7 @@ namespace WAYWF.UI
 			nameof(Value),
 			typeof(int),
 			typeof(Spinner),
-			new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged, OnCoerceValue));
+			new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged, CoerceValue));
 
 		public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register(
 			nameof(MinValue),
@@ -24,7 +24,7 @@ namespace WAYWF.UI
 			nameof(MaxValue),
 			typeof(int),
 			typeof(Spinner),
-			new FrameworkPropertyMetadata(int.MaxValue, OnMaxValueChanged, OnCoerceMaxValue));
+			new FrameworkPropertyMetadata(int.MaxValue, OnMaxValueChanged, CoerceMaxValue));
 
 		public static readonly RoutedCommand RollUp = new RoutedCommand(nameof(RollUp), typeof(Spinner));
 		public static readonly RoutedCommand RollDown = new RoutedCommand(nameof(RollDown), typeof(Spinner));
@@ -112,7 +112,7 @@ namespace WAYWF.UI
 			}
 		}
 
-		static object OnCoerceValue(object sender, object baseValue)
+		static object CoerceValue(object sender, object baseValue)
 		{
 			var control = (Spinner)sender;
 			var value = (int)baseValue;
@@ -120,7 +120,7 @@ namespace WAYWF.UI
 			return tmp == value ? baseValue : tmp;
 		}
 
-		static object OnCoerceMaxValue(object sender, object baseValue)
+		static object CoerceMaxValue(object sender, object baseValue)
 		{
 			var control = (Spinner)sender;
 			return control.MinValue > (int)baseValue ? control.MinValue : baseValue;
