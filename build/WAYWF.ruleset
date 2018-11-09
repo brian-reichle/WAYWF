@@ -136,6 +136,7 @@
   </Rules>
   <Rules AnalyzerId="WpfAnalyzers" RuleNamespace="WpfAnalyzers">
     <Rule Id="WPF0023" Action="None" />
+    <Rule Id="WPF0034" Action="Warning" />
     <Rule Id="WPF0041" Action="None" />
     <Rule Id="WPF0060" Action="None" />
     <Rule Id="WPF0061" Action="None" />
