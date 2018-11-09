@@ -174,9 +174,23 @@ namespace WAYWF.UI
 
 		void PreProcessDraggingInput(object sender, PreProcessInputEventArgs e)
 		{
-			if (e.StagingItem.Input is KeyEventArgs args && args.Key == Key.Escape && IsMouseCaptured)
+			var args = e.StagingItem.Input;
+
+			if (args.RoutedEvent == PreviewKeyDownEvent)
 			{
-				ReleaseMouseCapture();
+				var keyArgs = (KeyEventArgs)args;
+
+				if (keyArgs.Key == Key.Escape && IsMouseCaptured)
+				{
+					ReleaseMouseCapture();
+				}
+
+				args.Handled = true;
+				e.Cancel();
+			}
+			else if (args.RoutedEvent == PreviewKeyUpEvent || args.RoutedEvent == TextInputEvent)
+			{
+				args.Handled = true;
 				e.Cancel();
 			}
 		}
