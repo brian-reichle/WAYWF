@@ -8,6 +8,7 @@ namespace WAYWF.Agent
 		public const int E_PDB_NOT_FOUND = unchecked((int)0x806D0005);
 		public const int E_PDB_CORRUPT = unchecked((int)0x806D0014);
 		public const int E_ACCESSDENIED = unchecked((int)0x80070005);
+		public const int E_INVALIDARG = unchecked((int)0x80070057);
 
 		public const int CLDB_E_RECORD_NOTFOUND = unchecked((int)0x80131130);
 

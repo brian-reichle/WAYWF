@@ -92,9 +92,10 @@ namespace WAYWF.Agent.CorDebugApi
 		//     [in] IUnknown           *pIMetaData,
 		//     [out] ICorDebugModule  **ppModule
 		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugModule GetModuleFromMetaDataInterface(
-			[MarshalAs(UnmanagedType.Interface)] object pIMetaData);
+		[PreserveSig]
+		int GetModuleFromMetaDataInterface(
+			[MarshalAs(UnmanagedType.Interface)] object pIMetaData,
+			[MarshalAs(UnmanagedType.Interface)] out ICorDebugModule ppModule);
 
 		// HRESULT EnumerateBreakpoints(
 		//     [out] ICorDebugBreakpointEnum   **ppBreakpoints
