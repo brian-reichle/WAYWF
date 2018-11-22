@@ -188,7 +188,7 @@ namespace WAYWF.UI
 				args.Handled = true;
 				e.Cancel();
 			}
-			else if (args.RoutedEvent == PreviewKeyUpEvent || args.RoutedEvent == TextInputEvent)
+			else if (args.RoutedEvent == PreviewKeyUpEvent || args.RoutedEvent == PreviewTextInputEvent)
 			{
 				args.Handled = true;
 				e.Cancel();
