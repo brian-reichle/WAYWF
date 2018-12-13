@@ -1,63 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="WAYWF" ToolsVersion="15.0">
-  <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
-  <Include Path="basicdesignguidelinerules.ruleset" Action="Default" />
-  <Include Path="managedminimumrules.ruleset" Action="Default" />
-  <Include Path="minimumrecommendedrules.ruleset" Action="Default" />
-  <Include Path="securityrules.ruleset" Action="Default" />
-
-  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
-    <Rule Id="CA1001" Action="None" />
-    <Rule Id="CA1040" Action="Warning" />
-    <Rule Id="CA1064" Action="None" />
-
-    <Rule Id="CA1300" Action="Warning" />
-    <Rule Id="CA1302" Action="Warning" />
-    <Rule Id="CA1304" Action="Warning" />
-    <Rule Id="CA1306" Action="Warning" />
-    <Rule Id="CA1307" Action="Warning" />
-    <Rule Id="CA1309" Action="Warning" />
-
-    <Rule Id="CA1402" Action="Warning" />
-    <Rule Id="CA1406" Action="Warning" />
-    <Rule Id="CA1407" Action="Warning" />
-    <Rule Id="CA1408" Action="Warning" />
-    <Rule Id="CA1409" Action="Warning" />
-    <Rule Id="CA1411" Action="Warning" />
-    <Rule Id="CA1412" Action="Warning" />
-    <Rule Id="CA1413" Action="Warning" />
-    <Rule Id="CA1414" Action="Warning" />
-
-    <Rule Id="CA1502" Action="None" />
-    <Rule Id="CA1504" Action="Warning" />
-
-    <Rule Id="CA1700" Action="Warning" />
-    <Rule Id="CA1713" Action="Warning" />
-    <Rule Id="CA1714" Action="Warning" />
-    <Rule Id="CA1717" Action="Warning" />
-    <Rule Id="CA1721" Action="Warning" />
-    <Rule Id="CA1724" Action="Warning" />
-    <Rule Id="CA1725" Action="Warning" />
-
-    <Rule Id="CA1800" Action="Warning" />
-    <Rule Id="CA1802" Action="Warning" />
-    <Rule Id="CA1810" Action="None" />
-    <Rule Id="CA1811" Action="None" />
-
-    <Rule Id="CA2003" Action="Warning" />
-
-    <Rule Id="CA2151" Action="Warning" />
-
-    <Rule Id="CA2202" Action="None" />
-    <Rule Id="CA2210" Action="None" />
-    <Rule Id="CA2218" Action="Warning" />
-    <Rule Id="CA2228" Action="Warning" />
-    <Rule Id="CA2233" Action="Warning" />
-    <Rule Id="CA2243" Action="Warning" />
-
-    <Rule Id="CA5122" Action="Warning" />
-  </Rules>
-
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0016" Action="None" />
     <Rule Id="IDE0016WithoutSuggestion" Action="None" />
@@ -149,10 +91,12 @@
     <Rule Id="WPF0091" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
+    <Rule Id="CA1064" Action="None" />
     <Rule Id="CA1812" Action="None" />
     <Rule Id="CA2007" Action="None" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.CSharp.Analyzers" RuleNamespace="Microsoft.CodeQuality.CSharp.Analyzers">
+    <Rule Id="CA1001" Action="None" />
     <Rule Id="CA1032" Action="None" />
   </Rules>
 </RuleSet>

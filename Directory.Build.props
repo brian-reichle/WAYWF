@@ -14,7 +14,6 @@ CS1591 - Missing XML comment.
 		<NoWarn>1591</NoWarn>
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-		<RunCodeAnalysis>true</RunCodeAnalysis>
 		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\WAYWF.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
