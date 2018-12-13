@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -42,7 +43,7 @@ namespace WAYWF.Agent
 
 			if (_options.Verbose)
 			{
-				Console.Error.WriteLine(string.Format("{0:0.000}: Collecting initial state data.", sw.Elapsed.TotalSeconds));
+				Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Collecting initial state data.", sw.Elapsed.TotalSeconds));
 			}
 
 			var builder = new RuntimeProcessBuilder(callback, handle, process);
@@ -53,7 +54,7 @@ namespace WAYWF.Agent
 			{
 				if (_options.Verbose)
 				{
-					Console.Error.WriteLine(string.Format("{0:0.000}: Walking heap.", sw.Elapsed.TotalSeconds));
+					Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Walking heap.", sw.Elapsed.TotalSeconds));
 				}
 
 				builder.WalkHeap(process);
@@ -67,7 +68,7 @@ namespace WAYWF.Agent
 				{
 					if (_options.Verbose)
 					{
-						Console.Error.WriteLine(string.Format("{0:0.000}: Resuming for {1} seconds.", sw.Elapsed.TotalSeconds, _options.WaitSeconds));
+						Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Resuming for {1} seconds.", sw.Elapsed.TotalSeconds, _options.WaitSeconds));
 					}
 
 					builder.MarkStartTime();
@@ -78,7 +79,7 @@ namespace WAYWF.Agent
 
 				if (_options.Verbose)
 				{
-					Console.Error.WriteLine(string.Format("{0:0.000}: Detaching from target process.", sw.Elapsed.TotalSeconds));
+					Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Detaching from target process.", sw.Elapsed.TotalSeconds));
 				}
 
 				callback.FlushSteppers();
@@ -89,7 +90,7 @@ namespace WAYWF.Agent
 			{
 				if (_options.Verbose)
 				{
-					Console.Error.WriteLine(string.Format("{0:0.000}: Target process terminated.", sw.Elapsed.TotalSeconds));
+					Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Target process terminated.", sw.Elapsed.TotalSeconds));
 				}
 			}
 
@@ -97,14 +98,14 @@ namespace WAYWF.Agent
 
 			if (_options.Verbose)
 			{
-				Console.Error.WriteLine(string.Format("{0:0.000}: Writing results.", sw.Elapsed.TotalSeconds));
+				Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Writing results.", sw.Elapsed.TotalSeconds));
 			}
 
 			WriteData(stream, data);
 
 			if (_options.Verbose)
 			{
-				Console.Error.WriteLine(string.Format("{0:0.000}: Done.", sw.Elapsed.TotalSeconds));
+				Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Done.", sw.Elapsed.TotalSeconds));
 			}
 		}
 

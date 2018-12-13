@@ -26,7 +26,7 @@ namespace WAYWF.UI
 		public static void Transform(string xmlContent, XmlWriter writer)
 		{
 			using (var readStream = new StringReader(xmlContent))
-			using (var reader = XmlReader.Create(readStream))
+			using (var reader = CreateReader(readStream))
 			{
 				Instance.Transform(reader, writer);
 			}
@@ -57,14 +57,30 @@ namespace WAYWF.UI
 		static XslCompiledTransform FromStream(Stream stream)
 		{
 			var result = new XslCompiledTransform();
-			var settings = new XsltSettings(false, false);
+			var transformSettings = new XsltSettings(false, false);
 
-			using (var reader = XmlReader.Create(stream))
+			using (var reader = CreateReader(stream))
 			{
-				result.Load(reader, settings, NullResolver.Instance);
+				result.Load(reader, transformSettings, NullResolver.Instance);
 			}
 
 			return result;
+		}
+
+		static XmlReader CreateReader(Stream stream) => CreateReader(new StreamReader(stream));
+
+		static XmlReader CreateReader(TextReader reader)
+		{
+			var readerSettings = new XmlReaderSettings()
+			{
+				ConformanceLevel = ConformanceLevel.Document,
+				DtdProcessing = DtdProcessing.Prohibit,
+				XmlResolver = null,
+				ValidationType = ValidationType.None,
+				ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.None,
+			};
+
+			return XmlReader.Create(reader, readerSettings);
 		}
 
 		sealed class NullResolver : XmlResolver

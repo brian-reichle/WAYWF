@@ -1,4 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -67,7 +68,7 @@ namespace WAYWF.UI
 
 			if (_textBox != null)
 			{
-				_textBox.Text = Value.ToString();
+				_textBox.Text = Value.ToString(CultureInfo.InvariantCulture);
 				_textBox.TextChanged += new TextChangedEventHandler(TextBoxTextChanged);
 
 				if (_textBox.IsFocused)
@@ -152,7 +153,7 @@ namespace WAYWF.UI
 
 				if (tmp != value)
 				{
-					tb.Text = tmp.ToString();
+					tb.Text = tmp.ToString(CultureInfo.InvariantCulture);
 				}
 				else
 				{
@@ -161,7 +162,7 @@ namespace WAYWF.UI
 			}
 			else
 			{
-				tb.Text = Value.ToString();
+				tb.Text = Value.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
