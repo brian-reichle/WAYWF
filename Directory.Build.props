@@ -12,6 +12,7 @@ CS1591 - Missing XML comment.
 -->
 		<WarningsNotAsErrors>612,618,1030</WarningsNotAsErrors>
 		<NoWarn>1591</NoWarn>
+		<LangVersion>7.3</LangVersion>
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 		<CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)build\WAYWF.ruleset</CodeAnalysisRuleSet>
