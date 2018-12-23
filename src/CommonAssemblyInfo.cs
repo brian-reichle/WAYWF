@@ -12,5 +12,5 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(false)]
 [assembly: ComVisible(false)]
 
-// If you update this version number, then don't forget to also update the app.manifest version numbers.
+// If you update this version number, then don't forget to also update the app.manifest and .appveyor.yml version numbers.
 [assembly: AssemblyVersion("0.17.*")]
