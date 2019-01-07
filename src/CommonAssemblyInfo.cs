@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("Brian Reichle")]
 [assembly: AssemblyProduct("WAYWF")]
-[assembly: AssemblyCopyright("Copyright (C) Brian Reichle 2014-2018")]
+[assembly: AssemblyCopyright("Copyright (C) Brian Reichle 2014-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
