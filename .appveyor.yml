@@ -16,3 +16,8 @@ build:
   parallel: true
   project: src\WAYWF.sln
   verbosity: minimal
+
+artifacts:
+  - path: .\bin\%CONFIGURATION%\
+    name: WAYWF-v$(appveyor_build_version)
+    type: zip
