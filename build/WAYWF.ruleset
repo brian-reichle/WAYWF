@@ -58,6 +58,9 @@
     <Rule Id="WTG1011" Action="Warning" />
     <Rule Id="WTG1012" Action="Warning" />
     <Rule Id="WTG1013" Action="Warning" />
+    <Rule Id="WTG1014" Action="Warning" />
+    <Rule Id="WTG1015" Action="Warning" />
+    <Rule Id="WTG1016" Action="Warning" />
 
     <Rule Id="WTG2001" Action="Warning" />
     <Rule Id="WTG2002" Action="Warning" />
@@ -66,11 +69,12 @@
     <Rule Id="WTG3001" Action="Warning" />
     <Rule Id="WTG3002" Action="Warning" />
     <Rule Id="WTG3003" Action="Warning" />
-    <Rule Id="WTG3004" Action="Info" />
+    <Rule Id="WTG3004" Action="Warning" />
     <Rule Id="WTG3005" Action="Warning" />
     <Rule Id="WTG3006" Action="Warning" />
     <Rule Id="WTG3007" Action="Warning" />
     <Rule Id="WTG3008" Action="Warning" />
+    <Rule Id="WTG3009" Action="Warning" />
 
     <Rule Id="WTG3101" Action="Warning" />
     <Rule Id="WTG3102" Action="Warning" />
