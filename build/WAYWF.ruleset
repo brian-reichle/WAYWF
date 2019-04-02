@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="WAYWF" ToolsVersion="15.0">
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0016" Action="None" />
@@ -96,6 +96,7 @@
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
     <Rule Id="CA1064" Action="None" />
+    <Rule Id="CA1712" Action="None" />
     <Rule Id="CA1812" Action="None" />
     <Rule Id="CA2007" Action="None" />
   </Rules>
