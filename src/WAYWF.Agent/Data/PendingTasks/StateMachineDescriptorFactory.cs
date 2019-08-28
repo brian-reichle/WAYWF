@@ -242,61 +242,38 @@ namespace WAYWF.Agent.PendingTasks
 			return false;
 		}
 
-		static MetaDataToken[] FindTaskFieldSequence(ICorDebugModule module, MetaDataToken firstField)
+		static MetaDataToken[] FindTaskFieldSequence(ICorDebugModule module, MetaDataToken builderField)
 		{
-			var result = new List<MetaDataToken>();
-			result.Add(firstField);
+			var import = module.GetMetaDataImport();
+			import.GetFieldTypeInfo(builderField, out var _, out var classToken);
 
-			while (true)
+			switch (classToken.TokenType)
 			{
-				var import = module.GetMetaDataImport();
-				import.GetFieldTypeInfo(firstField, out var elementType, out var classToken);
+				case TokenType.TypeDef:
+					break;
 
-				switch (elementType)
-				{
-					case CorElementType.ELEMENT_TYPE_CLASS:
-					case CorElementType.ELEMENT_TYPE_VALUETYPE:
-						break;
-
-					default:
+				case TokenType.TypeRef:
+					if (Resolver.TryResolve(ref module, ref classToken) != ResolutionResult.Success)
+					{
 						return null;
-				}
+					}
+					break;
 
-				switch (classToken.TokenType)
-				{
-					case TokenType.TypeDef:
-						break;
-
-					case TokenType.TypeRef:
-						if (Resolver.TryResolve(ref module, ref classToken) != ResolutionResult.Success)
-						{
-							return null;
-						}
-						break;
-
-					default:
-						return null;
-				}
-
-				var field = FindNextField(module, classToken, out var fieldType);
-
-				if (field.IsNil)
-				{
+				default:
 					return null;
-				}
-
-				result.Add(field);
-
-				if (fieldType.IsNil)
-				{
-					return result.ToArray();
-				}
-
-				classToken = fieldType;
 			}
+
+			var taskField = FindTaskField(module, classToken);
+
+			if (taskField.IsNil)
+			{
+				return null;
+			}
+
+			return new[] { builderField, taskField };
 		}
 
-		static MetaDataToken FindNextField(ICorDebugModule module, MetaDataToken classToken, out MetaDataToken builderType)
+		static MetaDataToken FindTaskField(ICorDebugModule module, MetaDataToken classToken)
 		{
 			var import = module.GetMetaDataImport();
 			var e = IntPtr.Zero;
@@ -316,14 +293,6 @@ namespace WAYWF.Agent.PendingTasks
 					if (module.IsType(fieldTypeToken, "mscorlib", "System.Threading.Tasks.Task") ||
 						module.IsType(fieldTypeToken, "mscorlib", "System.Threading.Tasks.Task`1"))
 					{
-						builderType = MetaDataToken.Nil;
-						return field;
-					}
-					else if (module.IsType(fieldTypeToken, "mscorlib", "System.Runtime.CompilerServices.AsyncValueTaskMethodBuilder`1")
-						|| module.IsType(fieldTypeToken, "mscorlib", "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1")
-						|| module.IsType(fieldTypeToken, "mscorlib", "System.Runtime.CompilerServices.AsyncTaskMethodBuilder"))
-					{
-						builderType = fieldTypeToken;
 						return field;
 					}
 				}
@@ -336,7 +305,7 @@ namespace WAYWF.Agent.PendingTasks
 				}
 			}
 
-			return builderType = MetaDataToken.Nil;
+			return MetaDataToken.Nil;
 		}
 
 		static MetaDataToken GetMethodToken(ICorDebugModule module, MetaResolvedType smType)
