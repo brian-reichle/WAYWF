@@ -166,7 +166,7 @@ namespace WAYWF.Agent
 
 				if (count == 0)
 				{
-					return EmptyCollections<MetaDataToken>.EmptyArray;
+					return Array.Empty<MetaDataToken>();
 				}
 
 				var result = new MetaDataToken[count];

@@ -53,7 +53,7 @@ namespace WAYWF.Agent.Data
 				_threads,
 				_sourceCache.GetAllDocuments(),
 				_objects.Values.ToArray(),
-				_pendingTasks ?? EmptyCollections<PendingStateMachineTask>.EmptyArray);
+				_pendingTasks ?? Array.Empty<PendingStateMachineTask>());
 		}
 
 		public void MarkStartTime()
