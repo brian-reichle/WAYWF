@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using WAYWF.Agent.CorDebugApi;
 using WAYWF.Agent.Data;
 using WAYWF.Agent.MetaCache;
 using WAYWF.Agent.PendingTasks;
@@ -458,25 +457,25 @@ namespace WAYWF.Agent
 			return string.Join(" ", matchingModules);
 		}
 
-		void WriteILAttributes(CorDebugMappingResult ilMapping, int ilOffset)
+		void WriteILAttributes(RuntimeILMapping ilMapping, int ilOffset)
 		{
 			string mappingText;
 
 			switch (ilMapping)
 			{
-				case CorDebugMappingResult.MAPPING_EPILOG:
+				case RuntimeILMapping.Epilog:
 					mappingText = "Epilog";
 					break;
 
-				case CorDebugMappingResult.MAPPING_PROLOG:
+				case RuntimeILMapping.Prolog:
 					mappingText = "Prolog";
 					break;
 
-				case CorDebugMappingResult.MAPPING_APPROXIMATE:
+				case RuntimeILMapping.Approximate:
 					mappingText = "Approx";
 					break;
 
-				case CorDebugMappingResult.MAPPING_EXACT:
+				case RuntimeILMapping.Exact:
 					mappingText = null;
 					break;
 

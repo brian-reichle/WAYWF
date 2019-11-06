@@ -300,20 +300,20 @@ table
 			</td>
 			<td>
 				<xsl:choose>
-					<xsl:when test="contains(@state, 'USER_UNSTARTED')">Unstarted</xsl:when>
-					<xsl:when test="contains(@state, 'USER_STOP_REQUESTED')">Stopping</xsl:when>
-					<xsl:when test="contains(@state, 'USER_STOPPED')">Stopped</xsl:when>
-					<xsl:when test="contains(@state, 'USER_SUSPEND_REQUESTED')">Suspending</xsl:when>
-					<xsl:when test="contains(@state, 'USER_SUSPENDED')">Suspended</xsl:when>
-					<xsl:when test="contains(@state, 'USER_WAIT_SLEEP_JOIN')">Blocked</xsl:when>
+					<xsl:when test="contains(@state, 'NotStarted')">Unstarted</xsl:when>
+					<xsl:when test="contains(@state, 'Stopping')">Stopping</xsl:when>
+					<xsl:when test="contains(@state, 'Stopped')">Stopped</xsl:when>
+					<xsl:when test="contains(@state, 'Suspending')">Suspending</xsl:when>
+					<xsl:when test="contains(@state, 'Suspended')">Suspended</xsl:when>
+					<xsl:when test="contains(@state, 'WaitSleepJoin')">Blocked</xsl:when>
 					<xsl:otherwise>Running</xsl:otherwise>
 				</xsl:choose>
 			</td>
 			<td>
-				<xsl:if test="contains(@state, 'USER_THREADPOOL')">
+				<xsl:if test="contains(@state, 'ThreadPool')">
 					<span title="Threadpool Thread.">T</span>
 				</xsl:if>
-				<xsl:if test="contains(@state, 'USER_BACKGROUND')">
+				<xsl:if test="contains(@state, 'Background')">
 					<span title="Background Thread.">B</span>
 				</xsl:if>
 				<xsl:if test="key('windowLookup', @tid)[@visible='true']">
@@ -509,14 +509,12 @@ table
 		<tr>
 			<td colspan="3">
 				<xsl:choose>
-					<xsl:when test=". = 'STUBFRAME_M2U'">[Managed to Unmanaged Transition]</xsl:when>
-					<xsl:when test=". = 'STUBFRAME_U2M'">[Unmanaged to Managed Transition]</xsl:when>
-					<xsl:when test=". = 'STUBFRAME_APPDOMAIN_TRANSITION'">[AppDomain Transition]</xsl:when>
-					<xsl:when test=". = 'STUBFRAME_LIGHTWEIGHT_FUNCTION'">[Light Weight Function]</xsl:when>
-					<xsl:when test=". = 'STUBFRAME_INTERNALCALL'">[Internal Call]</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="." />
-					</xsl:otherwise>
+					<xsl:when test=". = 'ManagedToUnmanaged'">[Managed to Unmanaged Transition]</xsl:when>
+					<xsl:when test=". = 'UnmanagedToManaged'">[Unmanaged to Managed Transition]</xsl:when>
+					<xsl:when test=". = 'AppDomainTransition'">[AppDomain Transition]</xsl:when>
+					<xsl:when test=". = 'LightWeightFunction'">[Light Weight Function]</xsl:when>
+					<xsl:when test=". = 'InternalCall'">[Internal Call]</xsl:when>
+					<xsl:otherwise>[Unknown Internal Frame]</xsl:otherwise>
 				</xsl:choose>
 			</td>
 		</tr>
@@ -710,11 +708,7 @@ table
 	<xsl:template match="w:blockingObject">
 		<tr>
 			<td>
-				<xsl:choose>
-					<xsl:when test="@reason = 'BLOCKING_MONITOR_CRITICAL_SECTION'">Enter</xsl:when>
-					<xsl:when test="@reason = 'BLOCKING_MONITOR_EVENT'">Wait</xsl:when>
-					<xsl:otherwise>Unknown</xsl:otherwise>
-				</xsl:choose>
+				<xsl:value-of select="@reason" />
 			</td>
 			<td>
 				<xsl:choose>

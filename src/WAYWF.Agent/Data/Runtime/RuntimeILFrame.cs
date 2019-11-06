@@ -1,7 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using WAYWF.Agent.CorDebugApi;
 using WAYWF.Agent.MetaCache;
 using WAYWF.Agent.Source;
 
@@ -13,7 +12,7 @@ namespace WAYWF.Agent.Data
 		public RuntimeILFrame(
 			MetaMethod method,
 			int ilOffset,
-			CorDebugMappingResult ilMapping,
+			RuntimeILMapping ilMapping,
 			SourceRef source,
 			RuntimeValue @this,
 			MetaTypeBase[] typeArgs,
@@ -40,7 +39,7 @@ namespace WAYWF.Agent.Data
 		public MetaMethod Method { get; }
 		public int StartOfMethodArgs { get; }
 		public int ILOffset { get; }
-		public CorDebugMappingResult ILMapping { get; }
+		public RuntimeILMapping ILMapping { get; }
 		public SourceRef Source { get; }
 		public RuntimeValue This { get; }
 

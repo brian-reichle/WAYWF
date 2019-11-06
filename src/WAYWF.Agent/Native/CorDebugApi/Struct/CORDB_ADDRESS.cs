@@ -28,6 +28,8 @@ namespace WAYWF.Agent.CorDebugApi
 		public static CORDB_ADDRESS operator +(CORDB_ADDRESS baseAddress, int offset) => new CORDB_ADDRESS(baseAddress._address + offset);
 		public static CORDB_ADDRESS operator -(CORDB_ADDRESS baseAddress, int offset) => new CORDB_ADDRESS(baseAddress._address - offset);
 
+		public static implicit operator MemoryAddress(CORDB_ADDRESS address) => new MemoryAddress(address._address);
+
 		public static explicit operator IntPtr(CORDB_ADDRESS address) => (IntPtr)address._address;
 		public bool Equals(CORDB_ADDRESS other) => _address == other._address;
 		public int CompareTo(CORDB_ADDRESS other) => _address.CompareTo(other._address);

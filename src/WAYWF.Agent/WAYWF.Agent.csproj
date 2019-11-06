@@ -39,8 +39,13 @@
     <Compile Include="Data\MetaCache\MetaKnownTypeCode.cs" />
     <Compile Include="Data\MetaCache\MetaSimpleResolvedType.cs" />
     <Compile Include="Data\MetaCache\MetaTypeExtensions.cs" />
+    <Compile Include="Data\Runtime\RuntimeBlockingReason.cs" />
+    <Compile Include="Data\Runtime\RuntimeFrameChainReason.cs" />
+    <Compile Include="Data\Runtime\RuntimeILMapping.cs" />
+    <Compile Include="Data\Runtime\RuntimeInternalFrameKind.cs" />
     <Compile Include="Data\Runtime\RuntimePointerValue.cs" />
     <Compile Include="Data\Runtime\RuntimeIdentifiedValue.cs" />
+    <Compile Include="Data\Runtime\RuntimeThreadStates.cs" />
     <Compile Include="Exceptions\CodedErrorException.cs" />
     <Compile Include="ILog.cs" />
     <Compile Include="Native\CorDebugApi\Struct\CORDB_ADDRESS.cs" />
@@ -225,6 +230,7 @@
     <Compile Include="Native\MetaDataApi\IMetaDataImport.cs" />
     <Compile Include="Utils\Identity.cs" />
     <Compile Include="Utils\IIdentitySource.cs" />
+    <Compile Include="Utils\MemoryAddress.cs" />
     <Compile Include="Utils\MetadataToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

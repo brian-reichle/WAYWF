@@ -129,15 +129,60 @@ namespace WAYWF.Agent.Data
 
 			if (chainEnum == null)
 			{
-				return new RuntimeThread(thread.GetID(), thread.GetUserState(), null, null);
+				return new RuntimeThread(thread.GetID(), Translate(thread.GetUserState()), null, null);
 			}
 			else
 			{
 				var chains = GetChains(chainEnum);
 				var blockingObjects = thread is ICorDebugThread4 thread4 ? GetBlockingObjects(thread4.GetBlockingObjects()) : null;
 
-				return new RuntimeThread(thread.GetID(), thread.GetUserState(), chains, blockingObjects);
+				return new RuntimeThread(thread.GetID(), Translate(thread.GetUserState()), chains, blockingObjects);
 			}
+		}
+
+		static RuntimeThreadStates Translate(CorDebugUserState state)
+		{
+			var result = RuntimeThreadStates.None;
+
+			if ((state & CorDebugUserState.USER_BACKGROUND) != 0)
+			{
+				result |= RuntimeThreadStates.Background;
+			}
+
+			if ((state & CorDebugUserState.USER_THREADPOOL) != 0)
+			{
+				result |= RuntimeThreadStates.ThreadPool;
+			}
+
+			if ((state & CorDebugUserState.USER_UNSTARTED) != 0)
+			{
+				result |= RuntimeThreadStates.NotStarted;
+			}
+			else if ((state & CorDebugUserState.USER_STOPPED) != 0)
+			{
+				result |= RuntimeThreadStates.Stopped;
+			}
+			else if ((state & CorDebugUserState.USER_SUSPENDED) != 0)
+			{
+				result |= RuntimeThreadStates.Suspended;
+			}
+
+			if ((state & CorDebugUserState.USER_SUSPEND_REQUESTED) != 0)
+			{
+				result |= RuntimeThreadStates.Suspending;
+			}
+
+			if ((state & CorDebugUserState.USER_STOP_REQUESTED) != 0)
+			{
+				result |= RuntimeThreadStates.Stopping;
+			}
+
+			if ((state & CorDebugUserState.USER_WAIT_SLEEP_JOIN) != 0)
+			{
+				result |= RuntimeThreadStates.WaitSleepJoin;
+			}
+
+			return result;
 		}
 
 		RuntimeFrameChain[] GetChains(ICorDebugChainEnum chains)
@@ -155,7 +200,27 @@ namespace WAYWF.Agent.Data
 
 		RuntimeFrameChain GetChain(ICorDebugChain chain)
 		{
-			return new RuntimeFrameChain(chain.GetReason(), GetFrames(chain.EnumerateFrames()));
+			var tmp = chain.GetReason();
+			RuntimeFrameChainReason reason;
+
+			if ((tmp & CorDebugChainReason.CHAIN_CLASS_INIT) != 0)
+			{
+				reason = RuntimeFrameChainReason.ClassConstructor;
+			}
+			else if ((tmp & CorDebugChainReason.CHAIN_EXCEPTION_FILTER) != 0)
+			{
+				reason = RuntimeFrameChainReason.ExceptionFilter;
+			}
+			else if ((tmp & CorDebugChainReason.CHAIN_SECURITY) != 0)
+			{
+				reason = RuntimeFrameChainReason.SecurityEvaluation;
+			}
+			else
+			{
+				reason = RuntimeFrameChainReason.Unknown;
+			}
+
+			return new RuntimeFrameChain(reason, GetFrames(chain.EnumerateFrames()));
 		}
 
 		RuntimeFrame[] GetFrames(ICorDebugFrameEnum frames)
@@ -240,7 +305,7 @@ namespace WAYWF.Agent.Data
 			var ilFrame = new RuntimeILFrame(
 				metaFunc,
 				ilOffset,
-				ilMapping,
+				TranslateMapping(ilMapping),
 				source,
 				@this,
 				typeArgs,
@@ -251,6 +316,27 @@ namespace WAYWF.Agent.Data
 			Register(frame, ilFrame);
 
 			return ilFrame;
+		}
+
+		static RuntimeILMapping TranslateMapping(CorDebugMappingResult ilMapping)
+		{
+			switch (ilMapping)
+			{
+				case CorDebugMappingResult.MAPPING_EXACT:
+					return RuntimeILMapping.Exact;
+
+				case CorDebugMappingResult.MAPPING_APPROXIMATE:
+					return RuntimeILMapping.Approximate;
+
+				case CorDebugMappingResult.MAPPING_PROLOG:
+					return RuntimeILMapping.Prolog;
+
+				case CorDebugMappingResult.MAPPING_EPILOG:
+					return RuntimeILMapping.Epilog;
+
+				default:
+					return RuntimeILMapping.Unmapped;
+			}
 		}
 
 		RuntimeValue[] ExtractArguments(ICorDebugILFrame frame, ReadOnlyCollection<MetaVariable> paramDefs, int offset)
@@ -304,7 +390,36 @@ namespace WAYWF.Agent.Data
 
 		static RuntimeFrame GetInternalFrame(ICorDebugInternalFrame frame)
 		{
-			return new RuntimeInternalFrame(frame.GetFrameType());
+			RuntimeInternalFrameKind kind;
+
+			switch (frame.GetFrameType())
+			{
+				case CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION:
+					kind = RuntimeInternalFrameKind.AppDomainTransition;
+					break;
+
+				case CorDebugInternalFrameType.STUBFRAME_INTERNALCALL:
+					kind = RuntimeInternalFrameKind.InternalCall;
+					break;
+
+				case CorDebugInternalFrameType.STUBFRAME_LIGHTWEIGHT_FUNCTION:
+					kind = RuntimeInternalFrameKind.LightWeightFunction;
+					break;
+
+				case CorDebugInternalFrameType.STUBFRAME_M2U:
+					kind = RuntimeInternalFrameKind.ManagedToUnmanaged;
+					break;
+
+				case CorDebugInternalFrameType.STUBFRAME_U2M:
+					kind = RuntimeInternalFrameKind.UnmanagedToManaged;
+					break;
+
+				default:
+					kind = RuntimeInternalFrameKind.Unknown;
+					break;
+			}
+
+			return new RuntimeInternalFrame(kind);
 		}
 
 		RuntimeBlockingObject[] GetBlockingObjects(ICorDebugBlockingObjectEnum blockingObjects)
@@ -326,11 +441,28 @@ namespace WAYWF.Agent.Data
 
 			((ICorDebugHeapValue3)value).GetThreadOwningMonitorLock(out var thread, out var acquisitionCount);
 
+			RuntimeBlockingReason reason;
+
+			switch (obj.blockingReason)
+			{
+				case CorDebugBlockingReason.BLOCKING_MONITOR_CRITICAL_SECTION:
+					reason = RuntimeBlockingReason.Enter;
+					break;
+
+				case CorDebugBlockingReason.BLOCKING_MONITOR_EVENT:
+					reason = RuntimeBlockingReason.Wait;
+					break;
+
+				default:
+					reason = RuntimeBlockingReason.Unknown;
+					break;
+			}
+
 			return new RuntimeBlockingObject(
 				_objects.GetValue(value),
 				thread == null ? 0 : thread.GetID(),
 				obj.dwTimeout,
-				obj.blockingReason);
+				reason);
 		}
 
 		void Register(ICorDebugILFrame icdframe, RuntimeILFrame rtFrame)
