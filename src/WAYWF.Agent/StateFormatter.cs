@@ -133,15 +133,15 @@ namespace WAYWF.Agent
 			_writer.WriteAttributeString("id", domain.AppDomainID.ToString(CultureInfo.InvariantCulture));
 			_writer.WriteAttributeString("name", domain.Name);
 
-			foreach (var assembly in domain.Assembly.OrderBy(x => x.Name))
+			foreach (var group in domain.Modules.GroupBy(x => x.Assembly).OrderBy(x => x.Key.Name))
 			{
-				WriteAssembly(assembly);
+				WriteAssembly(group.Key, group);
 			}
 
 			_writer.WriteEndElement();
 		}
 
-		void WriteAssembly(MetaAssembly assembly)
+		void WriteAssembly(MetaAssembly assembly, IEnumerable<MetaModule> modules)
 		{
 			_writer.WriteStartElement("assembly");
 			_writer.WriteAttributeString("name", assembly.Name);
@@ -161,7 +161,7 @@ namespace WAYWF.Agent
 				_writer.WriteAttributeString("publicKeyToken", assembly.PublicKeyToken.Value.ToString("X16", CultureInfo.InvariantCulture));
 			}
 
-			foreach (var module in assembly.Modules)
+			foreach (var module in modules)
 			{
 				WriteModule(module);
 			}
@@ -448,8 +448,7 @@ namespace WAYWF.Agent
 		{
 			var matchingModules =
 				from domain in process.AppDomains
-				from assembly in domain.Assembly
-				from module in assembly.Modules
+				from module in domain.Modules
 				where module.MVID == referenceModule.MVID
 					&& module.Path == referenceModule.Path
 				select module.ModuleID.ID.ToString(CultureInfo.InvariantCulture);

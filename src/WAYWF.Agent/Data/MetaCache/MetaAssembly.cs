@@ -15,7 +15,6 @@ namespace WAYWF.Agent.MetaCache
 			Version = version;
 			PublicKeyToken = publicKeyToken;
 			Locale = locale;
-			Modules = new List<MetaModule>();
 			IsCorLib = name == "mscorlib";
 		}
 
@@ -25,6 +24,5 @@ namespace WAYWF.Agent.MetaCache
 		public string Locale { get; }
 		public long? PublicKeyToken { get; }
 		public bool IsCorLib { get; }
-		public List<MetaModule> Modules { get; }
 	}
 }

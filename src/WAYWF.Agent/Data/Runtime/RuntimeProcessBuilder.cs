@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -88,25 +89,22 @@ namespace WAYWF.Agent.Data
 		RuntimeAppDomain GetAppDomain(ICorDebugAppDomain appDomain)
 		{
 			var assemblyEnum = appDomain.EnumerateAssemblies();
-			var assemblies = new MetaAssembly[assemblyEnum.GetCount()];
+			var allModules = new List<MetaModule>();
 
-			for (var i = 0; i < assemblies.Length; i++)
+			while (assemblyEnum.Next(1, out var assembly))
 			{
-				assemblyEnum.Next(1, out var assembly);
-				assemblies[i] = _cache.GetAssembly(assembly);
-
 				var modules = assembly.EnumerateModules();
 
 				while (modules.Next(1, out var module))
 				{
-					_cache.GetModule(module);
+					allModules.Add(_cache.GetModule(module));
 				}
 			}
 
 			return new RuntimeAppDomain(
 				appDomain.GetID(),
 				appDomain.GetName(),
-				assemblies);
+				allModules.ToArray());
 		}
 
 		RuntimeThread[] GetThreads()

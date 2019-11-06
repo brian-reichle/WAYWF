@@ -8,15 +8,15 @@ namespace WAYWF.Agent.Data
 	[DebuggerDisplay("AppDomain-{AppDomainID}: {Name,nq}")]
 	sealed class RuntimeAppDomain
 	{
-		public RuntimeAppDomain(int appDomainId, string name, MetaAssembly[] assembly)
+		public RuntimeAppDomain(int appDomainId, string name, MetaModule[] modules)
 		{
 			AppDomainID = appDomainId;
 			Name = name;
-			Assembly = assembly.MakeReadOnly();
+			Modules = modules.MakeReadOnly();
 		}
 
 		public int AppDomainID { get; }
 		public string Name { get; }
-		public ReadOnlyCollection<MetaAssembly> Assembly { get; }
+		public ReadOnlyCollection<MetaModule> Modules { get; }
 	}
 }

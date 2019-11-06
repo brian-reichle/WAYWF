@@ -203,11 +203,6 @@ namespace WAYWF.Agent.MetaCache
 					module.IsDynamic(),
 					mvid);
 
-				if (assembly != null)
-				{
-					assembly.Modules.Add(result);
-				}
-
 				data = new ModuleData(result);
 
 				_moduleLookup.Add(module, data);
