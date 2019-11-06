@@ -36,6 +36,9 @@
     </Compile>
     <Compile Include="ConsoleLog.cs" />
     <Compile Include="Data\MetaCache\MetaGCHandleType.cs" />
+    <Compile Include="Data\MetaCache\MetaKnownTypeCode.cs" />
+    <Compile Include="Data\MetaCache\MetaSimpleResolvedType.cs" />
+    <Compile Include="Data\MetaCache\MetaTypeExtensions.cs" />
     <Compile Include="Data\Runtime\RuntimePointerValue.cs" />
     <Compile Include="Data\Runtime\RuntimeIdentifiedValue.cs" />
     <Compile Include="Exceptions\CodedErrorException.cs" />
@@ -253,7 +256,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MetaKnownType.g.cs</LastGenOutput>
     </None>
-    <None Include="Utils\TypeReferences.t4" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

@@ -5,7 +5,7 @@ using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
 {
-	sealed class MetaSignatureParser
+	static class MetaSignatureParser
 	{
 		public static MetaMethodSignature ReadMethodDefSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
 		{
@@ -138,7 +138,7 @@ namespace WAYWF.Agent.MetaCache
 				case CorElementType.ELEMENT_TYPE_OBJECT:
 				case CorElementType.ELEMENT_TYPE_STRING:
 				case CorElementType.ELEMENT_TYPE_VOID:
-					return MetaKnownType.FromElementType(elementType);
+					return MetaDataCache.GetType(elementType);
 
 				case CorElementType.ELEMENT_TYPE_ARRAY:
 					return ReadArray(sig);

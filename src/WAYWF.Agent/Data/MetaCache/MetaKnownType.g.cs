@@ -1,58 +1,31 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
-using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
 {
 	internal unsafe partial class MetaKnownType
 	{
-		public static readonly MetaKnownType String = new MetaStringType();
-		public static readonly MetaKnownType Boolean = new MetaValueType<bool>();
-		public static readonly MetaKnownType Char = new MetaValueType<char>();
-		public static readonly MetaKnownType SByte = new MetaValueType<sbyte>();
-		public static readonly MetaKnownType Int16 = new MetaValueType<short>();
-		public static readonly MetaKnownType Int32 = new MetaValueType<int>();
-		public static readonly MetaKnownType Int64 = new MetaValueType<long>();
-		public static readonly MetaKnownType IntPtr = new MetaValueType<IntPtr>();
-		public static readonly MetaKnownType Byte = new MetaValueType<byte>();
-		public static readonly MetaKnownType UInt16 = new MetaValueType<ushort>();
-		public static readonly MetaKnownType UInt32 = new MetaValueType<uint>();
-		public static readonly MetaKnownType UInt64 = new MetaValueType<ulong>();
-		public static readonly MetaKnownType UIntPtr = new MetaValueType<UIntPtr>();
-		public static readonly MetaKnownType Single = new MetaValueType<float>();
-		public static readonly MetaKnownType Double = new MetaValueType<double>();
-		public static readonly MetaKnownType Decimal = new MetaValueType<decimal>();
-		public static readonly MetaKnownType Guid = new MetaValueType<Guid>();
-		public static readonly MetaKnownType Void = new MetaKnownType("System.Void", 0);
-		public static readonly MetaKnownType Object = new MetaKnownType("System.Object", 0);
-		public static readonly MetaKnownType TypedReference = new MetaKnownType("System.TypedReference", 0);
-
-		public static MetaKnownType FromElementType(CorElementType type)
-		{
-			switch (type)
-			{
-				case CorElementType.ELEMENT_TYPE_BOOLEAN: return Boolean;
-				case CorElementType.ELEMENT_TYPE_CHAR: return Char;
-				case CorElementType.ELEMENT_TYPE_I: return IntPtr;
-				case CorElementType.ELEMENT_TYPE_I1: return SByte;
-				case CorElementType.ELEMENT_TYPE_I2: return Int16;
-				case CorElementType.ELEMENT_TYPE_I4: return Int32;
-				case CorElementType.ELEMENT_TYPE_I8: return Int64;
-				case CorElementType.ELEMENT_TYPE_OBJECT: return Object;
-				case CorElementType.ELEMENT_TYPE_R4: return Single;
-				case CorElementType.ELEMENT_TYPE_R8: return Double;
-				case CorElementType.ELEMENT_TYPE_STRING: return String;
-				case CorElementType.ELEMENT_TYPE_TYPEDBYREF: return TypedReference;
-				case CorElementType.ELEMENT_TYPE_U: return UIntPtr;
-				case CorElementType.ELEMENT_TYPE_U1: return Byte;
-				case CorElementType.ELEMENT_TYPE_U2: return UInt16;
-				case CorElementType.ELEMENT_TYPE_U4: return UInt32;
-				case CorElementType.ELEMENT_TYPE_U8: return UInt64;
-				case CorElementType.ELEMENT_TYPE_VOID: return Void;
-				default: throw new ResolutionException(type);
-			}
-		}
+		public static readonly MetaKnownType Boolean = new MetaKnownType(MetaKnownTypeCode.Boolean, "System.Boolean", sizeof(bool));
+		public static readonly MetaKnownType Char = new MetaKnownType(MetaKnownTypeCode.Char, "System.Char", sizeof(char));
+		public static readonly MetaKnownType SByte = new MetaKnownType(MetaKnownTypeCode.SByte, "System.SByte", sizeof(sbyte));
+		public static readonly MetaKnownType Int16 = new MetaKnownType(MetaKnownTypeCode.Int16, "System.Int16", sizeof(short));
+		public static readonly MetaKnownType Int32 = new MetaKnownType(MetaKnownTypeCode.Int32, "System.Int32", sizeof(int));
+		public static readonly MetaKnownType Int64 = new MetaKnownType(MetaKnownTypeCode.Int64, "System.Int64", sizeof(long));
+		public static readonly MetaKnownType IntPtr = new MetaKnownType(MetaKnownTypeCode.IntPtr, "System.IntPtr", sizeof(IntPtr));
+		public static readonly MetaKnownType Byte = new MetaKnownType(MetaKnownTypeCode.Byte, "System.Byte", sizeof(byte));
+		public static readonly MetaKnownType UInt16 = new MetaKnownType(MetaKnownTypeCode.UInt16, "System.UInt16", sizeof(ushort));
+		public static readonly MetaKnownType UInt32 = new MetaKnownType(MetaKnownTypeCode.UInt32, "System.UInt32", sizeof(uint));
+		public static readonly MetaKnownType UInt64 = new MetaKnownType(MetaKnownTypeCode.UInt64, "System.UInt64", sizeof(ulong));
+		public static readonly MetaKnownType UIntPtr = new MetaKnownType(MetaKnownTypeCode.UIntPtr, "System.UIntPtr", sizeof(UIntPtr));
+		public static readonly MetaKnownType Single = new MetaKnownType(MetaKnownTypeCode.Single, "System.Single", sizeof(float));
+		public static readonly MetaKnownType Double = new MetaKnownType(MetaKnownTypeCode.Double, "System.Double", sizeof(double));
+		public static readonly MetaKnownType Decimal = new MetaKnownType(MetaKnownTypeCode.Decimal, "System.Decimal", sizeof(decimal));
+		public static readonly MetaKnownType Guid = new MetaKnownType(MetaKnownTypeCode.Guid, "System.Guid", sizeof(Guid));
+		public static readonly MetaKnownType Void = new MetaKnownType(MetaKnownTypeCode.Void, "System.Void", 0);
+		public static readonly MetaKnownType Object = new MetaKnownType(MetaKnownTypeCode.Object, "System.Object", 0);
+		public static readonly MetaKnownType TypedReference = new MetaKnownType(MetaKnownTypeCode.TypedReference, "System.TypedReference", 0);
+		public static readonly MetaKnownType String = new MetaKnownType(MetaKnownTypeCode.String, "System.String", 0);
 
 		static readonly Dictionary<string, MetaKnownType> _lookup = new Dictionary<string, MetaKnownType>()
 		{

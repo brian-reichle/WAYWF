@@ -1,7 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
 {
@@ -17,11 +16,7 @@ namespace WAYWF.Agent.MetaCache
 		public MetaType BaseType { get; }
 		public ReadOnlyCollection<MetaTypeBase> TypeArgs { get; }
 
-		public override void Apply(IMetaTypeVisitor visitor) => visitor.Visit(this);
-
-		public override bool TryGetValue(ICorDebugValue value, out object result)
-		{
-			return BaseType.TryGetValue(value, TypeArgs, out result);
-		}
+		public override void Apply(IMetaTypeVisitor visitor) => visitor.VisitGen(this);
+		public override TResult Apply<TArg, TResult>(IMetaTypeVisitor<TArg, TResult> visitor, TArg arg) => visitor.VisitGen(this, arg);
 	}
 }

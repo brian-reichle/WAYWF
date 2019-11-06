@@ -14,6 +14,8 @@ namespace WAYWF.Agent.MetaCache
 
 		public bool Method { get; }
 		public int Index { get; }
-		public override void Apply(IMetaTypeVisitor visitor) => visitor.Visit(this);
+
+		public override void Apply(IMetaTypeVisitor visitor) => visitor.VisitVar(this);
+		public override TResult Apply<TArg, TResult>(IMetaTypeVisitor<TArg, TResult> visitor, TArg arg) => visitor.VisitVar(this, arg);
 	}
 }

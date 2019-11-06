@@ -4,19 +4,13 @@
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Linq" #>
-<#@ include file="..\..\Utils\TypeReferences.t4" #>
 using System;
 using System.Collections.Generic;
-using WAYWF.Agent.CorDebugApi;
 
-<#
-var unmarshalableTypes = new[] { typeof(void), typeof(object), typeof(TypedReference) };
-#>
 namespace WAYWF.Agent.MetaCache
 {
 	internal unsafe partial class MetaKnownType
 	{
-		public static readonly MetaKnownType String = new MetaStringType();
 <#
 foreach (var type in knownValueTypes)
 {
@@ -28,40 +22,22 @@ foreach (var type in knownValueTypes)
 	}
 
 #>
-		public static readonly MetaKnownType <#=type.Name#> = new MetaValueType<<#=shortName#>>();
+		public static readonly MetaKnownType <#=type.Name#> = new MetaKnownType(MetaKnownTypeCode.<#=type.Name#>, "<#=type.FullName#>", sizeof(<#=shortName#>));
 <#
 }
 
 foreach (var type in unmarshalableTypes)
 {
 #>
-		public static readonly MetaKnownType <#=type.Name#> = new MetaKnownType("<#=type.FullName#>", 0);
+		public static readonly MetaKnownType <#=type.Name#> = new MetaKnownType(MetaKnownTypeCode.<#=type.Name#>, "<#=type.FullName#>", 0);
 <#
 }
 #>
-
-		public static MetaKnownType FromElementType(CorElementType type)
-		{
-			switch (type)
-			{
-<#
-
-foreach (var pair in elementTypes.OrderBy(p => p.Value))
-{
-#>
-				case CorElementType.<#=pair.Value#>: return <#=pair.Key.Name#>;
-<#
-}
-
-#>
-				default: throw new ResolutionException(type);
-			}
-		}
 
 		static readonly Dictionary<string, MetaKnownType> _lookup = new Dictionary<string, MetaKnownType>()
 		{
 <#
-foreach (var type in knownValueTypes.Concat(unmarshalableTypes).Concat(new[] { typeof(string) }))
+foreach (var type in knownValueTypes.Concat(unmarshalableTypes))
 {
 #>
 			{ <#=type.Name#>.Name, <#=type.Name#> },
@@ -71,3 +47,40 @@ foreach (var type in knownValueTypes.Concat(unmarshalableTypes).Concat(new[] { t
 		};
 	}
 }
+<#+
+IDictionary<Type, string> shortNameLookup = new Dictionary<Type, string>()
+{
+	{ typeof(bool),    "bool"    },
+	{ typeof(char),    "char"    },
+	{ typeof(sbyte),   "sbyte"   },
+	{ typeof(short),   "short"   },
+	{ typeof(int),     "int"     },
+	{ typeof(long),    "long"    },
+	{ typeof(byte),    "byte"    },
+	{ typeof(ushort),  "ushort"  },
+	{ typeof(uint),    "uint"    },
+	{ typeof(ulong),   "ulong"   },
+	{ typeof(float),   "float"   },
+	{ typeof(double),  "double"  },
+	{ typeof(decimal), "decimal" },
+	{ typeof(object),  "object"  },
+	{ typeof(string),  "string"  },
+};
+
+IEnumerable<Type> knownValueTypes = new[]
+{
+	typeof(bool), typeof(char),
+	typeof(sbyte), typeof(short), typeof(int), typeof(long), typeof(IntPtr),
+	typeof(byte), typeof(ushort), typeof(uint), typeof(ulong), typeof(UIntPtr),
+	typeof(float), typeof(double), typeof(decimal),
+	typeof(Guid),
+};
+
+IEnumerable<Type> unmarshalableTypes = new[]
+{
+	typeof(void),
+	typeof(object),
+	typeof(TypedReference),
+	typeof(string),
+};
+#>

@@ -2,7 +2,6 @@
 using System;
 using System.Globalization;
 using System.Text;
-using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
 {
@@ -24,49 +23,10 @@ namespace WAYWF.Agent.MetaCache
 
 		public MetaKnownType UnderlyingType { get; }
 
-		public override bool TryGetValue(ICorDebugValue value, out object result)
-		{
-			if (UnderlyingType.TryGetValue(value, out result))
-			{
-				result = Format(ULongFromObject(result));
-				return true;
-			}
+		public override void Apply(IMetaTypeVisitor visitor) => visitor.VisitEnum(this);
+		public override TResult Apply<TArg, TResult>(IMetaTypeVisitor<TArg, TResult> visitor, TArg arg) => visitor.VisitEnum(this, arg);
 
-			return false;
-		}
-
-		static ulong ULongFromObject(object obj)
-		{
-			unchecked
-			{
-				switch (Type.GetTypeCode(obj.GetType()))
-				{
-					case TypeCode.Boolean: return ((bool)obj) ? 1u : 0u;
-					case TypeCode.Char: return (char)obj;
-
-					case TypeCode.SByte: return (byte)(sbyte)obj;
-					case TypeCode.Int16: return (ushort)(short)obj;
-					case TypeCode.Int32: return (uint)(int)obj;
-					case TypeCode.Int64: return (ulong)(long)obj;
-
-					case TypeCode.Byte: return (byte)obj;
-					case TypeCode.UInt16: return (ushort)obj;
-					case TypeCode.UInt32: return (uint)obj;
-					case TypeCode.UInt64: return (ulong)obj;
-
-					default:
-						var tmp = (IntPtr?)obj;
-						if (tmp.HasValue) return (ulong)tmp.Value;
-
-						var utmp = (UIntPtr?)obj;
-						if (utmp.HasValue) return (ulong)tmp.Value;
-
-						throw new ArgumentException("cannot convert " + obj.GetType() + " to ulong");
-				}
-			}
-		}
-
-		string Format(ulong value)
+		public string Format(ulong value)
 		{
 			return _isFlags ? FormatFlags(value) : FormatEnum(value);
 		}

@@ -1,6 +1,4 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-using System;
-using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
 {
@@ -16,19 +14,7 @@ namespace WAYWF.Agent.MetaCache
 
 		public MetaDataToken HandleField { get; }
 
-		public override bool TryGetValue(ICorDebugValue value, out object result)
-		{
-			var objValue = (ICorDebugObjectValue)value;
-			var handleObj = objValue.GetFieldValue(HandleField);
-
-			if (handleObj == null)
-			{
-				result = null;
-				return false;
-			}
-
-			result = ValueExtensions.GetValue<IntPtr>((ICorDebugGenericValue)handleObj).ToString();
-			return true;
-		}
+		public override void Apply(IMetaTypeVisitor visitor) => visitor.VisitGCHandle(this);
+		public override TResult Apply<TArg, TResult>(IMetaTypeVisitor<TArg, TResult> visitor, TArg arg) => visitor.VisitGCHandle(this, arg);
 	}
 }

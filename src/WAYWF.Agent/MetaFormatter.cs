@@ -148,26 +148,26 @@ namespace WAYWF.Agent
 
 		#region IMetaTypeVisitor Members
 
-		void IMetaTypeVisitor.Visit(MetaArrayType metaArrayType)
+		void IMetaTypeVisitor.VisitArray(MetaArrayType metaType)
 		{
-			var current = GetElementType(metaArrayType.ElementType);
+			var current = GetElementType(metaType.ElementType);
 
 			current.Apply(this);
-			metaArrayType = WriteIndexers(metaArrayType);
+			metaType = WriteIndexers(metaType);
 		}
 
-		void IMetaTypeVisitor.Visit(MetaPointerType metaPointerType)
+		void IMetaTypeVisitor.VisitPointer(MetaPointerType metaType)
 		{
-			metaPointerType.ElementType.Apply(this);
+			metaType.ElementType.Apply(this);
 			_builder.Append('*');
 		}
 
-		void IMetaTypeVisitor.Visit(MetaVarType metaVarType)
+		void IMetaTypeVisitor.VisitVar(MetaVarType metaType)
 		{
 			int lowerBound;
 			int upperBound;
 
-			if (metaVarType.Method)
+			if (metaType.Method)
 			{
 				lowerBound = MethodArgsStart;
 				upperBound = TypeArgs.Count;
@@ -178,7 +178,7 @@ namespace WAYWF.Agent
 				upperBound = MethodArgsStart;
 			}
 
-			var index = metaVarType.Index + lowerBound;
+			var index = metaType.Index + lowerBound;
 
 			if (index < lowerBound || index >= upperBound)
 			{
@@ -188,24 +188,25 @@ namespace WAYWF.Agent
 			TypeArgs[index].Apply(this);
 		}
 
-		void IMetaTypeVisitor.Visit(MetaGenType metaGenType)
+		void IMetaTypeVisitor.VisitGen(MetaGenType metaType)
 		{
-			if (metaGenType.BaseType is MetaResolvedType resolvedType)
+			if (metaType.BaseType is MetaResolvedType resolvedType)
 			{
-				Write(resolvedType, metaGenType.TypeArgs);
+				Write(resolvedType, metaType.TypeArgs);
 			}
 			else
 			{
-				Write((MetaUnresolvedType)metaGenType.BaseType, metaGenType.TypeArgs);
+				Write((MetaUnresolvedType)metaType.BaseType, metaType.TypeArgs);
 			}
 		}
 
-		void IMetaTypeVisitor.Visit(MetaResolvedType metaType)
-		{
-			Write(metaType, null);
-		}
+		void IMetaTypeVisitor.VisitEnum(MetaEnumType metaType) => Write(metaType, null);
+		void IMetaTypeVisitor.VisitGCHandle(MetaGCHandleType metaType) => Write(metaType, null);
+		void IMetaTypeVisitor.VisitKnownType(MetaKnownType metaType) => Write(metaType, null);
+		void IMetaTypeVisitor.VisitNullable(MetaNullableType metaType) => Write(metaType, null);
+		void IMetaTypeVisitor.VisitSimpleResolved(MetaSimpleResolvedType metaType) => Write(metaType, null);
 
-		void IMetaTypeVisitor.Visit(MetaUnresolvedType metaType)
+		void IMetaTypeVisitor.VisitUnresolved(MetaUnresolvedType metaType)
 		{
 			Write(metaType, null);
 		}

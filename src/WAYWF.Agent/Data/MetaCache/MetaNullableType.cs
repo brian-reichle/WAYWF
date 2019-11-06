@@ -1,6 +1,4 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-using System.Collections.ObjectModel;
-using WAYWF.Agent.CorDebugApi;
 
 namespace WAYWF.Agent.MetaCache
 {
@@ -18,32 +16,7 @@ namespace WAYWF.Agent.MetaCache
 		public MetaDataToken HasValueToken { get; }
 		public MetaDataToken ValueToken { get; }
 
-		public override bool TryGetValue(ICorDebugValue value, ReadOnlyCollection<MetaTypeBase> typeArgs, out object result)
-		{
-			if (typeArgs.Count != 1)
-			{
-				throw new InvalidMetaDataException("Nullable should have exactly 1 type arg");
-			}
-
-			var innerType = typeArgs[0];
-			var objValue = (ICorDebugObjectValue)value;
-			var hasValueValue = objValue.GetFieldValue(HasValueToken);
-
-			if (!ValueExtensions.GetValue<bool>((ICorDebugGenericValue)hasValueValue))
-			{
-				result = null;
-				return true;
-			}
-
-			var valueValue = objValue.GetFieldValue(ValueToken);
-
-			if (valueValue == null)
-			{
-				result = null;
-				return false;
-			}
-
-			return innerType.TryGetValue(valueValue, out result);
-		}
+		public override void Apply(IMetaTypeVisitor visitor) => visitor.VisitNullable(this);
+		public override TResult Apply<TArg, TResult>(IMetaTypeVisitor<TArg, TResult> visitor, TArg arg) => visitor.VisitNullable(this, arg);
 	}
 }

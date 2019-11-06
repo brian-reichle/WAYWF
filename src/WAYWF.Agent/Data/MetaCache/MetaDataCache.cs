@@ -70,7 +70,7 @@ namespace WAYWF.Agent.MetaCache
 					return new MetaPointerType(GetType(type.GetFirstTypeParameter()));
 
 				default:
-					return MetaKnownType.FromElementType(typeCode);
+					return GetType(typeCode);
 			}
 		}
 
@@ -84,6 +84,32 @@ namespace WAYWF.Agent.MetaCache
 				case TokenType.TypeRef: return GetTypeRef(data, module, token);
 				case TokenType.TypeSpec: return GetTypeSpec(data, module, token);
 				default: throw new ResolutionException();
+			}
+		}
+
+		public static MetaKnownType GetType(CorElementType type)
+		{
+			switch (type)
+			{
+				case CorElementType.ELEMENT_TYPE_BOOLEAN: return MetaKnownType.Boolean;
+				case CorElementType.ELEMENT_TYPE_CHAR: return MetaKnownType.Char;
+				case CorElementType.ELEMENT_TYPE_I: return MetaKnownType.IntPtr;
+				case CorElementType.ELEMENT_TYPE_I1: return MetaKnownType.SByte;
+				case CorElementType.ELEMENT_TYPE_I2: return MetaKnownType.Int16;
+				case CorElementType.ELEMENT_TYPE_I4: return MetaKnownType.Int32;
+				case CorElementType.ELEMENT_TYPE_I8: return MetaKnownType.Int64;
+				case CorElementType.ELEMENT_TYPE_OBJECT: return MetaKnownType.Object;
+				case CorElementType.ELEMENT_TYPE_R4: return MetaKnownType.Single;
+				case CorElementType.ELEMENT_TYPE_R8: return MetaKnownType.Double;
+				case CorElementType.ELEMENT_TYPE_STRING: return MetaKnownType.String;
+				case CorElementType.ELEMENT_TYPE_TYPEDBYREF: return MetaKnownType.TypedReference;
+				case CorElementType.ELEMENT_TYPE_U: return MetaKnownType.UIntPtr;
+				case CorElementType.ELEMENT_TYPE_U1: return MetaKnownType.Byte;
+				case CorElementType.ELEMENT_TYPE_U2: return MetaKnownType.UInt16;
+				case CorElementType.ELEMENT_TYPE_U4: return MetaKnownType.UInt32;
+				case CorElementType.ELEMENT_TYPE_U8: return MetaKnownType.UInt64;
+				case CorElementType.ELEMENT_TYPE_VOID: return MetaKnownType.Void;
+				default: throw new ResolutionException(type);
 			}
 		}
 
@@ -326,7 +352,7 @@ namespace WAYWF.Agent.MetaCache
 		{
 			var typeArgCount = import.GetTypeArgCount(token);
 
-			return new MetaResolvedType(
+			return new MetaSimpleResolvedType(
 				data.Module,
 				token,
 				declaringType,
@@ -359,9 +385,9 @@ namespace WAYWF.Agent.MetaCache
 							throw new InvalidMetaDataException("Enums may only contain one instance member and it must be called 'value__'.");
 						}
 
-						underlyingType = MetaKnownType.FromElementType(valueType);
+						underlyingType = GetType(valueType);
 
-						if (underlyingType == null || !underlyingType.CanGetEnumValue)
+						if (underlyingType == null || !CanGetEnumValue(underlyingType))
 						{
 							throw new InvalidMetaDataException("Enum instance member has an invalid type.");
 						}
@@ -370,7 +396,7 @@ namespace WAYWF.Agent.MetaCache
 						{
 							for (var i = 0; i < ptrList.Count; i++)
 							{
-								valuesList.Add(underlyingType.GetEnumValue(ptrList[i]));
+								valuesList.Add(GetEnumValue(underlyingType, ptrList[i]));
 							}
 
 							ptrList = null;
@@ -389,7 +415,7 @@ namespace WAYWF.Agent.MetaCache
 						}
 						else
 						{
-							valuesList.Add(underlyingType.GetEnumValue(valuePtr));
+							valuesList.Add(GetEnumValue(underlyingType, valuePtr));
 						}
 
 						labelsList.Add(fieldName);
@@ -416,6 +442,38 @@ namespace WAYWF.Agent.MetaCache
 
 			var isFlags = module.HasFlagsAttribute(token);
 			return new MetaEnumType(data.Module, token, declaringType, name, underlyingType, isFlags, labels, values);
+		}
+
+		static unsafe ulong GetEnumValue(MetaKnownType type, IntPtr valuePtr)
+		{
+			if (valuePtr == IntPtr.Zero) throw new ArgumentNullException(nameof(valuePtr));
+
+			ulong value;
+
+			switch (type.Size)
+			{
+				case 1: value = *(byte*)valuePtr; break;
+				case 2: value = *(ushort*)valuePtr; break;
+				case 4: value = *(uint*)valuePtr; break;
+				case 8: value = *(ulong*)valuePtr; break;
+				default: throw new InvalidOperationException("Type has no valid size information.");
+			}
+
+			return value;
+		}
+
+		static bool CanGetEnumValue(MetaKnownType type)
+		{
+			switch (type.Size)
+			{
+				case 1:
+				case 2:
+				case 4:
+				case 8:
+					return true;
+			}
+
+			return false;
 		}
 
 		static unsafe MetaNullableType CreateNullable(ModuleData data, IMetaDataImport import, MetaDataToken token)

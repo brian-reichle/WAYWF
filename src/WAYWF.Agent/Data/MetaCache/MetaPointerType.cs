@@ -10,6 +10,7 @@ namespace WAYWF.Agent.MetaCache
 
 		public MetaTypeBase ElementType { get; }
 
-		public override void Apply(IMetaTypeVisitor visitor) => visitor.Visit(this);
+		public override void Apply(IMetaTypeVisitor visitor) => visitor.VisitPointer(this);
+		public override TResult Apply<TArg, TResult>(IMetaTypeVisitor<TArg, TResult> visitor, TArg arg) => visitor.VisitPointer(this, arg);
 	}
 }
