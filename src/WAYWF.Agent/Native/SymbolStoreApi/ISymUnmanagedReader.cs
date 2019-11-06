@@ -3,6 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security;
+using WAYWF.Agent.Data;
 
 namespace WAYWF.Agent.SymbolStoreApi
 {

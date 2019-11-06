@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.Data;
 using WAYWF.Agent.IL;
 using WAYWF.Agent.MetaDataApi;
 using WAYWF.Agent.SymbolStoreApi;

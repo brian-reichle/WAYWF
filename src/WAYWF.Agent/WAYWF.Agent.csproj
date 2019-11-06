@@ -35,17 +35,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleLog.cs" />
-    <Compile Include="Data\MetaCache\MetaGCHandleType.cs" />
-    <Compile Include="Data\MetaCache\MetaKnownTypeCode.cs" />
-    <Compile Include="Data\MetaCache\MetaSimpleResolvedType.cs" />
     <Compile Include="Data\MetaCache\MetaTypeExtensions.cs" />
-    <Compile Include="Data\Runtime\RuntimeBlockingReason.cs" />
-    <Compile Include="Data\Runtime\RuntimeFrameChainReason.cs" />
-    <Compile Include="Data\Runtime\RuntimeILMapping.cs" />
-    <Compile Include="Data\Runtime\RuntimeInternalFrameKind.cs" />
-    <Compile Include="Data\Runtime\RuntimePointerValue.cs" />
-    <Compile Include="Data\Runtime\RuntimeIdentifiedValue.cs" />
-    <Compile Include="Data\Runtime\RuntimeThreadStates.cs" />
     <Compile Include="Exceptions\CodedErrorException.cs" />
     <Compile Include="ILog.cs" />
     <Compile Include="Native\CorDebugApi\Struct\CORDB_ADDRESS.cs" />
@@ -79,16 +69,7 @@
     <Compile Include="Native\CorDebugApi\ICorDebugThread4.cs" />
     <Compile Include="Native\CorDebugApi\ICorDebugValue.cs" />
     <Compile Include="Native\CorDebugApi\ICorDebugValue2.cs" />
-    <Compile Include="Data\Runtime\IRuntimeValueVisitor.cs" />
-    <Compile Include="Data\Runtime\RuntimeNativeInterface.cs" />
-    <Compile Include="Data\Runtime\RuntimeVirtualAddress.cs" />
-    <Compile Include="Data\Runtime\RuntimeNative.cs" />
-    <Compile Include="Data\Runtime\RuntimeNullValue.cs" />
-    <Compile Include="Data\Runtime\RuntimeRcwValue.cs" />
-    <Compile Include="Data\Runtime\RuntimeSimpleValue.cs" />
-    <Compile Include="Data\Runtime\RuntimeUser.cs" />
     <Compile Include="Data\Runtime\RuntimeNativeInterfaceFactory.cs" />
-    <Compile Include="Data\Runtime\RuntimeWindow.cs" />
     <Compile Include="Data\Runtime\RuntimeWindowLoader.cs" />
     <Compile Include="Data\Runtime\RuntimeValueFactory.cs" />
     <Compile Include="Exceptions\InvalidMetaDataException.cs" />
@@ -96,11 +77,6 @@
     <Compile Include="ErrorCodes.cs" />
     <Compile Include="Extensions\DebugExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
-    <Compile Include="Data\Runtime\IRuntimeFrameVisitor.cs" />
-    <Compile Include="Data\Runtime\RuntimeBlockingObject.cs" />
-    <Compile Include="Data\Runtime\RuntimeILFrame.cs" />
-    <Compile Include="Data\Runtime\RuntimeInternalFrame.cs" />
-    <Compile Include="Data\Runtime\RuntimeValue.cs" />
     <Compile Include="Extensions\FrameExtensions.cs" />
     <Compile Include="Exceptions\ILException.cs" />
     <Compile Include="Extensions\ISymMethodExtensions.cs" />
@@ -119,35 +95,15 @@
       <DependentUpon>ILReader.tt</DependentUpon>
     </Compile>
     <Compile Include="IL\Instruction.cs" />
-    <Compile Include="Data\MetaCache\IMetaGenericContext.cs" />
-    <Compile Include="Data\MetaCache\MetaField.cs" />
-    <Compile Include="Data\MetaCache\MetaUnresolvedType.cs" />
-    <Compile Include="Data\MetaCache\MetaEnumType.cs" />
-    <Compile Include="Data\MetaCache\MetaKnownType.cs" />
-    <Compile Include="Data\MetaCache\MetaKnownType.g.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MetaKnownType.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\MetaCache\MetaMethodSignature.cs" />
-    <Compile Include="Data\MetaCache\MetaNullableType.cs" />
     <Compile Include="Native\MetaDataApi\IMetaDataImport2.cs" />
     <Compile Include="MetaFormatter.cs" />
     <Compile Include="Native\Win32\NativeMethods.Advapi32.cs" />
     <Compile Include="Native\Win32\NativeMethods.Kernel32.cs" />
     <Compile Include="Native\Win32\NativeMethods.Mscoree.cs" />
     <Compile Include="Native\Win32\NativeMethods.User32.cs" />
-    <Compile Include="Data\PendingTasks\PendingStateMachineTask.cs" />
     <Compile Include="Data\PendingTasks\PendingTaskFactory.cs" />
-    <Compile Include="Data\PendingTasks\SMField.cs" />
-    <Compile Include="Data\PendingTasks\StateMachineDescriptor.cs" />
     <Compile Include="Data\PendingTasks\StateMachineDescriptorFactory.cs" />
-    <Compile Include="Data\Source\SourceAsyncState.cs" />
-    <Compile Include="Data\Source\SourceDocument.cs" />
-    <Compile Include="Data\Source\SourceDocumentType.cs" />
-    <Compile Include="Data\Source\SourceRef.cs" />
     <Compile Include="Data\Source\SourceProvider.cs" />
-    <Compile Include="Data\Source\SourceLanguage.cs" />
     <Compile Include="Native\SymbolStoreApi\ISymUnmanagedAsyncMethod.cs" />
     <Compile Include="Native\SymbolStoreApi\CorSymAddrKind.cs" />
     <Compile Include="Native\SymbolStoreApi\ISymUnmanagedBinder.cs" />
@@ -166,10 +122,7 @@
     <Compile Include="Native\CorDebugApi\ICorDebugILFrame2.cs" />
     <Compile Include="Native\CorDebugApi\ICorDebugType.cs" />
     <Compile Include="Native\CorDebugApi\ICorDebugTypeEnum.cs" />
-    <Compile Include="Data\Runtime\RuntimeAppDomain.cs" />
-    <Compile Include="Data\Runtime\RuntimeProcess.cs" />
     <Compile Include="Exceptions\ResolutionException.cs" />
-    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\AppDomainExtensions.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\MetaDataImportExtensions.cs" />
@@ -202,43 +155,22 @@
     <Compile Include="Extensions\RuntimeExtensions.cs" />
     <Compile Include="Native\CorDebugApi\ICorDebug.cs" />
     <Compile Include="Data\Runtime\RuntimeProcessBuilder.cs" />
-    <Compile Include="Data\Runtime\RuntimeThread.cs" />
-    <Compile Include="Utils\EmptyCollections.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Utils\HResults.cs" />
     <Compile Include="Exceptions\InvalidSignatureException.cs" />
     <Compile Include="ManagedCallback.cs" />
-    <Compile Include="Data\MetaCache\IMetaTypeVisitor.cs" />
     <Compile Include="Data\MetaCache\ISignatureContext.cs" />
-    <Compile Include="Data\MetaCache\MetaArrayType.cs" />
-    <Compile Include="Data\MetaCache\MetaAssembly.cs" />
     <Compile Include="Data\MetaCache\MetaDataCache.cs" />
-    <Compile Include="Data\Runtime\RuntimeFrame.cs" />
-    <Compile Include="Data\Runtime\RuntimeFrameChain.cs" />
-    <Compile Include="Data\MetaCache\MetaGenType.cs" />
-    <Compile Include="Data\MetaCache\MetaMethod.cs" />
-    <Compile Include="Data\MetaCache\MetaModule.cs" />
-    <Compile Include="Data\MetaCache\MetaVariable.cs" />
-    <Compile Include="Data\MetaCache\MetaPointerType.cs" />
     <Compile Include="Data\MetaCache\MetaSignatureParser.cs" />
-    <Compile Include="Data\MetaCache\MetaType.cs" />
-    <Compile Include="Data\MetaCache\MetaResolvedType.cs" />
-    <Compile Include="Data\MetaCache\MetaTypeBase.cs" />
-    <Compile Include="Data\MetaCache\MetaVarType.cs" />
     <Compile Include="Native\MetaDataApi\ASSEMBLYMETADATA.cs" />
     <Compile Include="Native\MetaDataApi\IMetaDataAssemblyImport.cs" />
     <Compile Include="Native\MetaDataApi\IMetaDataImport.cs" />
-    <Compile Include="Utils\Identity.cs" />
-    <Compile Include="Utils\IIdentitySource.cs" />
-    <Compile Include="Utils\MemoryAddress.cs" />
-    <Compile Include="Utils\MetadataToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\ResolutionResult.cs" />
     <Compile Include="Utils\Resolver.cs" />
     <Compile Include="StateFormatter.cs" />
     <Compile Include="Utils\SymGuids.cs" />
-    <Compile Include="Utils\TokenType.cs" />
     <Compile Include="Native\Win32\SafeHandle\CryptContextHandle.cs" />
     <Compile Include="Native\Win32\SafeHandle\CryptHashHandle.cs" />
     <Compile Include="Native\Win32\Struct\MEMORY_BASIC_INFORMATION.cs" />
@@ -258,10 +190,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="app.manifest" />
-    <None Include="Data\MetaCache\MetaKnownType.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>MetaKnownType.g.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -282,6 +210,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WAYWF.Agent.Data\WAYWF.Agent.Data.csproj">
+      <Project>{c04fac18-6b27-42bc-a017-461196ba41a0}</Project>
+      <Name>WAYWF.Agent.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\WAYWF.Options\WAYWF.Options.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

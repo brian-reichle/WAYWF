@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Emit;
 using System.Threading;
+using WAYWF.Agent.Data;
 
 namespace WAYWF.Agent.IL
 {

@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System.Runtime.InteropServices;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.Data;
 using WAYWF.Agent.MetaDataApi;
 
 namespace WAYWF.Agent

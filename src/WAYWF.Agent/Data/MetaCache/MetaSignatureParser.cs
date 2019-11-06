@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.Data;
 
 namespace WAYWF.Agent.MetaCache
 {

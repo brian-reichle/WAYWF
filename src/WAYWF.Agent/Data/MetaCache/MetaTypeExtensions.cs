@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.Data;
 
 namespace WAYWF.Agent.MetaCache
 {

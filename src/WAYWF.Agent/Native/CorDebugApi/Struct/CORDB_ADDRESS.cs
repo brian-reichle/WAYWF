@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using WAYWF.Agent.Data;
 
 namespace WAYWF.Agent.CorDebugApi
 {

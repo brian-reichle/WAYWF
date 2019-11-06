@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.Data;
 using WAYWF.Agent.MetaDataApi;
 
 namespace WAYWF.Agent.MetaCache

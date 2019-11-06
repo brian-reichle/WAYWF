@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.Data;
 using WAYWF.Agent.IL;
 using WAYWF.Agent.MetaCache;
 

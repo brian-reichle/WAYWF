@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using WAYWF.Agent.CorDebugApi;
+using WAYWF.Agent.Data;
 using WAYWF.Agent.SymbolStoreApi;
 
 namespace WAYWF.Agent.Source
