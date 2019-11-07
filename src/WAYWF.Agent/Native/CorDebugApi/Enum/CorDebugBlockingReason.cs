@@ -15,6 +15,6 @@ namespace WAYWF.Agent.CorDebugApi
 		/// A thread is waiting on the event that is associated with a monitor lock for an object.
 		/// Typically, this occurs when you call one of the System.Threading.Monitor Wait methods.
 		/// </summary>
-		BLOCKING_MONITOR_EVENT = 0x2
+		BLOCKING_MONITOR_EVENT = 0x2,
 	}
 }

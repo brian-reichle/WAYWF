@@ -82,7 +82,7 @@ namespace WAYWF.Agent.MetaDataApi
 			char* szName = null,
 			int cchName = 0,
 			int* pchName = null,
-			 MetaDataToken* ptkImplementation = null,
+			MetaDataToken* ptkImplementation = null,
 			MetaDataToken* ptkTypeDef = null,
 			int* pdwExportedTypeFlags = null);
 

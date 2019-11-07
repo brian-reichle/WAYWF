@@ -51,6 +51,6 @@ namespace WAYWF.Agent.SymbolStoreApi
 		/// <summary>
 		/// Indicates that the first address is the section and the second address is an offset.
 		/// </summary>
-		ADDR_NATIVE_ISECTOFFSET = 10
+		ADDR_NATIVE_ISECTOFFSET = 10,
 	}
 }
