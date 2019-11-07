@@ -17,7 +17,7 @@ namespace WAYWF.UI
 					new InputScopeName()
 					{
 						NameValue = InputScopeNameValue.Number,
-					}
+					},
 				},
 			};
 		}
