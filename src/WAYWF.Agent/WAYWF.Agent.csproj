@@ -34,10 +34,12 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ConsoleLog.cs" />
     <Compile Include="Data\MetaCache\MetaGCHandleType.cs" />
     <Compile Include="Data\Runtime\RuntimePointerValue.cs" />
     <Compile Include="Data\Runtime\RuntimeIdentifiedValue.cs" />
     <Compile Include="Exceptions\CodedErrorException.cs" />
+    <Compile Include="ILog.cs" />
     <Compile Include="Native\CorDebugApi\Struct\CORDB_ADDRESS.cs" />
     <Compile Include="Native\CorDebugApi\Struct\CorDebugBlockingObject.cs" />
     <Compile Include="Native\CorDebugApi\Enum\CorDebugBlockingReason.cs" />

@@ -1,7 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -19,16 +17,9 @@ namespace WAYWF.Agent
 			_options = options;
 		}
 
-		public void Run()
+		public void Run(Stream stream, ILog log)
 		{
-			var sw = new Stopwatch();
-			var stream = OpenStream();
-
-			if (_options.Verbose)
-			{
-				Console.Error.WriteLine("0.000: Attaching to process {0}.", _options.ProcessID);
-				sw.Start();
-			}
+			log?.WriteFormattedLine("Attaching to process {0}.", _options.ProcessID);
 
 			var callback = new ManagedCallback();
 			var handle = CorDebuggerHelper.OpenProcess(_options.ProcessID);
@@ -41,10 +32,7 @@ namespace WAYWF.Agent
 
 			callback.AwaitAttachComplete();
 
-			if (_options.Verbose)
-			{
-				Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Collecting initial state data.", sw.Elapsed.TotalSeconds));
-			}
+			log?.WriteLine("Collecting initial state data.");
 
 			var builder = new RuntimeProcessBuilder(callback, handle, process);
 			builder.ImportFromHandle();
@@ -52,11 +40,7 @@ namespace WAYWF.Agent
 
 			if (_options.WalkHeap)
 			{
-				if (_options.Verbose)
-				{
-					Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Walking heap.", sw.Elapsed.TotalSeconds));
-				}
-
+				log?.WriteLine("Walking heap.");
 				builder.WalkHeap(process);
 			}
 
@@ -66,10 +50,7 @@ namespace WAYWF.Agent
 			{
 				if (_options.WaitSeconds > 0)
 				{
-					if (_options.Verbose)
-					{
-						Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Resuming for {1} seconds.", sw.Elapsed.TotalSeconds, _options.WaitSeconds));
-					}
+					log?.WriteFormattedLine("Resuming for {0} seconds.", _options.WaitSeconds);
 
 					builder.MarkStartTime();
 					process.Continue();
@@ -77,10 +58,7 @@ namespace WAYWF.Agent
 					process.Stop();
 				}
 
-				if (_options.Verbose)
-				{
-					Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Detaching from target process.", sw.Elapsed.TotalSeconds));
-				}
+				log?.WriteLine("Detaching from target process.");
 
 				callback.FlushSteppers();
 				FlushQueuedCallbacks(process);
@@ -88,25 +66,16 @@ namespace WAYWF.Agent
 			}
 			catch (COMException ex) when (ex.ErrorCode == HResults.CORDBG_E_PROCESS_TERMINATED)
 			{
-				if (_options.Verbose)
-				{
-					Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Target process terminated.", sw.Elapsed.TotalSeconds));
-				}
+				log?.WriteLine("Target process terminated.");
 			}
 
 			debugger.Terminate();
 
-			if (_options.Verbose)
-			{
-				Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Writing results.", sw.Elapsed.TotalSeconds));
-			}
+			log?.WriteLine("Writing results.");
 
 			WriteData(stream, data);
 
-			if (_options.Verbose)
-			{
-				Console.Error.WriteLine(string.Format(CultureInfo.CurrentCulture, "{0:0.000}: Done.", sw.Elapsed.TotalSeconds));
-			}
+			log?.WriteLine("Done.");
 		}
 
 		void WriteData(Stream stream, RuntimeProcess process)
@@ -120,27 +89,6 @@ namespace WAYWF.Agent
 			using (var writer = XmlWriter.Create(stream, settings))
 			{
 				StateFormatter.Format(writer, process, _options);
-			}
-		}
-
-		Stream OpenStream()
-		{
-			if (_options.OutputFileName == null)
-			{
-				return Console.OpenStandardOutput();
-			}
-			else
-			{
-				try
-				{
-					var stream = new FileStream(_options.OutputFileName, FileMode.Create, FileAccess.Write);
-					stream.SetLength(0);
-					return stream;
-				}
-				catch (UnauthorizedAccessException ex)
-				{
-					throw new CodedErrorException(ErrorCodes.OutputAccessDenied, "Could not open output file for writing.", ex);
-				}
 			}
 		}
 
