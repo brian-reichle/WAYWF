@@ -37,7 +37,7 @@ namespace WAYWF.Agent
 
 			try
 			{
-				engine.Run();
+				engine.Run(OpenStream(options.OutputFileName), options.Verbose ? new ConsoleLog() : null);
 			}
 			catch (IOException ex)
 			{
@@ -60,6 +60,27 @@ namespace WAYWF.Agent
 			using (var identity = WindowsIdentity.GetCurrent())
 			{
 				return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
+			}
+		}
+
+		static Stream OpenStream(string outputFilename)
+		{
+			if (outputFilename == null)
+			{
+				return Console.OpenStandardOutput();
+			}
+			else
+			{
+				try
+				{
+					var stream = new FileStream(outputFilename, FileMode.Create, FileAccess.Write);
+					stream.SetLength(0);
+					return stream;
+				}
+				catch (UnauthorizedAccessException ex)
+				{
+					throw new CodedErrorException(ErrorCodes.OutputAccessDenied, "Could not open output file for writing.", ex);
+				}
 			}
 		}
 	}
