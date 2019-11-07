@@ -24,7 +24,7 @@ namespace WAYWF.Agent.PendingTasks
 		{
 			if (!process.AreGCStructuresValid())
 			{
-				return EmptyCollections<PendingStateMachineTask>.EmptyArray;
+				return Array.Empty<PendingStateMachineTask>();
 			}
 
 			var e = process.EnumerateHeap();

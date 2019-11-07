@@ -114,7 +114,7 @@ namespace WAYWF.Agent.MetaCache
 
 			if (tokens.Length == 0)
 			{
-				return EmptyCollections<MetaField>.EmptyArray;
+				return Array.Empty<MetaField>();
 			}
 
 			var moduleData = GetModuleData(module);
