@@ -9,6 +9,7 @@ namespace WAYWF.Agent.Data
 	public sealed class RuntimeProcess
 	{
 		public RuntimeProcess(
+			CaptureOptions options,
 			RuntimeNative native,
 			Version clrVersion,
 			RuntimeAppDomain[] appDomains,
@@ -17,6 +18,7 @@ namespace WAYWF.Agent.Data
 			RuntimeValue[] referenceValues,
 			PendingStateMachineTask[] pendingTasks)
 		{
+			Options = options;
 			Native = native;
 			ClrVersion = clrVersion;
 			DateTime = DateTimeOffset.Now;
@@ -27,6 +29,7 @@ namespace WAYWF.Agent.Data
 			PendingTasks = pendingTasks.MakeReadOnly();
 		}
 
+		public CaptureOptions Options { get; }
 		public RuntimeNative Native { get; }
 		public Version ClrVersion { get; }
 		public DateTimeOffset DateTime { get; }

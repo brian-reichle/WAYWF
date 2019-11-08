@@ -9,10 +9,6 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using WAYWF.Agent.Data;
-using WAYWF.Agent.MetaCache;
-using WAYWF.Agent.PendingTasks;
-using WAYWF.Agent.Source;
-using WAYWF.Options;
 
 namespace WAYWF.Agent
 {
@@ -29,19 +25,21 @@ namespace WAYWF.Agent
 			_globalValueFormatter = new GlobalValueWriter(this);
 		}
 
-		public static void Format(XmlWriter writer, RuntimeProcess process, CmdLineOptions options)
+		public static void Format(XmlWriter writer, RuntimeProcess process)
 		{
 			var formatter = new StateFormatter(writer);
 			formatter._writer.WriteProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"waywf.xslt\"");
-			formatter.WriteCapture(process, options);
+			formatter.WriteCapture(process);
 		}
 
-		void WriteCapture(RuntimeProcess process, CmdLineOptions options)
+		void WriteCapture(RuntimeProcess process)
 		{
 			_writer.WriteStartElement("waywf", "waywf-capture");
 			_writer.WriteAttributeString("version", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 			_writer.WriteAttributeString("timestamp", process.DateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
 			_writer.WriteAttributeString("timezone", process.DateTime.ToString("zzz", CultureInfo.InvariantCulture));
+
+			var options = process.Options;
 
 			if (options.WaitSeconds > 0)
 			{

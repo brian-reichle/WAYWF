@@ -6,25 +6,24 @@ using System.Threading;
 using System.Xml;
 using WAYWF.Agent.CorDebugApi;
 using WAYWF.Agent.Data;
-using WAYWF.Options;
 
 namespace WAYWF.Agent
 {
 	sealed class Engine
 	{
-		public Engine(CmdLineOptions options)
+		public Engine(CaptureOptions options)
 		{
 			_options = options;
 		}
 
-		public void Run(Stream stream, ILog log)
+		public void Run(Stream stream, ILog log, int processID)
 		{
-			log?.WriteFormattedLine("Attaching to process {0}.", _options.ProcessID);
+			log?.WriteFormattedLine("Attaching to process {0}.", processID);
 
 			var callback = new ManagedCallback();
-			var handle = CorDebuggerHelper.OpenProcess(_options.ProcessID);
+			var handle = CorDebuggerHelper.OpenProcess(processID);
 
-			var debugger = CorDebuggerHelper.CreateDebuggingInterfaceForProcess(_options.ProcessID, handle);
+			var debugger = CorDebuggerHelper.CreateDebuggingInterfaceForProcess(processID, handle);
 			debugger.Initialize();
 			debugger.SetManagedHandler(callback);
 
@@ -34,7 +33,7 @@ namespace WAYWF.Agent
 
 			log?.WriteLine("Collecting initial state data.");
 
-			var builder = new RuntimeProcessBuilder(callback, handle, process);
+			var builder = new RuntimeProcessBuilder(callback, handle, process, _options);
 			builder.ImportFromHandle();
 			builder.ImportStandardProcessDetails();
 
@@ -78,7 +77,7 @@ namespace WAYWF.Agent
 			log?.WriteLine("Done.");
 		}
 
-		void WriteData(Stream stream, RuntimeProcess process)
+		static void WriteData(Stream stream, RuntimeProcess process)
 		{
 			var settings = new XmlWriterSettings()
 			{
@@ -88,7 +87,7 @@ namespace WAYWF.Agent
 
 			using (var writer = XmlWriter.Create(stream, settings))
 			{
-				StateFormatter.Format(writer, process, _options);
+				StateFormatter.Format(writer, process);
 			}
 		}
 
@@ -102,6 +101,6 @@ namespace WAYWF.Agent
 			}
 		}
 
-		readonly CmdLineOptions _options;
+		readonly CaptureOptions _options;
 	}
 }

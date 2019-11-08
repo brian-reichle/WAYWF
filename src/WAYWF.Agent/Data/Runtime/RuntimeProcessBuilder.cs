@@ -14,10 +14,11 @@ namespace WAYWF.Agent.Data
 {
 	sealed class RuntimeProcessBuilder
 	{
-		public RuntimeProcessBuilder(ManagedCallback callback, ProcessHandle handle, ICorDebugProcess process)
+		public RuntimeProcessBuilder(ManagedCallback callback, ProcessHandle handle, ICorDebugProcess process, CaptureOptions options)
 		{
 			_cache = new MetaDataCache();
 			_objects = new RuntimeValueFactory(_cache, new RuntimeNativeInterfaceFactory(handle, process));
+			_options = options;
 			_sourceCache = new SourceProvider();
 			_callback = callback;
 			_handle = handle;
@@ -48,6 +49,7 @@ namespace WAYWF.Agent.Data
 		public RuntimeProcess GetProcess()
 		{
 			return new RuntimeProcess(
+				_options,
 				_native,
 				_clrVersion,
 				_appDomains,
@@ -483,6 +485,7 @@ namespace WAYWF.Agent.Data
 		RuntimeThread[] _threads;
 		PendingStateMachineTask[] _pendingTasks;
 		long _start;
+		readonly CaptureOptions _options;
 		readonly ICorDebugProcess _process;
 		readonly ProcessHandle _handle;
 		readonly double _tickDuration;
