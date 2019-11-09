@@ -5,15 +5,15 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B734593F-F71B-4260-8D62-6C94F3AE5042}</ProjectGuid>
+    <ProjectGuid>{28747ADC-08B6-40BA-981C-BDED65AC59AA}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WAYWF.Agent</RootNamespace>
-    <AssemblyName>WAYWF.Agent</AssemblyName>
+    <RootNamespace>WAYWF.Agent.x86</RootNamespace>
+    <AssemblyName>WAYWF.Agent.x86</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
