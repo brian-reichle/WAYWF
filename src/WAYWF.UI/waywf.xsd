@@ -39,13 +39,12 @@
 
 	<xs:simpleType name="internalFrameType">
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="STUBFRAME_NONE" />
-			<xs:enumeration value="STUBFRAME_M2U" />
-			<xs:enumeration value="STUBFRAME_U2M" />
-			<xs:enumeration value="STUBFRAME_APPDOMAIN_TRANSITION" />
-			<xs:enumeration value="STUBFRAME_LIGHTWEIGHT_FUNCTION" />
-			<xs:enumeration value="STUBFRAME_FUNC_EVAL" />
-			<xs:enumeration value="STUBFRAME_INTERNALCALL" />
+			<xs:enumeration value="Unknown" />
+			<xs:enumeration value="ManagedToUnmanaged" />
+			<xs:enumeration value="UnmanagedToManaged" />
+			<xs:enumeration value="AppDomainTransition" />
+			<xs:enumeration value="LightWeightFunction" />
+			<xs:enumeration value="InternalCall" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -60,15 +59,15 @@
 
 	<xs:simpleType name="threadUserStateType">
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="USER_STOP_REQUESTED" />
-			<xs:enumeration value="USER_SUSPEND_REQUESTED" />
-			<xs:enumeration value="USER_BACKGROUND" />
-			<xs:enumeration value="USER_UNSTARTED" />
-			<xs:enumeration value="USER_STOPPED" />
-			<xs:enumeration value="USER_WAIT_SLEEP_JOIN" />
-			<xs:enumeration value="USER_SUSPENDED" />
-			<xs:enumeration value="USER_UNSAFE_POINT" />
-			<xs:enumeration value="USER_THREADPOOL" />
+			<xs:enumeration value="None" />
+			<xs:enumeration value="NotStarted" />
+			<xs:enumeration value="Background" />
+			<xs:enumeration value="ThreadPool" />
+			<xs:enumeration value="Stopping" />
+			<xs:enumeration value="Stopped" />
+			<xs:enumeration value="Suspending" />
+			<xs:enumeration value="Suspended" />
+			<xs:enumeration value="WaitSleepJoin" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -78,17 +77,10 @@
 
 	<xs:simpleType name="chainReasonType">
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="CHAIN_NONE" />
-			<xs:enumeration value="CHAIN_CLASS_INIT" />
-			<xs:enumeration value="CHAIN_EXCEPTION_FILTER" />
-			<xs:enumeration value="CHAIN_SECURITY" />
-			<xs:enumeration value="CHAIN_CONTEXT_POLICY" />
-			<xs:enumeration value="CHAIN_INTERCEPTION" />
-			<xs:enumeration value="CHAIN_PROCESS_START" />
-			<xs:enumeration value="CHAIN_THREAD_START" />
-			<xs:enumeration value="CHAIN_ENTER_MANAGED" />
-			<xs:enumeration value="CHAIN_ENTER_UNMANAGED" />
-			<xs:enumeration value="CHAIN_CONTEXT_SWITCH" />
+			<xs:enumeration value="None" />
+			<xs:enumeration value="ClassConstructor" />
+			<xs:enumeration value="ExceptionFilter" />
+			<xs:enumeration value="SecurityEvaluation" />
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -123,8 +115,8 @@
 
 	<xs:simpleType name="blockingReasonType">
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="BLOCKING_MONITOR_CRITICAL_SECTION" />
-			<xs:enumeration value="BLOCKING_MONITOR_EVENT" />
+			<xs:enumeration value="Enter" />
+			<xs:enumeration value="Wait" />
 		</xs:restriction>
 	</xs:simpleType>
 

@@ -104,6 +104,8 @@
     <Rule Id="CA1064" Action="None" />
     <Rule Id="CA1303" Action="None" />
     <Rule Id="CA1712" Action="None" />
+    <Rule Id="CA1716" Action="None" />
+    <Rule Id="CA1720" Action="None" />
     <Rule Id="CA1812" Action="None" />
     <Rule Id="CA2007" Action="None" />
   </Rules>

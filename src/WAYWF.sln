@@ -13,8 +13,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Console", "WAYWF.Cons
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WAYWF.Options", "WAYWF.Options\WAYWF.Options.shproj", "{DB6BDC53-AFEF-4963-A48F-543907905EB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Agent.Core", "WAYWF.Agent.Core\WAYWF.Agent.Core.csproj", "{B307574C-0999-4623-BEEE-A42D3D1B3AF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Agent.Data", "WAYWF.Agent.Data\WAYWF.Agent.Data.csproj", "{C04FAC18-6B27-42BC-A017-461196BA41A0}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WAYWF.Agent.Shared", "WAYWF.Agent.Shared\WAYWF.Agent.Shared.shproj", "{12B41FE0-BF55-4AFC-BC49-B48D68E9EAE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Agent.x86", "WAYWF.Agent.x86\WAYWF.Agent.x86.csproj", "{28747ADC-08B6-40BA-981C-BDED65AC59AA}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		WAYWF.Agent.Shared\WAYWF.Agent.Shared.projitems*{12b41fe0-bf55-4afc-bc49-b48d68e9eae9}*SharedItemsImports = 13
+		WAYWF.Agent.Shared\WAYWF.Agent.Shared.projitems*{28747adc-08b6-40ba-981c-bded65ac59aa}*SharedItemsImports = 4
+		WAYWF.Options\WAYWF.Options.projitems*{28747adc-08b6-40ba-981c-bded65ac59aa}*SharedItemsImports = 4
+		WAYWF.Agent.Shared\WAYWF.Agent.Shared.projitems*{b734593f-f71b-4260-8d62-6c94f3ae5042}*SharedItemsImports = 4
 		WAYWF.Options\WAYWF.Options.projitems*{b734593f-f71b-4260-8d62-6c94f3ae5042}*SharedItemsImports = 4
 		WAYWF.Options\WAYWF.Options.projitems*{d1dec5a4-2fbb-416e-9c17-e97ed662a147}*SharedItemsImports = 4
 		WAYWF.Options\WAYWF.Options.projitems*{db6bdc53-afef-4963-a48f-543907905eb5}*SharedItemsImports = 13
@@ -40,6 +52,18 @@ Global
 		{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1DEC5A4-2FBB-416E-9C17-E97ED662A147}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B307574C-0999-4623-BEEE-A42D3D1B3AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B307574C-0999-4623-BEEE-A42D3D1B3AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B307574C-0999-4623-BEEE-A42D3D1B3AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B307574C-0999-4623-BEEE-A42D3D1B3AF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C04FAC18-6B27-42BC-A017-461196BA41A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04FAC18-6B27-42BC-A017-461196BA41A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04FAC18-6B27-42BC-A017-461196BA41A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04FAC18-6B27-42BC-A017-461196BA41A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28747ADC-08B6-40BA-981C-BDED65AC59AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28747ADC-08B6-40BA-981C-BDED65AC59AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28747ADC-08B6-40BA-981C-BDED65AC59AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28747ADC-08B6-40BA-981C-BDED65AC59AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
