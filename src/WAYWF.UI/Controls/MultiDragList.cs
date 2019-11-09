@@ -61,7 +61,7 @@ namespace WAYWF.UI
 			if (item.IsMouseCaptured)
 			{
 				item.ReleaseMouseCapture();
-				_mouseDown = default(Point);
+				_mouseDown = default;
 
 				switch (_releaseAction)
 				{

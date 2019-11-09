@@ -65,7 +65,7 @@ namespace WAYWF.Agent.Core
 			}
 
 			var children = new ISymUnmanagedScope[size];
-			scope.GetChildren(children.Length, out size, children);
+			scope.GetChildren(children.Length, out _, children);
 
 			return children;
 		}
@@ -80,7 +80,7 @@ namespace WAYWF.Agent.Core
 			}
 
 			var result = new ISymUnmanagedVariable[count];
-			scope.GetLocals(count, out count, result);
+			scope.GetLocals(count, out _, result);
 			return result;
 		}
 

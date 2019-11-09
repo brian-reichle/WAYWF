@@ -142,7 +142,7 @@ namespace WAYWF.Agent.Core
 			var toColumns = new int[count];
 			var refs = new SourceRef[count];
 
-			method.GetSequencePoints(count, out count, offsets, documents, fromLines, fromColumns, toLines, toColumns);
+			method.GetSequencePoints(count, out _, offsets, documents, fromLines, fromColumns, toLines, toColumns);
 
 			for (var i = 0; i < refs.Length; i++)
 			{

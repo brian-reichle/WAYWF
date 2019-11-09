@@ -50,7 +50,7 @@ namespace WAYWF.Agent.Core.Win32
 
 		public static bool IsAlive(this ProcessHandle handle)
 		{
-			if (!NativeMethods.GetExitCodeProcess(handle, out var exitCode))
+			if (!NativeMethods.GetExitCodeProcess(handle, out var _))
 			{
 				var error = Marshal.GetLastWin32Error();
 
@@ -140,7 +140,7 @@ namespace WAYWF.Agent.Core.Win32
 				ref nameLength,
 				domain,
 				ref domainLength,
-				out var use))
+				out var _))
 			{
 				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
 			}
