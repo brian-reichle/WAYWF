@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
+using WAYWF.Agent.Core;
 using WAYWF.Agent.Data;
 using WAYWF.Options;
 
@@ -38,7 +39,10 @@ namespace WAYWF.Agent
 
 			try
 			{
-				engine.Run(OpenStream(options.OutputFileName), options.Verbose ? new ConsoleLog() : null, options.ProcessID);
+				using (var stream = OpenStream(options.OutputFileName))
+				{
+					engine.Run(stream, options.Verbose ? new ConsoleLog() : null, options.ProcessID);
+				}
 			}
 			catch (IOException ex)
 			{

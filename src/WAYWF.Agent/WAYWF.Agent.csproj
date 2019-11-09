@@ -35,157 +35,8 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleLog.cs" />
-    <Compile Include="Data\MetaCache\MetaTypeExtensions.cs" />
-    <Compile Include="Exceptions\CodedErrorException.cs" />
-    <Compile Include="ILog.cs" />
-    <Compile Include="Native\CorDebugApi\Struct\CORDB_ADDRESS.cs" />
-    <Compile Include="Native\CorDebugApi\Struct\CorDebugBlockingObject.cs" />
-    <Compile Include="Native\CorDebugApi\Enum\CorDebugBlockingReason.cs" />
-    <Compile Include="Native\CorDebugApi\Enum\CorDebugInternalFrameType.cs" />
-    <Compile Include="Native\CorDebugApi\Enum\CorDebugMappingResult.cs" />
-    <Compile Include="Native\CorDebugApi\Enum\CorDebugThreadState.cs" />
-    <Compile Include="Native\CorDebugApi\Struct\COR_HEAPINFO.cs" />
-    <Compile Include="Native\CorDebugApi\Struct\COR_HEAPOBJECT.cs" />
-    <Compile Include="Native\CorDebugApi\Struct\COR_TYPEID.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugArrayValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugBlockingObjectEnum.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugBoxValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugComObjectValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugGenericValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugHeapEnum.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugHeapValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugHeapValue3.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugILFrame.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugInternalFrame.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugModule2.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugModule3.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugObjectValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugProcess2.cs" />
-    <Compile Include="Native\CorDebugApi\Struct\COR_VERSION.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugProcess5.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugReferenceValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugStepper.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugStringValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugThread4.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugValue.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugValue2.cs" />
-    <Compile Include="Data\Runtime\RuntimeNativeInterfaceFactory.cs" />
-    <Compile Include="Data\Runtime\RuntimeWindowLoader.cs" />
-    <Compile Include="Data\Runtime\RuntimeValueFactory.cs" />
-    <Compile Include="Exceptions\InvalidMetaDataException.cs" />
-    <Compile Include="Exceptions\ShitFanContactException.cs" />
-    <Compile Include="ErrorCodes.cs" />
-    <Compile Include="Extensions\DebugExtensions.cs" />
-    <Compile Include="Extensions\EnumExtensions.cs" />
-    <Compile Include="Extensions\FrameExtensions.cs" />
-    <Compile Include="Exceptions\ILException.cs" />
-    <Compile Include="Extensions\ISymMethodExtensions.cs" />
-    <Compile Include="Extensions\ProcessExtensions.cs" />
-    <Compile Include="Extensions\SymDocumentExtensions.cs" />
-    <Compile Include="Extensions\ThreadExtensions.cs" />
-    <Compile Include="Extensions\ValueExtensions.cs" />
-    <Content Include="IL\ILReader.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ILReader.g.cs</LastGenOutput>
-    </Content>
-    <Compile Include="IL\ILReader.cs" />
-    <Compile Include="IL\ILReader.g.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ILReader.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IL\Instruction.cs" />
-    <Compile Include="Native\MetaDataApi\IMetaDataImport2.cs" />
-    <Compile Include="MetaFormatter.cs" />
-    <Compile Include="Native\Win32\NativeMethods.Advapi32.cs" />
-    <Compile Include="Native\Win32\NativeMethods.Kernel32.cs" />
-    <Compile Include="Native\Win32\NativeMethods.Mscoree.cs" />
-    <Compile Include="Native\Win32\NativeMethods.User32.cs" />
-    <Compile Include="Data\PendingTasks\PendingTaskFactory.cs" />
-    <Compile Include="Data\PendingTasks\StateMachineDescriptorFactory.cs" />
-    <Compile Include="Data\Source\SourceProvider.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedAsyncMethod.cs" />
-    <Compile Include="Native\SymbolStoreApi\CorSymAddrKind.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedBinder.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedDispose.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedDocument.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedMethod.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedReader.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedScope.cs" />
-    <Compile Include="Native\SymbolStoreApi\ISymUnmanagedVariable.cs" />
-    <Compile Include="Utils\BlobReader.cs" />
-    <Compile Include="Utils\CryptFunctions.cs" />
-    <Compile Include="Exceptions\AttachException.cs" />
-    <Compile Include="Native\CorDebugApi\Enum\CorElementType.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugFrameEnum.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugChainEnum.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugILFrame2.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugType.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugTypeEnum.cs" />
-    <Compile Include="Exceptions\ResolutionException.cs" />
-    <Compile Include="Extensions\AppDomainExtensions.cs" />
-    <Compile Include="Extensions\AssemblyExtensions.cs" />
-    <Compile Include="Extensions\MetaDataImportExtensions.cs" />
-    <Compile Include="Extensions\MetaDataAssemblyImportExtensions.cs" />
-    <Compile Include="Extensions\ModuleExtensions.cs" />
-    <Compile Include="Native\CorDebugApi\Enum\CorDebugChainReason.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugChain.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugClass.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugFrame.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugFunction.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugModuleEnum.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugAppDomainEnum.cs" />
-    <Compile Include="Native\CorDebugApi\Enum\CorDebugUserState.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugAssemblyEnum.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugEnum.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugManagedCallback2.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugAppDomain.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugAssembly.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugController.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugManagedCallback.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugModule.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugProcess.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugThread.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebugThreadEnum.cs" />
-    <Compile Include="CorDebuggerHelper.cs" />
-    <Compile Include="Native\CLRHostApi\ICLRMetaHost.cs" />
-    <Compile Include="Native\CLRHostApi\ICLRRuntimeInfo.cs" />
-    <Compile Include="Native\CLRHostApi\IEnumUnknown.cs" />
-    <Compile Include="Utils\CLSID.cs" />
-    <Compile Include="Extensions\RuntimeExtensions.cs" />
-    <Compile Include="Native\CorDebugApi\ICorDebug.cs" />
-    <Compile Include="Data\Runtime\RuntimeProcessBuilder.cs" />
-    <Compile Include="Engine.cs" />
-    <Compile Include="Utils\HResults.cs" />
-    <Compile Include="Exceptions\InvalidSignatureException.cs" />
-    <Compile Include="ManagedCallback.cs" />
-    <Compile Include="Data\MetaCache\ISignatureContext.cs" />
-    <Compile Include="Data\MetaCache\MetaDataCache.cs" />
-    <Compile Include="Data\MetaCache\MetaSignatureParser.cs" />
-    <Compile Include="Native\MetaDataApi\ASSEMBLYMETADATA.cs" />
-    <Compile Include="Native\MetaDataApi\IMetaDataAssemblyImport.cs" />
-    <Compile Include="Native\MetaDataApi\IMetaDataImport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\ResolutionResult.cs" />
-    <Compile Include="Utils\Resolver.cs" />
-    <Compile Include="StateFormatter.cs" />
-    <Compile Include="Utils\SymGuids.cs" />
-    <Compile Include="Native\Win32\SafeHandle\CryptContextHandle.cs" />
-    <Compile Include="Native\Win32\SafeHandle\CryptHashHandle.cs" />
-    <Compile Include="Native\Win32\Struct\MEMORY_BASIC_INFORMATION.cs" />
-    <Compile Include="Native\Win32\Enum\MEM_FLAGS.cs" />
-    <Compile Include="Native\Win32\NativeMethods.cs" />
-    <Compile Include="Native\Win32\Enum\AccessOptions.cs" />
-    <Compile Include="Native\Win32\ProcessExtensions.cs" />
-    <Compile Include="Native\Win32\SafeHandle\ProcessHandle.cs" />
-    <Compile Include="Native\Win32\Struct\SID_AND_ATTRIBUTES.cs" />
-    <Compile Include="Native\Win32\Enum\SID_NAME_USE.cs" />
-    <Compile Include="Native\Win32\SafeHandle\TokenHandle.cs" />
-    <Compile Include="Native\Win32\Enum\TOKEN_INFORMATION_CLASS.cs" />
-    <Compile Include="Native\Win32\Struct\TOKEN_USER.cs" />
-    <Compile Include="Native\Win32\SafeHandle\UnmanagedBuffer.cs" />
-    <Compile Include="Native\Win32\Win32ErrorCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -212,6 +63,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WAYWF.Agent.Core\WAYWF.Agent.Core.csproj">
+      <Project>{b307574c-0999-4623-beee-a42d3d1b3af7}</Project>
+      <Name>WAYWF.Agent.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WAYWF.Agent.Data\WAYWF.Agent.Data.csproj">
       <Project>{c04fac18-6b27-42bc-a017-461196ba41a0}</Project>
       <Name>WAYWF.Agent.Data</Name>
