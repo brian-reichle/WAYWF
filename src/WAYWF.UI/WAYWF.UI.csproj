@@ -128,13 +128,18 @@
     <Resource Include="Resources\Save.ico" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\WAYWF.Agent\waywf.xslt">
-      <Link>Resources\waywf.xslt</Link>
+    <EmbeddedResource Include="waywf.xslt">
+      <LogicalName>WAYWF.UI.Resources.waywf.xslt</LogicalName>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <None Include="waywf.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WAYWF.Api\WAYWF.Api.csproj">

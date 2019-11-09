@@ -247,11 +247,6 @@
     <Compile Include="Native\Win32\Win32ErrorCodes.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="waywf.xslt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="Data\MetaCache\MetaKnownType.tt">
@@ -259,9 +254,6 @@
       <LastGenOutput>MetaKnownType.g.cs</LastGenOutput>
     </None>
     <None Include="Utils\TypeReferences.t4" />
-    <None Include="waywf.xsd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
