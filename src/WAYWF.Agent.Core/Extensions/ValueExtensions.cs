@@ -83,7 +83,7 @@ namespace WAYWF.Agent.Core
 			value.GetCachedInterfacePointers(false, 0, out var size, null);
 
 			var result = new CORDB_ADDRESS[size];
-			value.GetCachedInterfacePointers(false, size, out size, result);
+			value.GetCachedInterfacePointers(false, size, out _, result);
 
 			return result;
 		}

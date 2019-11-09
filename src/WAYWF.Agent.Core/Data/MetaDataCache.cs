@@ -160,7 +160,7 @@ namespace WAYWF.Agent.Core
 		{
 			var path = assembly.GetName();
 
-			ICorDebugModule module = null;
+			ICorDebugModule module;
 			var modules = assembly.EnumerateModules();
 
 			while (modules.Next(1, out module))

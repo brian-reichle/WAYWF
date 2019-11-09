@@ -223,7 +223,7 @@ namespace WAYWF.Agent.Core
 				switch (token.TokenType)
 				{
 					case TokenType.MemberRef:
-						import.GetMemberRefProps(token, out var classToken, out name);
+						import.GetMemberRefProps(token, out var _, out name);
 						break;
 
 					case TokenType.MethodDef:

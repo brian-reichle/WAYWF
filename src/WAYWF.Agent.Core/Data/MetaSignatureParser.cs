@@ -301,7 +301,6 @@ namespace WAYWF.Agent.Core
 					else if (value == (byte)CorElementType.ELEMENT_TYPE_BYREF)
 					{
 						sig.ReadByte();
-						value = sig.PeekByte();
 						isByRef = true;
 					}
 					else

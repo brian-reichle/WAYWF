@@ -26,6 +26,6 @@ namespace WAYWF.UI
 			return (T)Attribute.GetCustomAttribute(_assembly, typeof(T));
 		}
 
-		Assembly _assembly = typeof(HelpData).Assembly;
+		readonly Assembly _assembly = typeof(HelpData).Assembly;
 	}
 }

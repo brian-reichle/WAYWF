@@ -153,7 +153,7 @@ namespace WAYWF.Agent.Core
 			var current = GetElementType(metaType.ElementType);
 
 			current.Apply(this);
-			metaType = WriteIndexers(metaType);
+			WriteIndexers(metaType);
 		}
 
 		void IMetaTypeVisitor.VisitPointer(MetaPointerType metaType)
