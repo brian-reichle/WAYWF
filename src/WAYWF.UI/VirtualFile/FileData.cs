@@ -177,34 +177,32 @@ namespace WAYWF.UI
 
 			var requiredSize = sizeof(int) + FILEDESCRIPTOR_Length * files.Length;
 
-			using (var hMem = SafeWin32.GlobalAlloc(requiredSize))
+			using var hMem = SafeWin32.GlobalAlloc(requiredSize);
+			var ptr = NativeMethods.GlobalLock(hMem);
+			ptr.Initialize((ulong)requiredSize);
+
+			try
 			{
-				var ptr = NativeMethods.GlobalLock(hMem);
-				ptr.Initialize((ulong)requiredSize);
+				ptr.Write(0UL, files.Length);
+				ulong offset = sizeof(int);
 
-				try
+				for (var i = 0; i < files.Length; i++)
 				{
-					ptr.Write(0UL, files.Length);
-					ulong offset = sizeof(int);
+					var file = files[i];
+					var data = Encoding.Default.GetBytes(file.FileName);
 
-					for (var i = 0; i < files.Length; i++)
-					{
-						var file = files[i];
-						var data = Encoding.Default.GetBytes(file.FileName);
+					ptr.Write(offset + FILEDESCRIPTOR_FlagsOffset, 0);
+					ptr.WriteArray(offset + FILEDESCRIPTOR_FilenameOffset, data, 0, data.Length);
 
-						ptr.Write(offset + FILEDESCRIPTOR_FlagsOffset, 0);
-						ptr.WriteArray(offset + FILEDESCRIPTOR_FilenameOffset, data, 0, data.Length);
-
-						offset += FILEDESCRIPTOR_Length;
-					}
+					offset += FILEDESCRIPTOR_Length;
 				}
-				finally
-				{
-					NativeMethods.GlobalUnlock(hMem);
-				}
-
-				ApplyTo(ref medium, hMem);
 			}
+			finally
+			{
+				NativeMethods.GlobalUnlock(hMem);
+			}
+
+			ApplyTo(ref medium, hMem);
 		}
 
 		static void GetFileDescriptorDataW(ref STGMEDIUM medium, VirtualFileBase[] files)
@@ -216,56 +214,52 @@ namespace WAYWF.UI
 
 			var requiredSize = sizeof(int) + FILEDESCRIPTOR_Length * files.Length;
 
-			using (var hMem = SafeWin32.GlobalAlloc(requiredSize))
+			using var hMem = SafeWin32.GlobalAlloc(requiredSize);
+			var ptr = NativeMethods.GlobalLock(hMem);
+			ptr.Initialize((ulong)requiredSize);
+
+			try
 			{
-				var ptr = NativeMethods.GlobalLock(hMem);
-				ptr.Initialize((ulong)requiredSize);
+				ptr.Write(0UL, files.Length);
+				ulong offset = sizeof(int);
 
-				try
+				for (var i = 0; i < files.Length; i++)
 				{
-					ptr.Write(0UL, files.Length);
-					ulong offset = sizeof(int);
+					var file = files[i];
+					var data = Encoding.Unicode.GetBytes(file.FileName);
 
-					for (var i = 0; i < files.Length; i++)
-					{
-						var file = files[i];
-						var data = Encoding.Unicode.GetBytes(file.FileName);
+					ptr.Write(offset + FILEDESCRIPTOR_FlagsOffset, FD_UNICODE);
+					ptr.WriteArray(offset + FILEDESCRIPTOR_FilenameOffset, data, 0, data.Length);
 
-						ptr.Write(offset + FILEDESCRIPTOR_FlagsOffset, FD_UNICODE);
-						ptr.WriteArray(offset + FILEDESCRIPTOR_FilenameOffset, data, 0, data.Length);
-
-						offset += FILEDESCRIPTOR_Length;
-					}
+					offset += FILEDESCRIPTOR_Length;
 				}
-				finally
-				{
-					NativeMethods.GlobalUnlock(hMem);
-				}
-
-				ApplyTo(ref medium, hMem);
 			}
+			finally
+			{
+				NativeMethods.GlobalUnlock(hMem);
+			}
+
+			ApplyTo(ref medium, hMem);
 		}
 
 		static void GetFileContentsData(ref STGMEDIUM medium, VirtualFileBase file)
 		{
 			var data = file.GenerateContent();
 
-			using (var hMem = SafeWin32.GlobalAlloc(data.Length))
+			using var hMem = SafeWin32.GlobalAlloc(data.Length);
+			var ptr = NativeMethods.GlobalLock(hMem);
+			ptr.Initialize((ulong)data.Length);
+
+			try
 			{
-				var ptr = NativeMethods.GlobalLock(hMem);
-				ptr.Initialize((ulong)data.Length);
-
-				try
-				{
-					ptr.WriteArray(0, data, 0, data.Length);
-				}
-				finally
-				{
-					NativeMethods.GlobalUnlock(hMem);
-				}
-
-				ApplyTo(ref medium, hMem);
+				ptr.WriteArray(0, data, 0, data.Length);
 			}
+			finally
+			{
+				NativeMethods.GlobalUnlock(hMem);
+			}
+
+			ApplyTo(ref medium, hMem);
 		}
 
 		static void ApplyTo(ref STGMEDIUM medium, SafeHGlobal hMem)

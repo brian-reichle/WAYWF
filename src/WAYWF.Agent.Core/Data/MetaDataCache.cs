@@ -80,39 +80,39 @@ namespace WAYWF.Agent.Core
 		{
 			var data = GetModuleData(module);
 
-			switch (token.TokenType)
+			return token.TokenType switch
 			{
-				case TokenType.TypeDef: return GetTypeDef(data, module, token);
-				case TokenType.TypeRef: return GetTypeRef(data, module, token);
-				case TokenType.TypeSpec: return GetTypeSpec(data, module, token);
-				default: throw new ResolutionException();
-			}
+				TokenType.TypeDef => GetTypeDef(data, module, token),
+				TokenType.TypeRef => GetTypeRef(data, module, token),
+				TokenType.TypeSpec => GetTypeSpec(data, module, token),
+				_ => throw new ResolutionException(),
+			};
 		}
 
 		public static MetaKnownType GetType(CorElementType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case CorElementType.ELEMENT_TYPE_BOOLEAN: return MetaKnownType.Boolean;
-				case CorElementType.ELEMENT_TYPE_CHAR: return MetaKnownType.Char;
-				case CorElementType.ELEMENT_TYPE_I: return MetaKnownType.IntPtr;
-				case CorElementType.ELEMENT_TYPE_I1: return MetaKnownType.SByte;
-				case CorElementType.ELEMENT_TYPE_I2: return MetaKnownType.Int16;
-				case CorElementType.ELEMENT_TYPE_I4: return MetaKnownType.Int32;
-				case CorElementType.ELEMENT_TYPE_I8: return MetaKnownType.Int64;
-				case CorElementType.ELEMENT_TYPE_OBJECT: return MetaKnownType.Object;
-				case CorElementType.ELEMENT_TYPE_R4: return MetaKnownType.Single;
-				case CorElementType.ELEMENT_TYPE_R8: return MetaKnownType.Double;
-				case CorElementType.ELEMENT_TYPE_STRING: return MetaKnownType.String;
-				case CorElementType.ELEMENT_TYPE_TYPEDBYREF: return MetaKnownType.TypedReference;
-				case CorElementType.ELEMENT_TYPE_U: return MetaKnownType.UIntPtr;
-				case CorElementType.ELEMENT_TYPE_U1: return MetaKnownType.Byte;
-				case CorElementType.ELEMENT_TYPE_U2: return MetaKnownType.UInt16;
-				case CorElementType.ELEMENT_TYPE_U4: return MetaKnownType.UInt32;
-				case CorElementType.ELEMENT_TYPE_U8: return MetaKnownType.UInt64;
-				case CorElementType.ELEMENT_TYPE_VOID: return MetaKnownType.Void;
-				default: throw new ResolutionException(type);
-			}
+				CorElementType.ELEMENT_TYPE_BOOLEAN => MetaKnownType.Boolean,
+				CorElementType.ELEMENT_TYPE_CHAR => MetaKnownType.Char,
+				CorElementType.ELEMENT_TYPE_I => MetaKnownType.IntPtr,
+				CorElementType.ELEMENT_TYPE_I1 => MetaKnownType.SByte,
+				CorElementType.ELEMENT_TYPE_I2 => MetaKnownType.Int16,
+				CorElementType.ELEMENT_TYPE_I4 => MetaKnownType.Int32,
+				CorElementType.ELEMENT_TYPE_I8 => MetaKnownType.Int64,
+				CorElementType.ELEMENT_TYPE_OBJECT => MetaKnownType.Object,
+				CorElementType.ELEMENT_TYPE_R4 => MetaKnownType.Single,
+				CorElementType.ELEMENT_TYPE_R8 => MetaKnownType.Double,
+				CorElementType.ELEMENT_TYPE_STRING => MetaKnownType.String,
+				CorElementType.ELEMENT_TYPE_TYPEDBYREF => MetaKnownType.TypedReference,
+				CorElementType.ELEMENT_TYPE_U => MetaKnownType.UIntPtr,
+				CorElementType.ELEMENT_TYPE_U1 => MetaKnownType.Byte,
+				CorElementType.ELEMENT_TYPE_U2 => MetaKnownType.UInt16,
+				CorElementType.ELEMENT_TYPE_U4 => MetaKnownType.UInt32,
+				CorElementType.ELEMENT_TYPE_U8 => MetaKnownType.UInt64,
+				CorElementType.ELEMENT_TYPE_VOID => MetaKnownType.Void,
+				_ => throw new ResolutionException(type),
+			};
 		}
 
 		public MetaMethod GetMethod(ICorDebugFunction function)
@@ -242,19 +242,12 @@ namespace WAYWF.Agent.Core
 
 				var resolutionResult = Resolver.TryResolve(ref defModule, ref defToken);
 
-				switch (resolutionResult)
+				result = resolutionResult switch
 				{
-					case ResolutionResult.Success:
-						result = GetTypeDef(GetModuleData(defModule), defModule, defToken);
-						break;
-
-					case ResolutionResult.NotFound:
-						result = GetUnresolvedTypeRef(data, module, token);
-						break;
-
-					default:
-						throw new ResolutionException(token);
-				}
+					ResolutionResult.Success => GetTypeDef(GetModuleData(defModule), defModule, defToken),
+					ResolutionResult.NotFound => GetUnresolvedTypeRef(data, module, token),
+					_ => throw new ResolutionException(token),
+				};
 			}
 
 			return result;
@@ -272,12 +265,12 @@ namespace WAYWF.Agent.Core
 
 		MetaType GetType(ModuleData data, ICorDebugModule module, MetaDataToken token)
 		{
-			switch (token.TokenType)
+			return token.TokenType switch
 			{
-				case TokenType.TypeDef: return GetTypeDef(data, module, token);
-				case TokenType.TypeRef: return GetTypeRef(data, module, token);
-				default: throw new ResolutionException(token);
-			}
+				TokenType.TypeDef => GetTypeDef(data, module, token),
+				TokenType.TypeRef => GetTypeRef(data, module, token),
+				_ => throw new ResolutionException(token),
+			};
 		}
 
 		MetaResolvedType CreateTypeDef(ModuleData data, ICorDebugModule module, MetaDataToken token)
@@ -445,18 +438,14 @@ namespace WAYWF.Agent.Core
 		{
 			if (valuePtr == IntPtr.Zero) throw new ArgumentNullException(nameof(valuePtr));
 
-			ulong value;
-
-			switch (type.Size)
+			return type.Size switch
 			{
-				case 1: value = *(byte*)valuePtr; break;
-				case 2: value = *(ushort*)valuePtr; break;
-				case 4: value = *(uint*)valuePtr; break;
-				case 8: value = *(ulong*)valuePtr; break;
-				default: throw new InvalidOperationException("Type has no valid size information.");
-			}
-
-			return value;
+				1 => *(byte*)valuePtr,
+				2 => *(ushort*)valuePtr,
+				4 => *(uint*)valuePtr,
+				8 => *(ulong*)valuePtr,
+				_ => throw new InvalidOperationException("Type has no valid size information."),
+			};
 		}
 
 		static bool CanGetEnumValue(MetaKnownType type)

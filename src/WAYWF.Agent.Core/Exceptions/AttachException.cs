@@ -36,13 +36,13 @@ namespace WAYWF.Agent.Core
 
 		static string GetMessage(int errorCode)
 		{
-			switch (errorCode)
+			return errorCode switch
 			{
-				case ErrorCodes.AlreadyAttached: return "A debugger is already attached to the specified process.";
-				case ErrorCodes.UnsupportedCLR: return "Unsupported CLR Version.";
-				case ErrorCodes.NoCLRLoaded: return "CLR Not Loaded.";
-				default: return "ErrorCodes: " + errorCode;
-			}
+				ErrorCodes.AlreadyAttached => "A debugger is already attached to the specified process.",
+				ErrorCodes.UnsupportedCLR => "Unsupported CLR Version.",
+				ErrorCodes.NoCLRLoaded => "CLR Not Loaded.",
+				_ => "ErrorCodes: " + errorCode,
+			};
 		}
 	}
 }

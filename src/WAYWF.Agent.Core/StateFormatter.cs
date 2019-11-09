@@ -349,20 +349,18 @@ namespace WAYWF.Agent.Core
 
 		void WritePendingTasks(RuntimeProcess process, IEnumerable<PendingStateMachineTask> pendingTasks)
 		{
-			using (var enumerator = pendingTasks.GetEnumerator())
+			using var enumerator = pendingTasks.GetEnumerator();
+			if (enumerator.MoveNext())
 			{
-				if (enumerator.MoveNext())
+				_writer.WriteStartElement("pendingTasks");
+
+				do
 				{
-					_writer.WriteStartElement("pendingTasks");
-
-					do
-					{
-						WritePendingTask(process, enumerator.Current);
-					}
-					while (enumerator.MoveNext());
-
-					_writer.WriteEndElement();
+					WritePendingTask(process, enumerator.Current);
 				}
+				while (enumerator.MoveNext());
+
+				_writer.WriteEndElement();
 			}
 		}
 

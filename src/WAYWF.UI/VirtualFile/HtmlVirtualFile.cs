@@ -15,11 +15,9 @@ namespace WAYWF.UI.VirtualFile
 
 		public override byte[] GenerateContent()
 		{
-			using (var writeStream = new MemoryStream())
-			{
-				HtmlTranslator.Transform(_xmlContent, writeStream);
-				return writeStream.ToArray();
-			}
+			using var writeStream = new MemoryStream();
+			HtmlTranslator.Transform(_xmlContent, writeStream);
+			return writeStream.ToArray();
 		}
 
 		readonly string _xmlContent;

@@ -12,7 +12,7 @@ CS1591 - Missing XML comment.
 -->
 		<WarningsNotAsErrors>612,618,1030</WarningsNotAsErrors>
 		<NoWarn>1591</NoWarn>
-		<LangVersion>7.3</LangVersion>
+		<LangVersion>8.0</LangVersion>
 
 		<Product>WAYWF</Product>
 		<Authors>Brian Reichle</Authors>

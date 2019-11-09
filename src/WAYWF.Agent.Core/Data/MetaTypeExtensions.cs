@@ -77,27 +77,26 @@ namespace WAYWF.Agent.Core
 			{
 				var value = context.Value;
 
-				switch (metaType.Code)
+				return metaType.Code switch
 				{
-					case MetaKnownTypeCode.String: return GetStringValue(value);
-					case MetaKnownTypeCode.Boolean: return GetGenericValue<bool>(value);
-					case MetaKnownTypeCode.Char: return GetGenericValue<char>(value);
-					case MetaKnownTypeCode.SByte: return GetGenericValue<sbyte>(value);
-					case MetaKnownTypeCode.Int16: return GetGenericValue<short>(value);
-					case MetaKnownTypeCode.Int32: return GetGenericValue<int>(value);
-					case MetaKnownTypeCode.Int64: return GetGenericValue<long>(value);
-					case MetaKnownTypeCode.IntPtr: return GetGenericValue<IntPtr>(value);
-					case MetaKnownTypeCode.Byte: return GetGenericValue<byte>(value);
-					case MetaKnownTypeCode.UInt16: return GetGenericValue<ushort>(value);
-					case MetaKnownTypeCode.UInt32: return GetGenericValue<uint>(value);
-					case MetaKnownTypeCode.UInt64: return GetGenericValue<ulong>(value);
-					case MetaKnownTypeCode.UIntPtr: return GetGenericValue<UIntPtr>(value);
-					case MetaKnownTypeCode.Single: return GetGenericValue<float>(value);
-					case MetaKnownTypeCode.Double: return GetGenericValue<double>(value);
-					case MetaKnownTypeCode.Decimal: return GetGenericValue<decimal>(value);
-				}
-
-				return UnknownValue;
+					MetaKnownTypeCode.String => GetStringValue(value),
+					MetaKnownTypeCode.Boolean => GetGenericValue<bool>(value),
+					MetaKnownTypeCode.Char => GetGenericValue<char>(value),
+					MetaKnownTypeCode.SByte => GetGenericValue<sbyte>(value),
+					MetaKnownTypeCode.Int16 => GetGenericValue<short>(value),
+					MetaKnownTypeCode.Int32 => GetGenericValue<int>(value),
+					MetaKnownTypeCode.Int64 => GetGenericValue<long>(value),
+					MetaKnownTypeCode.IntPtr => GetGenericValue<IntPtr>(value),
+					MetaKnownTypeCode.Byte => GetGenericValue<byte>(value),
+					MetaKnownTypeCode.UInt16 => GetGenericValue<ushort>(value),
+					MetaKnownTypeCode.UInt32 => GetGenericValue<uint>(value),
+					MetaKnownTypeCode.UInt64 => GetGenericValue<ulong>(value),
+					MetaKnownTypeCode.UIntPtr => GetGenericValue<UIntPtr>(value),
+					MetaKnownTypeCode.Single => GetGenericValue<float>(value),
+					MetaKnownTypeCode.Double => GetGenericValue<double>(value),
+					MetaKnownTypeCode.Decimal => GetGenericValue<decimal>(value),
+					_ => UnknownValue,
+				};
 			}
 
 			public object VisitNullable(MetaNullableType metaType, Context context)
@@ -158,30 +157,28 @@ namespace WAYWF.Agent.Core
 			{
 				unchecked
 				{
-					switch (Type.GetTypeCode(obj.GetType()))
+					return (Type.GetTypeCode(obj.GetType())) switch
 					{
-						case TypeCode.Boolean: return ((bool)obj) ? 1u : 0u;
-						case TypeCode.Char: return (char)obj;
+						TypeCode.Boolean => ((bool)obj) ? 1u : 0u,
+						TypeCode.Char => (char)obj,
 
-						case TypeCode.SByte: return (byte)(sbyte)obj;
-						case TypeCode.Int16: return (ushort)(short)obj;
-						case TypeCode.Int32: return (uint)(int)obj;
-						case TypeCode.Int64: return (ulong)(long)obj;
+						TypeCode.SByte => (byte)(sbyte)obj,
+						TypeCode.Int16 => (ushort)(short)obj,
+						TypeCode.Int32 => (uint)(int)obj,
+						TypeCode.Int64 => (ulong)(long)obj,
 
-						case TypeCode.Byte: return (byte)obj;
-						case TypeCode.UInt16: return (ushort)obj;
-						case TypeCode.UInt32: return (uint)obj;
-						case TypeCode.UInt64: return (ulong)obj;
+						TypeCode.Byte => (byte)obj,
+						TypeCode.UInt16 => (ushort)obj,
+						TypeCode.UInt32 => (uint)obj,
+						TypeCode.UInt64 => (ulong)obj,
 
-						default:
-							switch (obj)
-							{
-								case IntPtr intPtr: return (ulong)intPtr;
-								case UIntPtr uIntPtr: return (ulong)uIntPtr;
-							}
-
-							throw new ArgumentException("cannot convert " + obj.GetType() + " to ulong");
-					}
+						_ => obj switch
+						{
+							IntPtr intPtr => (ulong)intPtr,
+							UIntPtr uIntPtr => (ulong)uIntPtr,
+							_ => throw new ArgumentException("cannot convert " + obj.GetType() + " to ulong"),
+						},
+					};
 				}
 			}
 		}

@@ -100,10 +100,8 @@ namespace WAYWF.UI
 
 		static void WriteTranslated(string path, string xmlContents)
 		{
-			using (var file = new FileStream(path, FileMode.Create))
-			{
-				HtmlTranslator.Transform(xmlContents, file);
-			}
+			using var file = new FileStream(path, FileMode.Create);
+			HtmlTranslator.Transform(xmlContents, file);
 		}
 
 		static string SuggestFilename(ProcessData data) => data.ProcessName + "-" + data.ProcessID;

@@ -15,20 +15,12 @@ namespace WAYWF.Agent.Core
 
 		public static long GetPublicKeyToken(IntPtr publicKey, int publicKeySize)
 		{
-			long result;
+			using var context = AquireContext();
+			using var hash = CreateHash(context);
+			CryptHashData(hash, publicKey, publicKeySize);
 
-			using (var context = AquireContext())
-			using (var hash = CreateHash(context))
-			{
-				CryptHashData(hash, publicKey, publicKeySize);
-
-				using (var buffer = GetHash(hash))
-				{
-					result = buffer.Read<long>(buffer.ByteLength - sizeof(long));
-				}
-			}
-
-			return result;
+			using var buffer = GetHash(hash);
+			return buffer.Read<long>(buffer.ByteLength - sizeof(long));
 		}
 
 		static CryptContextHandle AquireContext()

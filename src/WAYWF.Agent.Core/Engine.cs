@@ -85,10 +85,8 @@ namespace WAYWF.Agent.Core
 				IndentChars = "  ",
 			};
 
-			using (var writer = XmlWriter.Create(stream, settings))
-			{
-				StateFormatter.Format(writer, process);
-			}
+			using var writer = XmlWriter.Create(stream, settings);
+			StateFormatter.Format(writer, process);
 		}
 
 		static void FlushQueuedCallbacks(ICorDebugProcess process)

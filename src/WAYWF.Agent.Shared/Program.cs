@@ -39,10 +39,8 @@ namespace WAYWF.Agent
 
 			try
 			{
-				using (var stream = OpenStream(options.OutputFileName))
-				{
-					engine.Run(stream, options.Verbose ? new ConsoleLog() : null, options.ProcessID);
-				}
+				using var stream = OpenStream(options.OutputFileName);
+				engine.Run(stream, options.Verbose ? new ConsoleLog() : null, options.ProcessID);
 			}
 			catch (IOException ex)
 			{
@@ -62,10 +60,8 @@ namespace WAYWF.Agent
 
 		static bool IsRunningAsAdministrator()
 		{
-			using (var identity = WindowsIdentity.GetCurrent())
-			{
-				return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
-			}
+			using var identity = WindowsIdentity.GetCurrent();
+			return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
 		}
 
 		static Stream OpenStream(string outputFilename)

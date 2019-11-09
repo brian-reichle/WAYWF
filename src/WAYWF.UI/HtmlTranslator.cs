@@ -16,20 +16,16 @@ namespace WAYWF.UI
 
 		public static void Transform(string xmlContent, Stream writeStream)
 		{
-			using (var writer = XmlWriter.Create(writeStream))
-			{
-				Transform(xmlContent, writer);
-				writer.Flush();
-			}
+			using var writer = XmlWriter.Create(writeStream);
+			Transform(xmlContent, writer);
+			writer.Flush();
 		}
 
 		public static void Transform(string xmlContent, XmlWriter writer)
 		{
-			using (var readStream = new StringReader(xmlContent))
-			using (var reader = CreateReader(readStream))
-			{
-				Instance.Transform(reader, writer);
-			}
+			using var readStream = new StringReader(xmlContent);
+			using var reader = CreateReader(readStream);
+			Instance.Transform(reader, writer);
 		}
 
 		static XslCompiledTransform GetTransform()
@@ -39,10 +35,8 @@ namespace WAYWF.UI
 
 			try
 			{
-				using (var stream = File.Open(filename, FileMode.Open))
-				{
-					return FromStream(stream);
-				}
+				using var stream = File.Open(filename, FileMode.Open);
+				return FromStream(stream);
 			}
 			catch (FileNotFoundException)
 			{

@@ -23,10 +23,8 @@ namespace WAYWF.UI.VirtualFile
 
 			try
 			{
-				using (var stream = File.Open(filename, FileMode.Open))
-				{
-					return GetBytes(stream);
-				}
+				using var stream = File.Open(filename, FileMode.Open);
+				return GetBytes(stream);
 			}
 			catch (FileNotFoundException)
 			{

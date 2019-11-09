@@ -12,13 +12,11 @@ namespace WAYWF.Api
 		{
 			try
 			{
-				using (var process = SafeWin32.GetProcessById(pid))
-				{
-					var is32Bit = !Environment.Is64BitOperatingSystem || process.IsWow64Process();
-					var imageName = process.QueryFullProcessImageName();
-					var processName = Path.GetFileNameWithoutExtension(imageName);
-					return new ProcessData(pid, processName, is32Bit);
-				}
+				using var process = SafeWin32.GetProcessById(pid);
+				var is32Bit = !Environment.Is64BitOperatingSystem || process.IsWow64Process();
+				var imageName = process.QueryFullProcessImageName();
+				var processName = Path.GetFileNameWithoutExtension(imageName);
+				return new ProcessData(pid, processName, is32Bit);
 			}
 			catch (Win32Exception ex) when (IsErrorCodeIgnoreable(ex))
 			{
