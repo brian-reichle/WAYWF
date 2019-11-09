@@ -17,8 +17,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Agent.Core", "WAYWF.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAYWF.Agent.Data", "WAYWF.Agent.Data\WAYWF.Agent.Data.csproj", "{C04FAC18-6B27-42BC-A017-461196BA41A0}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WAYWF.Agent.Shared", "WAYWF.Agent.Shared\WAYWF.Agent.Shared.shproj", "{12B41FE0-BF55-4AFC-BC49-B48D68E9EAE9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		WAYWF.Agent.Shared\WAYWF.Agent.Shared.projitems*{12b41fe0-bf55-4afc-bc49-b48d68e9eae9}*SharedItemsImports = 13
+		WAYWF.Agent.Shared\WAYWF.Agent.Shared.projitems*{b734593f-f71b-4260-8d62-6c94f3ae5042}*SharedItemsImports = 4
 		WAYWF.Options\WAYWF.Options.projitems*{b734593f-f71b-4260-8d62-6c94f3ae5042}*SharedItemsImports = 4
 		WAYWF.Options\WAYWF.Options.projitems*{d1dec5a4-2fbb-416e-9c17-e97ed662a147}*SharedItemsImports = 4
 		WAYWF.Options\WAYWF.Options.projitems*{db6bdc53-afef-4963-a48f-543907905eb5}*SharedItemsImports = 13
