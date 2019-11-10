@@ -1,11 +1,11 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
-using WAYWF.Agent.Core;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.IL;
 using WAYWF.Agent.Data;
@@ -37,11 +37,13 @@ namespace WAYWF.Agent.Core
 
 		StateMachineDescriptor CreateDescriptor(ICorDebugModule module, MetaResolvedType smType, MetaMethod method, IEnumerable<Instruction> il)
 		{
-			var paramFields = new SMField[method.Signature.Parameters.Count];
+			var paramFields = ImmutableArray.CreateBuilder<SMField>(method.Signature.Parameters.Length);
+			paramFields.Count = paramFields.Capacity;
+
 			var nonLocal = new HashSet<MetaDataToken>();
 			SMField stateField = null;
 			SMField thisField = null;
-			MetaDataToken[] taskFieldSequence = null;
+			var taskFieldSequence = ImmutableArray<MetaDataToken>.Empty;
 
 			Instruction prevInstruction = null;
 
@@ -86,10 +88,18 @@ namespace WAYWF.Agent.Core
 			var localFields = _mdCache
 				.GetFields(module, smType.Token)
 				.Where(x => !nonLocal.Contains(x.Token))
-				.ToArray();
+				.ToImmutableArray();
 
 			var moveNextMethod = module.GetMethodBody(smType.Token, "mscorlib", "System.Runtime.CompilerServices.IAsyncStateMachine", "MoveNext");
-			return new StateMachineDescriptor(method, moveNextMethod, smType, stateField, thisField, taskFieldSequence, paramFields, localFields);
+			return new StateMachineDescriptor(
+				method,
+				moveNextMethod,
+				smType,
+				stateField,
+				thisField,
+				taskFieldSequence,
+				paramFields.MoveToImmutable(),
+				localFields);
 		}
 
 		static bool IsSettingField(Instruction instruction, out MetaDataToken fieldToken)
@@ -243,7 +253,7 @@ namespace WAYWF.Agent.Core
 			return false;
 		}
 
-		static MetaDataToken[] FindTaskFieldSequence(ICorDebugModule module, MetaDataToken builderField)
+		static ImmutableArray<MetaDataToken> FindTaskFieldSequence(ICorDebugModule module, MetaDataToken builderField)
 		{
 			var import = module.GetMetaDataImport();
 			import.GetFieldTypeInfo(builderField, out var _, out var classToken);
@@ -256,22 +266,22 @@ namespace WAYWF.Agent.Core
 				case TokenType.TypeRef:
 					if (Resolver.TryResolve(ref module, ref classToken) != ResolutionResult.Success)
 					{
-						return null;
+						return ImmutableArray<MetaDataToken>.Empty;
 					}
 					break;
 
 				default:
-					return null;
+					return ImmutableArray<MetaDataToken>.Empty;
 			}
 
 			var taskField = FindTaskField(module, classToken);
 
 			if (taskField.IsNil)
 			{
-				return null;
+				return ImmutableArray<MetaDataToken>.Empty;
 			}
 
-			return new[] { builderField, taskField };
+			return ImmutableArray.Create(builderField, taskField);
 		}
 
 		static MetaDataToken FindTaskField(ICorDebugModule module, MetaDataToken classToken)

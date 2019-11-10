@@ -1,6 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,7 +11,7 @@ namespace WAYWF.Agent.Core
 {
 	static class RuntimeWindowLoader
 	{
-		public static unsafe RuntimeWindow[] Load(int pid)
+		public static unsafe ImmutableArray<RuntimeWindow> Load(int pid)
 		{
 			var host = new Host(pid);
 			var handle = new GCHandle();
@@ -34,7 +34,7 @@ namespace WAYWF.Agent.Core
 				}
 			}
 
-			return host._windows.ToArray();
+			return host._windows.ToImmutable();
 		}
 
 		static bool Callback(IntPtr hwnd, IntPtr lParam)
@@ -127,12 +127,12 @@ namespace WAYWF.Agent.Core
 			public Host(int pid)
 			{
 				_pid = pid;
-				_windows = new List<RuntimeWindow>();
+				_windows = ImmutableArray.CreateBuilder<RuntimeWindow>();
 				_builder = new StringBuilder();
 			}
 
 			public readonly int _pid;
-			public readonly List<RuntimeWindow> _windows;
+			public readonly ImmutableArray<RuntimeWindow>.Builder _windows;
 			public readonly StringBuilder _builder;
 		}
 	}

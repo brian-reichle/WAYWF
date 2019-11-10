@@ -1,6 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.SymbolStoreApi;
@@ -76,31 +77,26 @@ namespace WAYWF.Agent.Core
 			return GetAsyncSourceRef(tmp, token, state);
 		}
 
-		public string[] GetLocalNames(ICorDebugModule module, MetaDataToken token, int ilOffset, int localCount)
+		public ImmutableArray<string> GetLocalNames(ICorDebugModule module, MetaDataToken token, int ilOffset, int localCount)
 		{
 			if (localCount == 0)
 			{
-				return null;
+				return ImmutableArray<string>.Empty;
 			}
 
 			var info = GetModuleInfo(module);
 
 			if (info == null)
 			{
-				return null;
+				return ImmutableArray<string>.Empty;
 			}
 
 			var method = info.Reader.GetMethod(token);
-			return method.GetVariableNames(ilOffset, localCount);
+			return ImmutableArray.Create(method.GetVariableNames(ilOffset, localCount));
 		}
 
-		public SourceDocument[] GetAllDocuments()
-		{
-			var documents = _documentPathCache.Values;
-			var result = new SourceDocument[documents.Count];
-			documents.CopyTo(result, 0);
-			return result;
-		}
+		public ImmutableArray<SourceDocument> GetAllDocuments()
+			=> _documentPathCache.Values.ToImmutableArray();
 
 		SourceRef GetSourceRef(ModuleInfo tmp, MetaDataToken token, int offset)
 		{

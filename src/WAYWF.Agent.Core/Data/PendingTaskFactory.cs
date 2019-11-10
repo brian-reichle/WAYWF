@@ -1,8 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+using System.Collections.Immutable;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
 
@@ -18,15 +17,15 @@ namespace WAYWF.Agent.Core
 			_sourceProvider = sourceProvider;
 		}
 
-		public PendingStateMachineTask[] ExtractPendingTasks(ICorDebugProcess5 process)
+		public ImmutableArray<PendingStateMachineTask> ExtractPendingTasks(ICorDebugProcess5 process)
 		{
 			if (!process.AreGCStructuresValid())
 			{
-				return Array.Empty<PendingStateMachineTask>();
+				return ImmutableArray<PendingStateMachineTask>.Empty;
 			}
 
 			var e = process.EnumerateHeap();
-			var result = new List<PendingStateMachineTask>();
+			var result = ImmutableArray.CreateBuilder<PendingStateMachineTask>();
 
 			while (e.Next(1, out var obj))
 			{
@@ -36,7 +35,7 @@ namespace WAYWF.Agent.Core
 				}
 			}
 
-			return result.ToArray();
+			return result.ToImmutable();
 		}
 
 		bool TryGetPendingStateMachineTask(ICorDebugProcess5 process, ref COR_HEAPOBJECT obj, out PendingStateMachineTask result)
@@ -55,8 +54,13 @@ namespace WAYWF.Agent.Core
 			RuntimeSimpleValue stateValue = null;
 			RuntimeValue thisValue = null;
 			RuntimeValue taskValue = null;
-			var parameterValues = new RuntimeValue[descriptor.ParamFields.Count];
-			var localValues = new RuntimeValue[descriptor.LocalFields.Count];
+
+			var parameterValues = ImmutableArray.CreateBuilder<RuntimeValue>(descriptor.ParamFields.Length);
+			parameterValues.Count = parameterValues.Capacity;
+
+			var localValues = ImmutableArray.CreateBuilder<RuntimeValue>(descriptor.LocalFields.Length);
+			localValues.Count = localValues.Capacity;
+
 			SourceAsyncState state = null;
 
 			if (objectValue != null)
@@ -64,18 +68,18 @@ namespace WAYWF.Agent.Core
 				stateValue = descriptor.StateField == null ? null : GetValue(objectValue, descriptor.StateField.FieldToken) as RuntimeSimpleValue;
 				thisValue = descriptor.ThisField == null ? null : GetValue(objectValue, descriptor.ThisField.FieldToken);
 
-				if (descriptor.TaskFieldSequence.Count > 0)
+				if (descriptor.TaskFieldSequence.Length > 0)
 				{
 					taskValue = GetIndirectValue(objectValue, descriptor.TaskFieldSequence);
 				}
 
-				for (var i = 0; i < parameterValues.Length; i++)
+				for (var i = 0; i < parameterValues.Count; i++)
 				{
 					var field = descriptor.ParamFields[i];
 					parameterValues[i] = field == null ? null : GetValue(objectValue, field.FieldToken);
 				}
 
-				for (var i = 0; i < localValues.Length; i++)
+				for (var i = 0; i < localValues.Count; i++)
 				{
 					var field = descriptor.LocalFields[i];
 					localValues[i] = field == null ? null : GetValue(objectValue, field.Token);
@@ -89,13 +93,21 @@ namespace WAYWF.Agent.Core
 				}
 			}
 
-			result = new PendingStateMachineTask(descriptor, GetTypeArgs(process, obj.type), stateValue, thisValue, taskValue, parameterValues, localValues, state);
+			result = new PendingStateMachineTask(
+				descriptor,
+				GetTypeArgs(process, obj.type),
+				stateValue,
+				thisValue,
+				taskValue,
+				parameterValues.MoveToImmutable(),
+				localValues.MoveToImmutable(),
+				state);
 			return true;
 		}
 
-		RuntimeValue GetIndirectValue(ICorDebugObjectValue objectValue, ReadOnlyCollection<MetaDataToken> taskSequence)
+		RuntimeValue GetIndirectValue(ICorDebugObjectValue objectValue, ImmutableArray<MetaDataToken> taskSequence)
 		{
-			for (var i = 0; i < taskSequence.Count; i++)
+			for (var i = 0; i < taskSequence.Length; i++)
 			{
 				var value = objectValue.GetFieldValue(taskSequence[i]);
 
@@ -147,12 +159,11 @@ namespace WAYWF.Agent.Core
 			return value as ICorDebugObjectValue;
 		}
 
-		MetaTypeBase[] GetTypeArgs(ICorDebugProcess5 process, COR_TYPEID typeID)
+		ImmutableArray<MetaTypeBase> GetTypeArgs(ICorDebugProcess5 process, COR_TYPEID typeID)
 		{
 			var type = process.GetTypeForTypeID(typeID);
 			var e = type.EnumerateTypeParameters();
-			var typeArgs = _mdCache.GetTypes(e).ToArray();
-			return typeArgs;
+			return _mdCache.GetTypes(e);
 		}
 
 		StateMachineDescriptor GetStateMachineType(ICorDebugProcess5 process, COR_TYPEID typeID)

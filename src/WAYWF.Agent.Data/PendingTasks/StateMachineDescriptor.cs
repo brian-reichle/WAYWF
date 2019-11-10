@@ -1,12 +1,12 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 
 namespace WAYWF.Agent.Data
 {
 	public sealed class StateMachineDescriptor
 	{
-		public StateMachineDescriptor(MetaMethod asyncMethod, MetaDataToken moveNextMethod, MetaResolvedType stateMachineType, SMField stateField, SMField thisField, MetaDataToken[] taskFieldSequence, SMField[] paramFields, MetaField[] localFields)
+		public StateMachineDescriptor(MetaMethod asyncMethod, MetaDataToken moveNextMethod, MetaResolvedType stateMachineType, SMField stateField, SMField thisField, ImmutableArray<MetaDataToken> taskFieldSequence, ImmutableArray<SMField> paramFields, ImmutableArray<MetaField> localFields)
 		{
 			if (asyncMethod == null) throw new ArgumentNullException(nameof(asyncMethod));
 			if (stateMachineType == null) throw new ArgumentNullException(nameof(stateMachineType));
@@ -16,9 +16,9 @@ namespace WAYWF.Agent.Data
 			StateMachineType = stateMachineType;
 			StateField = stateField;
 			ThisField = thisField;
-			TaskFieldSequence = taskFieldSequence.MakeReadOnly();
-			ParamFields = paramFields.MakeReadOnly();
-			LocalFields = localFields.MakeReadOnly();
+			TaskFieldSequence = taskFieldSequence;
+			ParamFields = paramFields;
+			LocalFields = localFields;
 		}
 
 		public MetaMethod AsyncMethod { get; }
@@ -26,8 +26,8 @@ namespace WAYWF.Agent.Data
 		public MetaResolvedType StateMachineType { get; }
 		public SMField StateField { get; }
 		public SMField ThisField { get; }
-		public ReadOnlyCollection<MetaDataToken> TaskFieldSequence { get; }
-		public ReadOnlyCollection<SMField> ParamFields { get; }
-		public ReadOnlyCollection<MetaField> LocalFields { get; }
+		public ImmutableArray<MetaDataToken> TaskFieldSequence { get; }
+		public ImmutableArray<SMField> ParamFields { get; }
+		public ImmutableArray<MetaField> LocalFields { get; }
 	}
 }

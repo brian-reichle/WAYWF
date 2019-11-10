@@ -1,10 +1,10 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using WAYWF.Agent.Core;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.MetaDataApi;
 using WAYWF.Agent.Data;
@@ -122,17 +122,18 @@ namespace WAYWF.Agent.Core
 			return GetMethod(data, module, function.GetToken());
 		}
 
-		public MetaTypeBase[] GetTypes(ICorDebugTypeEnum types)
+		public ImmutableArray<MetaTypeBase> GetTypes(ICorDebugTypeEnum types)
 		{
-			var result = new MetaTypeBase[types.GetCount()];
+			var result = ImmutableArray.CreateBuilder<MetaTypeBase>(types.GetCount());
+			result.Count = result.Capacity;
 
-			for (var i = 0; i < result.Length; i++)
+			for (var i = 0; i < result.Count; i++)
 			{
 				types.Next(1, out var type);
 				result[i] = GetType(type);
 			}
 
-			return result;
+			return result.MoveToImmutable();
 		}
 
 		public MetaField[] GetFields(ICorDebugModule module, MetaDataToken classToken)
@@ -353,8 +354,8 @@ namespace WAYWF.Agent.Core
 		static unsafe MetaEnumType CreateEnumTypeDef(ModuleData data, ICorDebugModule module, MetaDataToken token, MetaResolvedType declaringType, string name)
 		{
 			var import = module.GetMetaDataImport();
-			var labelsList = new List<string>();
-			var valuesList = new List<ulong>();
+			var labelsList = ImmutableArray.CreateBuilder<string>();
+			var valuesList = ImmutableArray.CreateBuilder<ulong>();
 			var hEnum = IntPtr.Zero;
 			MetaKnownType underlyingType = null;
 			List<IntPtr> ptrList = null;
@@ -431,7 +432,7 @@ namespace WAYWF.Agent.Core
 			Array.Sort(values, labels);
 
 			var isFlags = module.HasFlagsAttribute(token);
-			return new MetaEnumType(data.Module, token, declaringType, name, underlyingType, isFlags, labels, values);
+			return new MetaEnumType(data.Module, token, declaringType, name, underlyingType, isFlags, labels.ToImmutableArray(), values.ToImmutableArray());
 		}
 
 		static unsafe ulong GetEnumValue(MetaKnownType type, IntPtr valuePtr)
@@ -595,11 +596,11 @@ namespace WAYWF.Agent.Core
 				var sig = MetaSignatureParser.ReadMethodDefSig(context, sigPtr, sigLen);
 				var localToken = GetLocalSigToken(module, rva);
 
-				MetaVariable[] localSig;
+				ImmutableArray<MetaVariable> localSig;
 
 				if (localToken.IsNil)
 				{
-					localSig = null;
+					localSig = ImmutableArray<MetaVariable>.Empty;
 				}
 				else
 				{

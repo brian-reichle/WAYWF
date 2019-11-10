@@ -1,6 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace WAYWF.Agent.Data
@@ -14,20 +14,20 @@ namespace WAYWF.Agent.Data
 			RuntimeILMapping ilMapping,
 			SourceRef source,
 			RuntimeValue @this,
-			MetaTypeBase[] typeArgs,
-			RuntimeValue[] arguments,
-			RuntimeValue[] locals,
-			string[] localNames)
+			ImmutableArray<MetaTypeBase> typeArgs,
+			ImmutableArray<RuntimeValue> arguments,
+			ImmutableArray<RuntimeValue> locals,
+			ImmutableArray<string> localNames)
 		{
 			Method = method ?? throw new ArgumentNullException(nameof(method));
 			ILOffset = ilOffset;
 			ILMapping = ilMapping;
 			Source = source;
 			This = @this;
-			TypeArgs = typeArgs.MakeReadOnly();
-			Arguments = arguments.MakeReadOnly();
-			Locals = locals.MakeReadOnly();
-			LocalNames = localNames.MakeReadOnly();
+			TypeArgs = typeArgs;
+			Arguments = arguments;
+			Locals = locals;
+			LocalNames = localNames;
 
 			if (method.DeclaringType != null)
 			{
@@ -44,10 +44,10 @@ namespace WAYWF.Agent.Data
 
 		public double? Duration { get; set; }
 
-		public ReadOnlyCollection<MetaTypeBase> TypeArgs { get; }
-		public ReadOnlyCollection<RuntimeValue> Arguments { get; }
-		public ReadOnlyCollection<RuntimeValue> Locals { get; }
-		public ReadOnlyCollection<string> LocalNames { get; }
+		public ImmutableArray<MetaTypeBase> TypeArgs { get; }
+		public ImmutableArray<RuntimeValue> Arguments { get; }
+		public ImmutableArray<RuntimeValue> Locals { get; }
+		public ImmutableArray<string> LocalNames { get; }
 
 		public override void Apply(IRuntimeFrameVisitor visitor) => visitor.Visit(this);
 	}
