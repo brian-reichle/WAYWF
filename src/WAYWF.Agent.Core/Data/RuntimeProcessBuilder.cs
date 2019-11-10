@@ -318,23 +318,14 @@ namespace WAYWF.Agent.Core
 
 		static RuntimeILMapping TranslateMapping(CorDebugMappingResult ilMapping)
 		{
-			switch (ilMapping)
+			return ilMapping switch
 			{
-				case CorDebugMappingResult.MAPPING_EXACT:
-					return RuntimeILMapping.Exact;
-
-				case CorDebugMappingResult.MAPPING_APPROXIMATE:
-					return RuntimeILMapping.Approximate;
-
-				case CorDebugMappingResult.MAPPING_PROLOG:
-					return RuntimeILMapping.Prolog;
-
-				case CorDebugMappingResult.MAPPING_EPILOG:
-					return RuntimeILMapping.Epilog;
-
-				default:
-					return RuntimeILMapping.Unmapped;
-			}
+				CorDebugMappingResult.MAPPING_EXACT => RuntimeILMapping.Exact,
+				CorDebugMappingResult.MAPPING_APPROXIMATE => RuntimeILMapping.Approximate,
+				CorDebugMappingResult.MAPPING_PROLOG => RuntimeILMapping.Prolog,
+				CorDebugMappingResult.MAPPING_EPILOG => RuntimeILMapping.Epilog,
+				_ => RuntimeILMapping.Unmapped,
+			};
 		}
 
 		RuntimeValue[] ExtractArguments(ICorDebugILFrame frame, ReadOnlyCollection<MetaVariable> paramDefs, int offset)
@@ -388,36 +379,15 @@ namespace WAYWF.Agent.Core
 
 		static RuntimeFrame GetInternalFrame(ICorDebugInternalFrame frame)
 		{
-			RuntimeInternalFrameKind kind;
-
-			switch (frame.GetFrameType())
+			return new RuntimeInternalFrame((frame.GetFrameType()) switch
 			{
-				case CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION:
-					kind = RuntimeInternalFrameKind.AppDomainTransition;
-					break;
-
-				case CorDebugInternalFrameType.STUBFRAME_INTERNALCALL:
-					kind = RuntimeInternalFrameKind.InternalCall;
-					break;
-
-				case CorDebugInternalFrameType.STUBFRAME_LIGHTWEIGHT_FUNCTION:
-					kind = RuntimeInternalFrameKind.LightWeightFunction;
-					break;
-
-				case CorDebugInternalFrameType.STUBFRAME_M2U:
-					kind = RuntimeInternalFrameKind.ManagedToUnmanaged;
-					break;
-
-				case CorDebugInternalFrameType.STUBFRAME_U2M:
-					kind = RuntimeInternalFrameKind.UnmanagedToManaged;
-					break;
-
-				default:
-					kind = RuntimeInternalFrameKind.Unknown;
-					break;
-			}
-
-			return new RuntimeInternalFrame(kind);
+				CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION => RuntimeInternalFrameKind.AppDomainTransition,
+				CorDebugInternalFrameType.STUBFRAME_INTERNALCALL => RuntimeInternalFrameKind.InternalCall,
+				CorDebugInternalFrameType.STUBFRAME_LIGHTWEIGHT_FUNCTION => RuntimeInternalFrameKind.LightWeightFunction,
+				CorDebugInternalFrameType.STUBFRAME_M2U => RuntimeInternalFrameKind.ManagedToUnmanaged,
+				CorDebugInternalFrameType.STUBFRAME_U2M => RuntimeInternalFrameKind.UnmanagedToManaged,
+				_ => RuntimeInternalFrameKind.Unknown,
+			});
 		}
 
 		RuntimeBlockingObject[] GetBlockingObjects(ICorDebugBlockingObjectEnum blockingObjects)
@@ -439,22 +409,12 @@ namespace WAYWF.Agent.Core
 
 			((ICorDebugHeapValue3)value).GetThreadOwningMonitorLock(out var thread, out var _);
 
-			RuntimeBlockingReason reason;
-
-			switch (obj.blockingReason)
+			var reason = obj.blockingReason switch
 			{
-				case CorDebugBlockingReason.BLOCKING_MONITOR_CRITICAL_SECTION:
-					reason = RuntimeBlockingReason.Enter;
-					break;
-
-				case CorDebugBlockingReason.BLOCKING_MONITOR_EVENT:
-					reason = RuntimeBlockingReason.Wait;
-					break;
-
-				default:
-					reason = RuntimeBlockingReason.Unknown;
-					break;
-			}
+				CorDebugBlockingReason.BLOCKING_MONITOR_CRITICAL_SECTION => RuntimeBlockingReason.Enter,
+				CorDebugBlockingReason.BLOCKING_MONITOR_EVENT => RuntimeBlockingReason.Wait,
+				_ => RuntimeBlockingReason.Unknown,
+			};
 
 			return new RuntimeBlockingObject(
 				_objects.GetValue(value),

@@ -40,12 +40,10 @@ namespace WAYWF.Agent.Core.Win32
 
 		public static unsafe void GetUser(this ProcessHandle handle, out string username, out string domainname)
 		{
-			using (var token = handle.OpenProcessToken())
-			using (var buffer = token.GetTokenInformation(TOKEN_INFORMATION_CLASS.TokenUser))
-			{
-				var user = buffer.Read<TOKEN_USER>(0);
-				LookupAccountSid(user.User.Sid, out username, out domainname);
-			}
+			using var token = handle.OpenProcessToken();
+			using var buffer = token.GetTokenInformation(TOKEN_INFORMATION_CLASS.TokenUser);
+			var user = buffer.Read<TOKEN_USER>(0);
+			LookupAccountSid(user.User.Sid, out username, out domainname);
 		}
 
 		public static bool IsAlive(this ProcessHandle handle)

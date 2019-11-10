@@ -23,38 +23,36 @@ namespace WAYWF.Api
 
 			var info = CreateStartInfo(processId, is32bit, errorOutCallback != null, config);
 
-			using (var process = new Process())
+			using var process = new Process();
+			process.StartInfo = info;
+
+			if (errorOutCallback != null)
 			{
-				process.StartInfo = info;
-
-				if (errorOutCallback != null)
+				process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
 				{
-					process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
-					{
-						errorOutCallback(e.Data);
-					};
-				}
-
-				try
-				{
-					process.Start();
-				}
-				catch (Win32Exception ex) when (ex.NativeErrorCode == Win32.Win32ErrorCodes.ERROR_FILE_NOT_FOUND)
-				{
-					errorOutCallback?.Invoke("Error starting '" + info.FileName + "', file not found.");
-					return new CaptureResult(string.Empty, int.MinValue);
-				}
-
-				if (errorOutCallback != null)
-				{
-					process.BeginErrorReadLine();
-				}
-
-				var stdOutTaskTask = process.StandardOutput.ReadToEndAsync();
-				var resultTask = process.WaitForExitAsync();
-				await Task.WhenAll(stdOutTaskTask, resultTask).ConfigureAwait(false);
-				return new CaptureResult(stdOutTaskTask.Result, resultTask.Result);
+					errorOutCallback(e.Data);
+				};
 			}
+
+			try
+			{
+				process.Start();
+			}
+			catch (Win32Exception ex) when (ex.NativeErrorCode == Win32.Win32ErrorCodes.ERROR_FILE_NOT_FOUND)
+			{
+				errorOutCallback?.Invoke("Error starting '" + info.FileName + "', file not found.");
+				return new CaptureResult(string.Empty, int.MinValue);
+			}
+
+			if (errorOutCallback != null)
+			{
+				process.BeginErrorReadLine();
+			}
+
+			var stdOutTaskTask = process.StandardOutput.ReadToEndAsync();
+			var resultTask = process.WaitForExitAsync();
+			await Task.WhenAll(stdOutTaskTask, resultTask).ConfigureAwait(false);
+			return new CaptureResult(stdOutTaskTask.Result, resultTask.Result);
 		}
 
 		static ProcessStartInfo CreateStartInfo(int processId, bool is32bit, bool redirectError, CaptureConfig config)
