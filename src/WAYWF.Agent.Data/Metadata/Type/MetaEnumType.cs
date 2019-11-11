@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
 
@@ -7,12 +8,10 @@ namespace WAYWF.Agent.Data
 {
 	public sealed class MetaEnumType : MetaResolvedType
 	{
-		public MetaEnumType(MetaModule module, MetaDataToken token, MetaResolvedType declaringType, string name, MetaKnownType underlyingType, bool isFlags, string[] labels, ulong[] values)
+		public MetaEnumType(MetaModule module, MetaDataToken token, MetaResolvedType declaringType, string name, MetaKnownType underlyingType, bool isFlags, ImmutableArray<string> labels, ImmutableArray<ulong> values)
 			: base(module, token, declaringType, name, 0)
 		{
 			if (underlyingType == null) throw new ArgumentNullException(nameof(underlyingType));
-			if (labels == null) throw new ArgumentNullException(nameof(labels));
-			if (values == null) throw new ArgumentNullException(nameof(values));
 			if (labels.Length != values.Length) throw new ArgumentException("length mismatch.");
 
 			UnderlyingType = underlyingType;
@@ -33,7 +32,7 @@ namespace WAYWF.Agent.Data
 
 		string FormatEnum(ulong value)
 		{
-			var index = Array.BinarySearch(_values, value);
+			var index = _values.BinarySearch(value);
 			return index < 0 ? value.ToString(CultureInfo.InvariantCulture) : _labels[index];
 		}
 
@@ -105,7 +104,7 @@ namespace WAYWF.Agent.Data
 		}
 
 		readonly bool _isFlags;
-		readonly string[] _labels;
-		readonly ulong[] _values;
+		readonly ImmutableArray<string> _labels;
+		readonly ImmutableArray<ulong> _values;
 	}
 }

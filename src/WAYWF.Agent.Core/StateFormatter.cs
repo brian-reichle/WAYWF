@@ -1,7 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -424,7 +424,7 @@ namespace WAYWF.Agent.Core
 
 			var parameters = signature.Parameters;
 
-			for (var i = 0; i < parameters.Count; i++)
+			for (var i = 0; i < parameters.Length; i++)
 			{
 				WriteVariable("param", pendingTask, parameters[i], pendingTask.ParameterValues[i], null);
 			}
@@ -432,7 +432,7 @@ namespace WAYWF.Agent.Core
 			var locals = pendingTask.Descriptor.LocalFields;
 			var context = new SMContext(pendingTask);
 
-			for (var i = 0; i < locals.Count; i++)
+			for (var i = 0; i < locals.Length; i++)
 			{
 				WriteVariable("local", context, locals[i].Type, pendingTask.LocalValues[i], locals[i].Name);
 			}
@@ -563,21 +563,21 @@ namespace WAYWF.Agent.Core
 			var parameters = signature.Parameters;
 			var arguments = frame.Arguments;
 
-			for (var i = 0; i < parameters.Count; i++)
+			for (var i = 0; i < parameters.Length; i++)
 			{
 				WriteVariable("param", frame, parameters[i], arguments[i], null);
 			}
 
 			var locals = frame.Locals;
 
-			if (locals.Count > 0)
+			if (locals.Length > 0)
 			{
 				var localDefs = frame.Method.Locals;
 				var names = frame.LocalNames;
 
-				for (var i = 0; i < frame.Locals.Count; i++)
+				for (var i = 0; i < frame.Locals.Length; i++)
 				{
-					WriteVariable("local", frame, localDefs[i], locals[i], names.Count > i ? names[i] : null);
+					WriteVariable("local", frame, localDefs[i], locals[i], names.Length > i ? names[i] : null);
 				}
 			}
 
@@ -637,7 +637,7 @@ namespace WAYWF.Agent.Core
 			}
 			else
 			{
-				_formatter.TypeArgs = null;
+				_formatter.TypeArgs = ImmutableArray<MetaTypeBase>.Empty;
 				_formatter.MethodArgsStart = 0;
 			}
 		}
@@ -740,8 +740,8 @@ namespace WAYWF.Agent.Core
 			}
 
 			// Pretend that all type arguments are type type arguments.
-			public int StartOfMethodArgs => _task.TypeArgs.Count;
-			public ReadOnlyCollection<MetaTypeBase> TypeArgs => _task.TypeArgs;
+			public int StartOfMethodArgs => _task.TypeArgs.Length;
+			public ImmutableArray<MetaTypeBase> TypeArgs => _task.TypeArgs;
 
 			readonly PendingStateMachineTask _task;
 		}

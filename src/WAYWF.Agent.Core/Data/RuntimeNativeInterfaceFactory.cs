@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
+using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.Win32;
@@ -15,16 +16,17 @@ namespace WAYWF.Agent.Core
 			_process = process;
 		}
 
-		public RuntimeNativeInterface[] GetInterfaces(CORDB_ADDRESS[] interfacePointers)
+		public ImmutableArray<RuntimeNativeInterface> GetInterfaces(CORDB_ADDRESS[] interfacePointers)
 		{
-			var result = new RuntimeNativeInterface[interfacePointers.Length];
+			var result = ImmutableArray.CreateBuilder<RuntimeNativeInterface>(interfacePointers.Length);
+			result.Count = result.Capacity;
 
-			for (var i = 0; i < result.Length; i++)
+			for (var i = 0; i < result.Count; i++)
 			{
 				result[i] = GetInterface(interfacePointers[i]);
 			}
 
-			return result;
+			return result.MoveToImmutable();
 		}
 
 		public RuntimeNativeInterface GetInterface(CORDB_ADDRESS interfacePointer)

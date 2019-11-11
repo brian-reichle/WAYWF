@@ -1,9 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.Win32;
 using WAYWF.Agent.Data;
@@ -53,8 +51,8 @@ namespace WAYWF.Agent.Core
 				_appDomains,
 				_threads,
 				_sourceCache.GetAllDocuments(),
-				_objects.Values.ToArray(),
-				_pendingTasks ?? Array.Empty<PendingStateMachineTask>());
+				_objects.Values.ToImmutableArray(),
+				_pendingTasks);
 		}
 
 		public void MarkStartTime()
@@ -73,23 +71,25 @@ namespace WAYWF.Agent.Core
 				RuntimeWindowLoader.Load(handle.Pid));
 		}
 
-		RuntimeAppDomain[] GetAppDomains()
+		ImmutableArray<RuntimeAppDomain> GetAppDomains()
 		{
 			var appDomainEnum = _process.EnumerateAppDomains();
-			var appDomains = new RuntimeAppDomain[appDomainEnum.GetCount()];
+			var appDomains = ImmutableArray.CreateBuilder<RuntimeAppDomain>(appDomainEnum.GetCount());
+			appDomains.Count = appDomains.Capacity;
 
-			for (var i = 0; i < appDomains.Length; i++)
+			for (var i = 0; i < appDomains.Count; i++)
 			{
 				appDomainEnum.Next(1, out var appDomain);
 				appDomains[i] = GetAppDomain(appDomain);
 			}
-			return appDomains;
+
+			return appDomains.MoveToImmutable();
 		}
 
 		RuntimeAppDomain GetAppDomain(ICorDebugAppDomain appDomain)
 		{
 			var assemblyEnum = appDomain.EnumerateAssemblies();
-			var allModules = new List<MetaModule>();
+			var allModules = ImmutableArray.CreateBuilder<MetaModule>();
 
 			while (assemblyEnum.Next(1, out var assembly))
 			{
@@ -104,21 +104,22 @@ namespace WAYWF.Agent.Core
 			return new RuntimeAppDomain(
 				appDomain.GetID(),
 				appDomain.GetName(),
-				allModules.ToArray());
+				allModules.ToImmutable());
 		}
 
-		RuntimeThread[] GetThreads()
+		ImmutableArray<RuntimeThread> GetThreads()
 		{
 			var threadEnum = _process.EnumerateThreads();
-			var threads = new RuntimeThread[threadEnum.GetCount()];
+			var threads = ImmutableArray.CreateBuilder<RuntimeThread>(threadEnum.GetCount());
+			threads.Count = threads.Capacity;
 
-			for (var i = 0; i < threads.Length; i++)
+			for (var i = 0; i < threads.Count; i++)
 			{
 				threadEnum.Next(1, out var thread);
 				threads[i] = GetThread(thread);
 			}
 
-			return threads;
+			return threads.MoveToImmutable();
 		}
 
 		RuntimeThread GetThread(ICorDebugThread thread)
@@ -127,14 +128,25 @@ namespace WAYWF.Agent.Core
 
 			if (chainEnum == null)
 			{
-				return new RuntimeThread(thread.GetID(), Translate(thread.GetUserState()), null, null);
+				return new RuntimeThread(
+					thread.GetID(),
+					Translate(thread.GetUserState()),
+					ImmutableArray<RuntimeFrameChain>.Empty,
+					ImmutableArray<RuntimeBlockingObject>.Empty);
 			}
 			else
 			{
 				var chains = GetChains(chainEnum);
-				var blockingObjects = thread is ICorDebugThread4 thread4 ? GetBlockingObjects(thread4.GetBlockingObjects()) : null;
 
-				return new RuntimeThread(thread.GetID(), Translate(thread.GetUserState()), chains, blockingObjects);
+				var blockingObjects = thread is ICorDebugThread4 thread4
+					? GetBlockingObjects(thread4.GetBlockingObjects())
+					: ImmutableArray<RuntimeBlockingObject>.Empty;
+
+				return new RuntimeThread(
+					thread.GetID(),
+					Translate(thread.GetUserState()),
+					chains,
+					blockingObjects);
 			}
 		}
 
@@ -183,17 +195,18 @@ namespace WAYWF.Agent.Core
 			return result;
 		}
 
-		RuntimeFrameChain[] GetChains(ICorDebugChainEnum chains)
+		ImmutableArray<RuntimeFrameChain> GetChains(ICorDebugChainEnum chains)
 		{
-			var result = new RuntimeFrameChain[chains.GetCount()];
+			var result = ImmutableArray.CreateBuilder<RuntimeFrameChain>(chains.GetCount());
+			result.Count = result.Capacity;
 
-			for (var i = 0; i < result.Length; i++)
+			for (var i = 0; i < result.Count; i++)
 			{
 				chains.Next(1, out var chain);
 				result[i] = GetChain(chain);
 			}
 
-			return result;
+			return result.MoveToImmutable();
 		}
 
 		RuntimeFrameChain GetChain(ICorDebugChain chain)
@@ -221,17 +234,18 @@ namespace WAYWF.Agent.Core
 			return new RuntimeFrameChain(reason, GetFrames(chain.EnumerateFrames()));
 		}
 
-		RuntimeFrame[] GetFrames(ICorDebugFrameEnum frames)
+		ImmutableArray<RuntimeFrame> GetFrames(ICorDebugFrameEnum frames)
 		{
-			var result = new RuntimeFrame[frames.GetCount()];
+			var result = ImmutableArray.CreateBuilder<RuntimeFrame>(frames.GetCount());
+			result.Count = result.Capacity;
 
-			for (var i = 0; i < result.Length; i++)
+			for (var i = 0; i < result.Count; i++)
 			{
 				frames.Next(1, out var frame);
 				result[i] = GetFrame(frame);
 			}
 
-			return result;
+			return result.MoveToImmutable();
 		}
 
 		RuntimeFrame GetFrame(ICorDebugFrame frame)
@@ -249,14 +263,17 @@ namespace WAYWF.Agent.Core
 		RuntimeFrame GetILFrame(ICorDebugILFrame frame)
 		{
 			var function = frame.GetFunction();
-			var typeArgs = frame is ICorDebugILFrame2 frame2 ? _cache.GetTypes(frame2.EnumerateTypeParameters()) : null;
+			var typeArgs = frame is ICorDebugILFrame2 frame2
+				? _cache.GetTypes(frame2.EnumerateTypeParameters())
+				: ImmutableArray<MetaTypeBase>.Empty;
+
 			var metaFunc = _cache.GetMethod(function);
 			var signature = metaFunc.Signature;
 
-			RuntimeValue[] paramValues;
+			ImmutableArray<RuntimeValue> paramValues;
 			RuntimeValue @this;
 
-			if (signature.Parameters.Count > 0)
+			if (signature.Parameters.Length > 0)
 			{
 				int offset;
 
@@ -276,15 +293,18 @@ namespace WAYWF.Agent.Core
 			}
 			else
 			{
-				paramValues = null;
+				paramValues = ImmutableArray<RuntimeValue>.Empty;
 				@this = null;
 			}
 
-			var localValues = metaFunc.Locals.Count > 0 ? ExtractLocals(frame, metaFunc.Locals) : null;
+			var localValues = metaFunc.Locals.Length > 0
+				? ExtractLocals(frame, metaFunc.Locals)
+				: ImmutableArray<RuntimeValue>.Empty;
+
 			var ilMapping = frame.GetIP(out var ilOffset);
 
 			SourceRef source;
-			string[] localNames;
+			ImmutableArray<string> localNames;
 
 			if (SouldCaptureSource(ilMapping))
 			{
@@ -292,12 +312,12 @@ namespace WAYWF.Agent.Core
 				var token = function.GetToken();
 
 				source = _sourceCache.GetSourceRef(module, token, ilOffset);
-				localNames = _sourceCache.GetLocalNames(module, token, ilOffset, metaFunc.Locals.Count);
+				localNames = _sourceCache.GetLocalNames(module, token, ilOffset, metaFunc.Locals.Length);
 			}
 			else
 			{
 				source = null;
-				localNames = null;
+				localNames = ImmutableArray<string>.Empty;
 			}
 
 			var ilFrame = new RuntimeILFrame(
@@ -328,11 +348,12 @@ namespace WAYWF.Agent.Core
 			};
 		}
 
-		RuntimeValue[] ExtractArguments(ICorDebugILFrame frame, ReadOnlyCollection<MetaVariable> paramDefs, int offset)
+		ImmutableArray<RuntimeValue> ExtractArguments(ICorDebugILFrame frame, ImmutableArray<MetaVariable> paramDefs, int offset)
 		{
-			var paramValues = new RuntimeValue[paramDefs.Count];
+			var paramValues = ImmutableArray.CreateBuilder<RuntimeValue>(paramDefs.Length);
+			paramValues.Count = paramDefs.Length;
 
-			for (var i = 0; i < paramValues.Length; i++)
+			for (var i = 0; i < paramValues.Count; i++)
 			{
 				var value = frame.GetArgument(i + offset);
 
@@ -342,14 +363,15 @@ namespace WAYWF.Agent.Core
 				}
 			}
 
-			return paramValues;
+			return paramValues.MoveToImmutable();
 		}
 
-		RuntimeValue[] ExtractLocals(ICorDebugILFrame frame, ReadOnlyCollection<MetaVariable> localDefs)
+		ImmutableArray<RuntimeValue> ExtractLocals(ICorDebugILFrame frame, ImmutableArray<MetaVariable> localDefs)
 		{
-			var localValues = new RuntimeValue[localDefs.Count];
+			var localValues = ImmutableArray.CreateBuilder<RuntimeValue>(localDefs.Length);
+			localValues.Count = localDefs.Length;
 
-			for (var i = 0; i < localValues.Length; i++)
+			for (var i = 0; i < localValues.Count; i++)
 			{
 				var value = frame.GetLocalVariable(i);
 
@@ -359,7 +381,7 @@ namespace WAYWF.Agent.Core
 				}
 			}
 
-			return localValues;
+			return localValues.MoveToImmutable();
 		}
 
 		static bool SouldCaptureSource(CorDebugMappingResult ilMapping)
@@ -390,17 +412,18 @@ namespace WAYWF.Agent.Core
 			});
 		}
 
-		RuntimeBlockingObject[] GetBlockingObjects(ICorDebugBlockingObjectEnum blockingObjects)
+		ImmutableArray<RuntimeBlockingObject> GetBlockingObjects(ICorDebugBlockingObjectEnum blockingObjects)
 		{
-			var result = new RuntimeBlockingObject[blockingObjects.GetCount()];
+			var result = ImmutableArray.CreateBuilder<RuntimeBlockingObject>(blockingObjects.GetCount());
+			result.Count = result.Capacity;
 
-			for (var i = 0; i < result.Length; i++)
+			for (var i = 0; i < result.Count; i++)
 			{
 				blockingObjects.Next(1, out var tmp);
 				result[i] = GetBlockingObject(tmp);
 			}
 
-			return result;
+			return result.MoveToImmutable();
 		}
 
 		RuntimeBlockingObject GetBlockingObject(CorDebugBlockingObject obj)
@@ -439,9 +462,9 @@ namespace WAYWF.Agent.Core
 
 		RuntimeNative _native;
 		Version _clrVersion;
-		RuntimeAppDomain[] _appDomains;
-		RuntimeThread[] _threads;
-		PendingStateMachineTask[] _pendingTasks;
+		ImmutableArray<RuntimeAppDomain> _appDomains;
+		ImmutableArray<RuntimeThread> _threads;
+		ImmutableArray<PendingStateMachineTask> _pendingTasks = ImmutableArray<PendingStateMachineTask>.Empty;
 		long _start;
 		readonly CaptureOptions _options;
 		readonly ICorDebugProcess _process;

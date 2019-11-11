@@ -1,5 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
+using System.Collections.Immutable;
 using System.Reflection;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
@@ -16,7 +17,7 @@ namespace WAYWF.Agent.Core
 			return result;
 		}
 
-		public static MetaVariable[] ReadLocalSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
+		public static ImmutableArray<MetaVariable> ReadLocalSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
 		{
 			var sig = new Signature(context, sigPtr, sigLen);
 			var result = ReadLocalSig(sig);
@@ -76,10 +77,12 @@ namespace WAYWF.Agent.Core
 			callingConvention |= mask & (CallingConventions)preamble;
 
 			var paramCount = sig.ReadCompressedUInt();
-			var parameters = new MetaVariable[paramCount];
+			var parameters = ImmutableArray.CreateBuilder<MetaVariable>(paramCount);
+			parameters.Count = paramCount;
+
 			var resultParam = ReadParameter(sig, null);
 
-			for (var i = 0; i < parameters.Length; i++)
+			for (var i = 0; i < parameters.Count; i++)
 			{
 				if ((CorElementType)sig.PeekByte() == CorElementType.ELEMENT_TYPE_SENTINEL)
 				{
@@ -91,22 +94,23 @@ namespace WAYWF.Agent.Core
 				parameters[i] = ReadParameter(sig, isTopLevel ? i + 1 : default(int?));
 			}
 
-			return new MetaMethodSignature(callingConvention, genParamCount, resultParam, parameters);
+			return new MetaMethodSignature(callingConvention, genParamCount, resultParam, parameters.MoveToImmutable());
 		}
 
-		static MetaVariable[] ReadLocalSig(Signature sig)
+		static ImmutableArray<MetaVariable> ReadLocalSig(Signature sig)
 		{
 			if (sig.ReadByte() != LOCAL_SIG) throw new InvalidSignatureException();
 
 			var count = sig.ReadCompressedUInt();
-			var locals = new MetaVariable[count];
+			var locals = ImmutableArray.CreateBuilder<MetaVariable>(count);
+			locals.Count = count;
 
-			for (var i = 0; i < locals.Length; i++)
+			for (var i = 0; i < locals.Count; i++)
 			{
 				locals[i] = ReadLocal(sig, i);
 			}
 
-			return locals;
+			return locals.ToImmutable();
 		}
 
 		static MetaTypeBase ReadFieldType(Signature sig)
@@ -216,14 +220,15 @@ namespace WAYWF.Agent.Core
 			sig.ReadByte();
 			var baseType = ReadClass(sig);
 			var genArgCount = sig.ReadCompressedUInt();
-			var genArguments = new MetaTypeBase[genArgCount];
+			var genArguments = ImmutableArray.CreateBuilder<MetaTypeBase>(genArgCount);
+			genArguments.Count = genArgCount;
 
 			for (var i = 0; i < genArgCount; i++)
 			{
 				genArguments[i] = ReadTypeCore(sig);
 			}
 
-			return new MetaGenType(baseType, genArguments);
+			return new MetaGenType(baseType, genArguments.MoveToImmutable());
 		}
 
 		static MetaType ReadFunctionPTR(Signature sig)

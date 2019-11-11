@@ -1,5 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text;
 using WAYWF.Agent.Data;
 
@@ -7,7 +7,7 @@ namespace WAYWF.Agent.Core
 {
 	sealed class MetaFormatter : IMetaTypeVisitor
 	{
-		public IList<MetaTypeBase> TypeArgs { get; set; }
+		public ImmutableArray<MetaTypeBase> TypeArgs { get; set; } = ImmutableArray<MetaTypeBase>.Empty;
 		public int MethodArgsStart { get; set; }
 
 		public override string ToString() => _builder.ToString();
@@ -25,7 +25,7 @@ namespace WAYWF.Agent.Core
 			type.Apply(this);
 		}
 
-		public void Write(MetaResolvedType type, IList<MetaTypeBase> overrideTypeArgs)
+		public void Write(MetaResolvedType type, ImmutableArray<MetaTypeBase> overrideTypeArgs)
 		{
 			int typeArgStart;
 
@@ -42,7 +42,7 @@ namespace WAYWF.Agent.Core
 
 			var typeArgCount = type.TypeArgs - typeArgStart;
 
-			if (typeArgCount == 0 || overrideTypeArgs == null)
+			if (typeArgCount == 0 || overrideTypeArgs.Length == 0)
 			{
 				_builder.Append(type.Name);
 			}
@@ -53,11 +53,11 @@ namespace WAYWF.Agent.Core
 			}
 		}
 
-		public void Write(MetaUnresolvedType type, IList<MetaTypeBase> overrideTypeArgs)
+		public void Write(MetaUnresolvedType type, ImmutableArray<MetaTypeBase> overrideTypeArgs)
 		{
 			if (type.DeclaringType != null)
 			{
-				Write(type.DeclaringType, null);
+				Write(type.DeclaringType, ImmutableArray<MetaTypeBase>.Empty);
 				_builder.Append('.');
 			}
 
@@ -65,7 +65,7 @@ namespace WAYWF.Agent.Core
 
 			if (overrideTypeArgs != null)
 			{
-				WriteTypeArgs(overrideTypeArgs, 0, overrideTypeArgs.Count);
+				WriteTypeArgs(overrideTypeArgs, 0, overrideTypeArgs.Length);
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace WAYWF.Agent.Core
 			}
 		}
 
-		void WriteTypeArgs(IList<MetaTypeBase> typeArgs, int start, int count)
+		void WriteTypeArgs(ImmutableArray<MetaTypeBase> typeArgs, int start, int count)
 		{
 			var end = start + count;
 
@@ -170,7 +170,7 @@ namespace WAYWF.Agent.Core
 			if (metaType.Method)
 			{
 				lowerBound = MethodArgsStart;
-				upperBound = TypeArgs.Count;
+				upperBound = TypeArgs.Length;
 			}
 			else
 			{
@@ -200,15 +200,15 @@ namespace WAYWF.Agent.Core
 			}
 		}
 
-		void IMetaTypeVisitor.VisitEnum(MetaEnumType metaType) => Write(metaType, null);
-		void IMetaTypeVisitor.VisitGCHandle(MetaGCHandleType metaType) => Write(metaType, null);
-		void IMetaTypeVisitor.VisitKnownType(MetaKnownType metaType) => Write(metaType, null);
-		void IMetaTypeVisitor.VisitNullable(MetaNullableType metaType) => Write(metaType, null);
-		void IMetaTypeVisitor.VisitSimpleResolved(MetaSimpleResolvedType metaType) => Write(metaType, null);
+		void IMetaTypeVisitor.VisitEnum(MetaEnumType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
+		void IMetaTypeVisitor.VisitGCHandle(MetaGCHandleType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
+		void IMetaTypeVisitor.VisitKnownType(MetaKnownType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
+		void IMetaTypeVisitor.VisitNullable(MetaNullableType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
+		void IMetaTypeVisitor.VisitSimpleResolved(MetaSimpleResolvedType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
 
 		void IMetaTypeVisitor.VisitUnresolved(MetaUnresolvedType metaType)
 		{
-			Write(metaType, null);
+			Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
 		}
 
 		#endregion

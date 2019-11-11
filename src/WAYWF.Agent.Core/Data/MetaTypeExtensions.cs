@@ -1,6 +1,6 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
 
@@ -10,7 +10,7 @@ namespace WAYWF.Agent.Core
 	{
 		public static bool TryGetValue(this MetaTypeBase type, ICorDebugValue value, out object result)
 		{
-			var tmp = type.Apply(Visitor.Instance, new Context(value, null));
+			var tmp = type.Apply(Visitor.Instance, new Context(value, ImmutableArray<MetaTypeBase>.Empty));
 
 			if (tmp == UnknownValue)
 			{
@@ -103,7 +103,7 @@ namespace WAYWF.Agent.Core
 			{
 				var typeArgs = context.TypeArgs;
 
-				if (typeArgs.Count != 1)
+				if (typeArgs.Length != 1)
 				{
 					throw new InvalidMetaDataException("Nullable should have exactly 1 type arg");
 				}
@@ -124,7 +124,7 @@ namespace WAYWF.Agent.Core
 					return UnknownValue;
 				}
 
-				return innerType.Apply(this, new Context(valueValue, null));
+				return innerType.Apply(this, new Context(valueValue, ImmutableArray<MetaTypeBase>.Empty));
 			}
 
 			public object VisitPointer(MetaPointerType metaType, Context context) => UnknownValue;
@@ -185,14 +185,14 @@ namespace WAYWF.Agent.Core
 
 		struct Context
 		{
-			public Context(ICorDebugValue value, ReadOnlyCollection<MetaTypeBase> typeArgs)
+			public Context(ICorDebugValue value, ImmutableArray<MetaTypeBase> typeArgs)
 			{
 				Value = value;
 				TypeArgs = typeArgs;
 			}
 
 			public ICorDebugValue Value { get; }
-			public ReadOnlyCollection<MetaTypeBase> TypeArgs { get; }
+			public ImmutableArray<MetaTypeBase> TypeArgs { get; }
 		}
 	}
 }
