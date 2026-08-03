@@ -39,7 +39,21 @@ namespace WAYWF.UI.VirtualFile
 		static byte[] GetBytes(Stream stream)
 		{
 			var result = new byte[stream.Length];
-			stream.Read(result, 0, result.Length);
+			var start = 0;
+
+			while (start < result.Length)
+			{
+				var read = stream.Read(result, start, result.Length - start);
+
+				if (read == 0)
+				{
+					Array.Resize(ref result, start);
+					break;
+				}
+
+				start += read;
+			}
+
 			return result;
 		}
 	}
