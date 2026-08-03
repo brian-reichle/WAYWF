@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="WAYWF.Agent.Core/WAYWF.Agent.Core.csproj" />
+  <Project Path="WAYWF.Agent.Data/WAYWF.Agent.Data.csproj" />
+  <Project Path="WAYWF.Agent.Shared/WAYWF.Agent.Shared.shproj" />
+  <Project Path="WAYWF.Agent.x86/WAYWF.Agent.x86.csproj" />
+  <Project Path="WAYWF.Agent/WAYWF.Agent.csproj" />
+  <Project Path="WAYWF.Api/WAYWF.Api.csproj" />
+  <Project Path="WAYWF.Console/WAYWF.Console.csproj" />
+  <Project Path="WAYWF.Options/WAYWF.Options.shproj" />
+  <Project Path="WAYWF.UI/WAYWF.UI.csproj" />
+</Solution>
