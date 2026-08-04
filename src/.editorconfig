@@ -26,10 +26,6 @@ dotnet_diagnostic.SA0001.severity = none
 # We don't use `this.` unless it's needed to resolve ambiguity.
 dotnet_diagnostic.SA1101.severity = none
 
-# SA1129: Do not use default value type constructor
-# TODO: FIX
-dotnet_diagnostic.SA1129.severity = none
-
 # SA1201: Elements should appear in the correct order
 # Fields should be near the end of the containing type
 # (just before any nested types).

@@ -14,7 +14,7 @@ namespace WAYWF.UI.Win32
 	{
 		public static int? GetProcessIDAtPoint(int x, int y)
 		{
-			var p = new POINT();
+			var p = default(POINT);
 			p.X = x;
 			p.Y = y;
 
@@ -48,7 +48,7 @@ namespace WAYWF.UI.Win32
 		[SuppressMessage("Microsoft.Usage", "CA2219:DoNotRaiseExceptionsInExceptionClauses")]
 		public static BitmapSource GetIcon(string extension)
 		{
-			var info = new SHFILEINFO();
+			var info = default(SHFILEINFO);
 			BitmapSource result;
 
 			RuntimeHelpers.PrepareConstrainedRegions();

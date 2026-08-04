@@ -14,7 +14,7 @@ namespace WAYWF.Agent.Core
 		public static unsafe ImmutableArray<RuntimeWindow> Load(int pid)
 		{
 			var host = new Host(pid);
-			var handle = new GCHandle();
+			var handle = default(GCHandle);
 
 			RuntimeHelpers.PrepareConstrainedRegions();
 			try

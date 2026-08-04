@@ -10,7 +10,7 @@ namespace WAYWF.Agent.Core
 		public static unsafe bool GetAssemblyProps(this IMetaDataAssemblyImport aImport, out string name, out Version version, out string locale, out long? publicKeyToken)
 		{
 			int size;
-			var info = new ASSEMBLYMETADATA();
+			var info = default(ASSEMBLYMETADATA);
 
 			var hr = aImport.GetAssemblyFromScope(out var assemblyToken);
 
@@ -76,7 +76,7 @@ namespace WAYWF.Agent.Core
 		public static unsafe bool GetAssemblyRefProps(this IMetaDataAssemblyImport aImport, MetaDataToken assemblyRefToken, out string name, out Version version, out string locale, out long? publicKeyToken)
 		{
 			int size;
-			var info = new ASSEMBLYMETADATA();
+			var info = default(ASSEMBLYMETADATA);
 
 			IntPtr publicKeyPtr;
 			int publicKeyLen;
