@@ -106,10 +106,6 @@ dotnet_diagnostic.SA1516.severity = none
 # TODO: FIX
 dotnet_diagnostic.SA1629.severity = none
 
-# SA1633: File should have header
-# TODO: FIX
-dotnet_diagnostic.SA1633.severity = none
-
 # SX1309: Field names must begin with underscore
 dotnet_diagnostic.SX1309.severity = warning
 
