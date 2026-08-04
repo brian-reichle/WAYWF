@@ -102,10 +102,6 @@ dotnet_diagnostic.SA1515.severity = none
 # for single-line members.
 dotnet_diagnostic.SA1516.severity = none
 
-# SA1629: Documentation text should end with a period
-# TODO: FIX
-dotnet_diagnostic.SA1629.severity = none
-
 # SX1309: Field names must begin with underscore
 dotnet_diagnostic.SX1309.severity = warning
 

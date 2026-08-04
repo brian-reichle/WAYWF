@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace WAYWF.Agent.Core
 {
 	/// <summary>
-	/// The shit hit the fan!
+	/// The shit hit the fan!.
 	/// </summary>
 	[Serializable]
 	sealed class ShitFanContactException : Exception
