@@ -59,7 +59,7 @@ namespace WAYWF.UI.Win32
 					extension,
 					FileAttributes.FILE_ATTRIBUTE_NORMAL,
 					ref info,
-					Marshal.SizeOf(typeof(SHFILEINFO)),
+					Marshal.SizeOf<SHFILEINFO>(),
 					SHGFI.SHGFI_ICON | SHGFI.SHGFI_SMALLICON | SHGFI.SHGFI_USEFILEATTRIBUTES) == IntPtr.Zero)
 				{
 					throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());

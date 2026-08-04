@@ -7,7 +7,7 @@ namespace WAYWF.Agent.Core.Win32
 {
 	sealed class TokenHandle : SafeHandle
 	{
-		TokenHandle()
+		public TokenHandle()
 			: base(IntPtr.Zero, true)
 		{
 		}

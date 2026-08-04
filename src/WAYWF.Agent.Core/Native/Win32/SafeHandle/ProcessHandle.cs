@@ -8,7 +8,7 @@ namespace WAYWF.Agent.Core.Win32
 {
 	sealed class ProcessHandle : SafeHandle
 	{
-		ProcessHandle()
+		public ProcessHandle()
 			: base(INVALID_HANDLE, true)
 		{
 		}
