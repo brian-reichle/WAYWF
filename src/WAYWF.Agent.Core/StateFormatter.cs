@@ -269,10 +269,7 @@ namespace WAYWF.Agent.Core
 				_writer.WriteAttributeString("name", name);
 			}
 
-			if (value != null)
-			{
-				value.Apply(_localValueFormatter);
-			}
+			value?.Apply(_localValueFormatter);
 
 			_writer.WriteEndElement();
 		}
@@ -402,10 +399,7 @@ namespace WAYWF.Agent.Core
 			{
 				_writer.WriteStartElement("this");
 
-				if (pendingTask.ThisValue != null)
-				{
-					pendingTask.ThisValue.Apply(_localValueFormatter);
-				}
+				pendingTask.ThisValue?.Apply(_localValueFormatter);
 
 				_writer.WriteEndElement();
 			}
@@ -414,10 +408,7 @@ namespace WAYWF.Agent.Core
 			{
 				_writer.WriteStartElement("task");
 
-				if (pendingTask.TaskValue != null)
-				{
-					pendingTask.TaskValue.Apply(_localValueFormatter);
-				}
+				pendingTask.TaskValue?.Apply(_localValueFormatter);
 
 				_writer.WriteEndElement();
 			}
