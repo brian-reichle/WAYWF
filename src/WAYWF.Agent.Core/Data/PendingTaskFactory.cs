@@ -85,11 +85,11 @@ namespace WAYWF.Agent.Core
 					localValues[i] = field == null ? null : GetValue(objectValue, field.Token);
 				}
 
-				if (stateValue != null && stateValue.Value is int && !descriptor.MoveNextMethod.IsNil)
+				if (stateValue != null && stateValue.Value is int v && !descriptor.MoveNextMethod.IsNil)
 				{
 					var cl = value.GetClass();
 					var module = cl.GetModule();
-					state = _sourceProvider.GetAsyncSourceRef(module, descriptor.MoveNextMethod, (int)stateValue.Value);
+					state = _sourceProvider.GetAsyncSourceRef(module, descriptor.MoveNextMethod, v);
 				}
 			}
 

@@ -20,7 +20,7 @@ namespace WAYWF.Agent.Data
 		public bool IsNil => (_tokenId & 0x00FFFFFF) == 0;
 
 		public override int GetHashCode() => _tokenId.GetHashCode();
-		public override bool Equals(object obj) => obj is MetaDataToken && this == (MetaDataToken)obj;
+		public override bool Equals(object obj) => obj is MetaDataToken token && this == token;
 		public override string ToString() => _tokenId.ToString("X8", CultureInfo.InvariantCulture);
 		public bool Equals(MetaDataToken other) => this == other;
 
