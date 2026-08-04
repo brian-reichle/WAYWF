@@ -9,3 +9,7 @@ dotnet_diagnostic.CA1859.severity = none
 
 # CA2263: Prefer generic overload when type is known
 dotnet_diagnostic.CA2263.severity = warning
+
+# IDE0130: Namespace does not match folder structure
+# Matching the namespace to folder structure is too restrictive and unnecessary.
+dotnet_diagnostic.IDE0130.severity = none
