@@ -13,7 +13,3 @@ dotnet_diagnostic.CA2263.severity = warning
 # IDE0130: Namespace does not match folder structure
 # Matching the namespace to folder structure is too restrictive and unnecessary.
 dotnet_diagnostic.IDE0130.severity = none
-
-# WTG1018: Boolean literals as method arguments should be passed as named arguments.
-# TODO: Fix
-dotnet_diagnostic.WTG1018.severity = none

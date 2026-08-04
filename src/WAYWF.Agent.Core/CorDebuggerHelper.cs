@@ -18,7 +18,7 @@ namespace WAYWF.Agent.Core
 				AccessOptions.PROCESS_DUP_HANDLE |
 				AccessOptions.SYNCHRONIZE;
 
-			var handle = NativeMethods.OpenProcess(access, false, pid);
+			var handle = NativeMethods.OpenProcess(access, bInheritHandle: false, pid);
 
 			if (handle.IsInvalid)
 			{
