@@ -26,10 +26,6 @@ dotnet_diagnostic.SA0001.severity = none
 # We don't use `this.` unless it's needed to resolve ambiguity.
 dotnet_diagnostic.SA1101.severity = none
 
-# SA1119: Statement should not use unnecessary parenthesis
-# TODO: FIX
-dotnet_diagnostic.SA1119.severity = none
-
 # SA1124: Do not use regions
 # TODO: FIX
 dotnet_diagnostic.SA1124.severity = none

@@ -401,7 +401,7 @@ namespace WAYWF.Agent.Core
 
 		static RuntimeFrame GetInternalFrame(ICorDebugInternalFrame frame)
 		{
-			return new RuntimeInternalFrame((frame.GetFrameType()) switch
+			return new RuntimeInternalFrame(frame.GetFrameType() switch
 			{
 				CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION => RuntimeInternalFrameKind.AppDomainTransition,
 				CorDebugInternalFrameType.STUBFRAME_INTERNALCALL => RuntimeInternalFrameKind.InternalCall,

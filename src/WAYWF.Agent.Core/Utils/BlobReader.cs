@@ -28,7 +28,7 @@ namespace WAYWF.Agent.Core
 				throw new InvalidSignatureException();
 			}
 
-			return *(_buffer);
+			return *_buffer;
 		}
 
 		public byte ReadByte()
