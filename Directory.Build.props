@@ -17,7 +17,7 @@ CS1591 - Missing XML comment.
 		<Product>WAYWF</Product>
 		<Authors>Brian Reichle</Authors>
 		<Copyright>Copyright (C) Brian Reichle</Copyright>
-		<!-- If you update this version number, then don't forget to also update the app.manifest and .appveyor.yml version numbers. -->
+		<!-- If you update this version number, then don't forget to also update the app.manifest version number. -->
 		<Version>0.17.0</Version>
 
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
