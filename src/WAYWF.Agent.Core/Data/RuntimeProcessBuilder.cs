@@ -453,7 +453,7 @@ namespace WAYWF.Agent.Core
 
 			_callback.RegisterStepAction(
 				stepper,
-				delegate
+				obj =>
 				{
 					var end = Stopwatch.GetTimestamp();
 					rtFrame.Duration = (end - _start) * _tickDuration;

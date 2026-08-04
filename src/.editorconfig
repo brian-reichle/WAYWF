@@ -42,10 +42,6 @@ dotnet_diagnostic.SA1124.severity = none
 # TODO: FIX
 dotnet_diagnostic.SA1129.severity = none
 
-# SA1130: Use lambda syntax
-# TODO: FIX
-dotnet_diagnostic.SA1130.severity = none
-
 # SA1201: Elements should appear in the correct order
 # Fields should be near the end of the containing type
 # (just before any nested types).

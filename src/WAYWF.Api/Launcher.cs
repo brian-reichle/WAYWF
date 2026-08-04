@@ -28,10 +28,7 @@ namespace WAYWF.Api
 
 			if (errorOutCallback != null)
 			{
-				process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
-				{
-					errorOutCallback(e.Data);
-				};
+				process.ErrorDataReceived += (sender, e) => errorOutCallback(e.Data);
 			}
 
 			try
@@ -106,7 +103,7 @@ namespace WAYWF.Api
 			}
 			else
 			{
-				process.Exited += delegate
+				process.Exited += (sender, e) =>
 				{
 					source.TrySetResult(process.ExitCode);
 				};
