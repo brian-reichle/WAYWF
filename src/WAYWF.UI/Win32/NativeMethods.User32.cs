@@ -30,7 +30,6 @@ namespace WAYWF.UI.Win32
 		// HWND WindowFromPoint(
 		//     [in]  POINT Point
 		// );
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0")]
 		[DllImport("user32.dll")]
 		[SuppressUnmanagedCodeSecurity]
 		public static extern IntPtr WindowFromPoint(

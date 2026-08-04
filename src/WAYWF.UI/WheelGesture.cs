@@ -6,9 +6,7 @@ namespace WAYWF.UI
 {
 	sealed class WheelGesture : MouseGesture
 	{
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Referenced via xaml.")]
 		public static WheelGesture Up = new WheelGesture(true);
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Referenced via xaml.")]
 		public static WheelGesture Down = new WheelGesture(false);
 
 		WheelGesture(bool up)
