@@ -234,10 +234,7 @@ namespace WAYWF.Agent.Core
 				return null;
 			}
 
-			if (_binder == null)
-			{
-				_binder = (ISymUnmanagedBinder)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID.CLSID_CorSymBinder));
-			}
+			_binder ??= (ISymUnmanagedBinder)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID.CLSID_CorSymBinder));
 
 			var hr = _binder.GetReaderForFile(
 				module.GetMetaDataImport(),

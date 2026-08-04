@@ -291,11 +291,11 @@ namespace WAYWF.Agent.Core
 				}
 				else if (name == MetaNullableType.TypeName)
 				{
-					return data.Nullable ?? (data.Nullable = CreateNullable(data, import, token));
+					return data.Nullable ??= CreateNullable(data, import, token);
 				}
 				else if (name == MetaGCHandleType.TypeName)
 				{
-					return data.GCHandle ?? (data.GCHandle = CreateGCHandle(data, import, token));
+					return data.GCHandle ??= CreateGCHandle(data, import, token);
 				}
 			}
 
@@ -397,10 +397,7 @@ namespace WAYWF.Agent.Core
 					{
 						if (underlyingType == null)
 						{
-							if (ptrList == null)
-							{
-								ptrList = new List<IntPtr>();
-							}
+							ptrList ??= new List<IntPtr>();
 
 							ptrList.Add(valuePtr);
 						}

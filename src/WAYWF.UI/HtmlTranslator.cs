@@ -12,7 +12,7 @@ namespace WAYWF.UI
 	{
 		public const string TransformFilename = "waywf.xslt";
 
-		public static XslCompiledTransform Instance => _instance ?? (_instance = GetTransform());
+		public static XslCompiledTransform Instance => _instance ??= GetTransform();
 
 		public static void Transform(string xmlContent, Stream writeStream)
 		{
