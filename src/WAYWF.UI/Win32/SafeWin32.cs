@@ -45,7 +45,6 @@ namespace WAYWF.UI.Win32
 			return hMem;
 		}
 
-		[SuppressMessage("Microsoft.Usage", "CA2219:DoNotRaiseExceptionsInExceptionClauses")]
 		public static BitmapSource GetIcon(string extension)
 		{
 			var info = default(SHFILEINFO);
@@ -62,7 +61,12 @@ namespace WAYWF.UI.Win32
 					Marshal.SizeOf<SHFILEINFO>(),
 					SHGFI.SHGFI_ICON | SHGFI.SHGFI_SMALLICON | SHGFI.SHGFI_USEFILEATTRIBUTES) == IntPtr.Zero)
 				{
+#pragma warning disable CA2219 // Do not raise exceptions in finally clauses
+					// the reason for the CA2219 rule is that the new exception may hide
+					// the old exception. But the try block is empty so there is no scope
+					// for an 'old exception'.
 					throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+#pragma warning restore CA2219 // Do not raise exceptions in finally clauses
 				}
 
 				if (info.hIcon == IntPtr.Zero)
@@ -85,10 +89,14 @@ namespace WAYWF.UI.Win32
 			return result;
 		}
 
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "WAYWF.UI.Win32.NativeMethods.GetWindowThreadProcessId(System.IntPtr,System.Int32@)")]
 		static int GetOwningPid(IntPtr hWnd)
 		{
+#pragma warning disable CA1806 // Do not ignore method results
+			// GetWindowThreadProcessId does not return a HRESULT or error code,
+			// it returns the thread id. We don't care abouth the thread id,
+			// we only want the process id.
 			NativeMethods.GetWindowThreadProcessId(hWnd, out var pid);
+#pragma warning restore CA1806 // Do not ignore method results
 			var error = Marshal.GetLastWin32Error();
 
 			if (error != 0)

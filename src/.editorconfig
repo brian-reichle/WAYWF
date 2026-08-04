@@ -73,10 +73,6 @@ dotnet_diagnostic.SA1401.severity = none
 # TODO: FIX
 dotnet_diagnostic.SA1402.severity = none
 
-# SA1404: Code analysis suppression should have justification
-# TODO: FIX
-dotnet_diagnostic.SA1404.severity = none
-
 # SA1407: Arithmetic expressions should declare precedence
 # arithmetic precedence is well defined in mathematics,
 # far better than for other operators in C#. So saying that
