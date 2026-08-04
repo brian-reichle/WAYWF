@@ -14,10 +14,6 @@ dotnet_diagnostic.CA2263.severity = warning
 # Matching the namespace to folder structure is too restrictive and unnecessary.
 dotnet_diagnostic.IDE0130.severity = none
 
-# WTG1017: This variable could be confused with a discard.
-# TODO: FIX
-dotnet_diagnostic.WTG1017.severity = none
-
 # WTG1018: Boolean literals as method arguments should be passed as named arguments.
 # TODO: Fix
 dotnet_diagnostic.WTG1018.severity = none

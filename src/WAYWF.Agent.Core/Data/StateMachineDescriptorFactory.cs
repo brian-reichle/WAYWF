@@ -233,11 +233,11 @@ namespace WAYWF.Agent.Core
 				switch (token.TokenType)
 				{
 					case TokenType.MemberRef:
-						import.GetMemberRefProps(token, out var _, out name);
+						import.GetMemberRefProps(token, out _, out name);
 						break;
 
 					case TokenType.MethodDef:
-						import.GetMethodProps(token, out var _, out name, out var _, out var _, out var _);
+						import.GetMethodProps(token, out _, out name, out _, out _, out _);
 						break;
 
 					default:
@@ -256,7 +256,7 @@ namespace WAYWF.Agent.Core
 		static ImmutableArray<MetaDataToken> FindTaskFieldSequence(ICorDebugModule module, MetaDataToken builderField)
 		{
 			var import = module.GetMetaDataImport();
-			import.GetFieldTypeInfo(builderField, out var _, out var classToken);
+			import.GetFieldTypeInfo(builderField, out _, out var classToken);
 
 			switch (classToken.TokenType)
 			{
@@ -294,7 +294,7 @@ namespace WAYWF.Agent.Core
 			{
 				while (import.EnumFields(ref e, classToken, out var field))
 				{
-					import.GetFieldTypeInfo(field, out var _, out var fieldTypeToken);
+					import.GetFieldTypeInfo(field, out _, out var fieldTypeToken);
 
 					if (fieldTypeToken.IsNil)
 					{

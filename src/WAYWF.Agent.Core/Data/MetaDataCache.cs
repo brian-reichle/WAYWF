@@ -472,7 +472,7 @@ namespace WAYWF.Agent.Core
 			{
 				while (import.EnumFields(ref hEnum, token, &fieldToken, 1) == 1)
 				{
-					import.GetFieldTypeInfo(fieldToken, out var type, out var _);
+					import.GetFieldTypeInfo(fieldToken, out var type, out _);
 
 					switch (type)
 					{
@@ -526,7 +526,7 @@ namespace WAYWF.Agent.Core
 			{
 				while (import.EnumFields(ref hEnum, token, &fieldToken, 1) == 1)
 				{
-					import.GetFieldTypeInfo(fieldToken, out var type, out var _);
+					import.GetFieldTypeInfo(fieldToken, out var type, out _);
 
 					switch (type)
 					{
