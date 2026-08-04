@@ -13,3 +13,9 @@ dotnet_diagnostic.CA2263.severity = warning
 # IDE0130: Namespace does not match folder structure
 # Matching the namespace to folder structure is too restrictive and unnecessary.
 dotnet_diagnostic.IDE0130.severity = none
+
+# SX1309: Field names must begin with underscore
+dotnet_diagnostic.SX1309.severity = warning
+
+# SX1309S: Static field names must begin with underscore
+dotnet_diagnostic.SX1309S.severity = warning
