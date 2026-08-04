@@ -32,7 +32,7 @@ namespace WAYWF.UI.Win32
 			try { }
 			finally
 			{
-				var hr = NativeMethods.CreateStreamOnHGlobal(handle, true, out stream);
+				var hr = NativeMethods.CreateStreamOnHGlobal(handle, fDeleteOnRelease: true, out stream);
 				SetHandleAsInvalid();
 
 				if (hr < 0)

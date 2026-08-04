@@ -7,7 +7,7 @@ namespace WAYWF.Api.Win32
 	{
 		public static ProcessHandle GetProcessById(int pid)
 		{
-			var process = NativeMethods.OpenProcess(ProcessAccessOptions.PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
+			var process = NativeMethods.OpenProcess(ProcessAccessOptions.PROCESS_QUERY_LIMITED_INFORMATION, bInheritHandle: false, pid);
 
 			if (process == null || process.IsInvalid)
 			{

@@ -210,7 +210,7 @@ namespace WAYWF.Agent.Core
 					pcchValue: valueLenPtr);
 			}
 
-			DistilFieldType(sigPtr, sigLen, out type, out var _);
+			DistilFieldType(sigPtr, sigLen, out type, out _);
 
 			if (size <= 1)
 			{

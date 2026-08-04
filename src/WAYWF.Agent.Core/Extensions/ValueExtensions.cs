@@ -80,10 +80,10 @@ namespace WAYWF.Agent.Core
 
 		public static CORDB_ADDRESS[] GetInterfacePointers(this ICorDebugComObjectValue value)
 		{
-			value.GetCachedInterfacePointers(false, 0, out var size, null);
+			value.GetCachedInterfacePointers(bIInspectableOnly: false, 0, out var size, null);
 
 			var result = new CORDB_ADDRESS[size];
-			value.GetCachedInterfacePointers(false, size, out _, result);
+			value.GetCachedInterfacePointers(bIInspectableOnly: false, size, out _, result);
 
 			return result;
 		}

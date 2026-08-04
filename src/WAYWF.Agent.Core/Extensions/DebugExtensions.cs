@@ -9,7 +9,7 @@ namespace WAYWF.Agent.Core
 	{
 		public static ICorDebugProcess DebugActiveProcess(this ICorDebug debug, ProcessHandle handle)
 		{
-			var hr = debug.DebugActiveProcess(handle.Pid, false, out var process);
+			var hr = debug.DebugActiveProcess(handle.Pid, win32Attach: false, out var process);
 
 			if (hr == HResults.CORDBG_E_DEBUGGER_ALREADY_ATTACHED)
 			{

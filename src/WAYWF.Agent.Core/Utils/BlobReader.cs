@@ -168,7 +168,7 @@ namespace WAYWF.Agent.Core
 
 			fixed (char* charsPtr = &chars[0])
 			{
-				decoder.Convert(_buffer, (int)(_end - _buffer), charsPtr, length, true, out bytesUsed, out var charsUsed, out var completed);
+				decoder.Convert(_buffer, (int)(_end - _buffer), charsPtr, length, flush: true, out bytesUsed, out var charsUsed, out var completed);
 			}
 
 			_buffer += bytesUsed;

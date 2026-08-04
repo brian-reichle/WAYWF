@@ -12,7 +12,7 @@ namespace WAYWF.Agent.Core
 		public static MetaMethodSignature ReadMethodDefSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
 		{
 			var sig = new Signature(context, sigPtr, sigLen);
-			var result = ReadMethodSig(sig, false, true);
+			var result = ReadMethodSig(sig, allowSentinel: false, isTopLevel: true);
 			if (!sig.EOF) throw new InvalidSignatureException();
 			return result;
 		}
@@ -153,10 +153,10 @@ namespace WAYWF.Agent.Core
 					return ReadClass(sig);
 
 				case CorElementType.ELEMENT_TYPE_MVAR:
-					return ReadVar(true, sig);
+					return ReadVar(method: true, sig);
 
 				case CorElementType.ELEMENT_TYPE_VAR:
-					return ReadVar(false, sig);
+					return ReadVar(method: false, sig);
 
 				case CorElementType.ELEMENT_TYPE_PTR:
 					return ReadPointer(sig);
@@ -233,7 +233,7 @@ namespace WAYWF.Agent.Core
 
 		static MetaType ReadFunctionPTR(Signature sig)
 		{
-			ReadMethodSig(sig, true, false);
+			ReadMethodSig(sig, allowSentinel: true, isTopLevel: false);
 			return MetaKnownType.IntPtr;
 		}
 

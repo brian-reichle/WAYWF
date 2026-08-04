@@ -430,7 +430,7 @@ namespace WAYWF.Agent.Core
 		{
 			var value = obj.pBlockingObject;
 
-			((ICorDebugHeapValue3)value).GetThreadOwningMonitorLock(out var thread, out var _);
+			((ICorDebugHeapValue3)value).GetThreadOwningMonitorLock(out var thread, out _);
 
 			var reason = obj.blockingReason switch
 			{

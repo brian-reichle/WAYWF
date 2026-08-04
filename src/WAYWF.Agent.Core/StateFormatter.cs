@@ -246,7 +246,7 @@ namespace WAYWF.Agent.Core
 
 		void WriteVariable(string elementName, IMetaGenericContext context, MetaTypeBase type, RuntimeValue value, string name)
 		{
-			WriteVariable(elementName, context, type, false, false, value, name);
+			WriteVariable(elementName, context, type, isByRef: false, pinned: false, value, name);
 		}
 
 		void WriteVariable(string elementName, IMetaGenericContext context, MetaTypeBase type, bool isByRef, bool pinned, RuntimeValue value, string name)

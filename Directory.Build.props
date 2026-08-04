@@ -16,6 +16,7 @@ CS1591 - Missing XML comment.
 
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisMode>Recommended</AnalysisMode>
+		<WTGAnalyzersWarnAll>true</WTGAnalyzersWarnAll>
 
 		<Product>WAYWF</Product>
 		<Authors>Brian Reichle</Authors>
