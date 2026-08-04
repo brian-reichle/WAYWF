@@ -13,7 +13,11 @@ namespace WAYWF.Agent.Core
 		{
 			var sig = new Signature(context, sigPtr, sigLen);
 			var result = ReadMethodSig(sig, allowSentinel: false, isTopLevel: true);
-			if (!sig.EOF) throw new InvalidSignatureException();
+			if (!sig.EOF)
+			{
+				throw new InvalidSignatureException();
+			}
+
 			return result;
 		}
 
@@ -21,7 +25,11 @@ namespace WAYWF.Agent.Core
 		{
 			var sig = new Signature(context, sigPtr, sigLen);
 			var result = ReadLocalSig(sig);
-			if (!sig.EOF) throw new InvalidSignatureException();
+			if (!sig.EOF)
+			{
+				throw new InvalidSignatureException();
+			}
+
 			return result;
 		}
 
@@ -29,7 +37,11 @@ namespace WAYWF.Agent.Core
 		{
 			var sig = new Signature(context, sigPtr, sigLen);
 			var result = ReadTypeCore(sig);
-			if (!sig.EOF) throw new InvalidSignatureException();
+			if (!sig.EOF)
+			{
+				throw new InvalidSignatureException();
+			}
+
 			return result;
 		}
 
@@ -37,7 +49,11 @@ namespace WAYWF.Agent.Core
 		{
 			var sig = new Signature(context, sigPtr, sigLen);
 			var result = ReadFieldType(sig);
-			if (!sig.EOF) throw new InvalidSignatureException();
+			if (!sig.EOF)
+			{
+				throw new InvalidSignatureException();
+			}
+
 			return result;
 		}
 
@@ -86,7 +102,11 @@ namespace WAYWF.Agent.Core
 			{
 				if ((CorElementType)sig.PeekByte() == CorElementType.ELEMENT_TYPE_SENTINEL)
 				{
-					if (!allowSentinel) throw new InvalidSignatureException();
+					if (!allowSentinel)
+					{
+						throw new InvalidSignatureException();
+					}
+
 					sig.ReadByte();
 					allowSentinel = false;
 				}
@@ -99,7 +119,10 @@ namespace WAYWF.Agent.Core
 
 		static ImmutableArray<MetaVariable> ReadLocalSig(Signature sig)
 		{
-			if (sig.ReadByte() != LOCAL_SIG) throw new InvalidSignatureException();
+			if (sig.ReadByte() != LOCAL_SIG)
+			{
+				throw new InvalidSignatureException();
+			}
 
 			var count = sig.ReadCompressedUInt();
 			var locals = ImmutableArray.CreateBuilder<MetaVariable>(count);
@@ -115,7 +138,11 @@ namespace WAYWF.Agent.Core
 
 		static MetaTypeBase ReadFieldType(Signature sig)
 		{
-			if (sig.ReadByte() != FIELD_SIG) throw new InvalidSignatureException();
+			if (sig.ReadByte() != FIELD_SIG)
+			{
+				throw new InvalidSignatureException();
+			}
+
 			SkipCMODList(sig);
 			return ReadTypeCore(sig);
 		}

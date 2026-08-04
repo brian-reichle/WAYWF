@@ -16,8 +16,15 @@ namespace WAYWF.Agent.Data
 			ImmutableArray<RuntimeValue> localValues,
 			SourceAsyncState state)
 		{
-			if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
-			if (typeArgs == null) throw new ArgumentNullException(nameof(typeArgs));
+			if (descriptor == null)
+			{
+				throw new ArgumentNullException(nameof(descriptor));
+			}
+
+			if (typeArgs == null)
+			{
+				throw new ArgumentNullException(nameof(typeArgs));
+			}
 
 			Descriptor = descriptor;
 			TypeArgs = typeArgs;

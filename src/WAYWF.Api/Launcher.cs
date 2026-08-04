@@ -12,14 +12,20 @@ namespace WAYWF.Api
 	{
 		public static Task<CaptureResult> CaptureAsync(ProcessData data, CaptureConfig config, Action<string> errorOutCallback)
 		{
-			if (data == null) throw new ArgumentNullException(nameof(data));
+			if (data == null)
+			{
+				throw new ArgumentNullException(nameof(data));
+			}
 
 			return CaptureAsync(data.ProcessID, data.Is32Bit, config, errorOutCallback);
 		}
 
 		public static async Task<CaptureResult> CaptureAsync(int processId, bool is32bit, CaptureConfig config, Action<string> errorOutCallback)
 		{
-			if (config == null) throw new ArgumentNullException(nameof(config));
+			if (config == null)
+			{
+				throw new ArgumentNullException(nameof(config));
+			}
 
 			var info = CreateStartInfo(processId, is32bit, errorOutCallback != null, config);
 

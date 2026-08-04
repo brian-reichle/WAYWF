@@ -10,7 +10,10 @@ namespace WAYWF.UI
 		public ProcessSelectedEventArgs(RoutedEvent routedEvent, object sender, ProcessData process)
 			: base(routedEvent, sender)
 		{
-			if (process == null) throw new ArgumentNullException(nameof(process));
+			if (process == null)
+			{
+				throw new ArgumentNullException(nameof(process));
+			}
 
 			Process = process;
 		}

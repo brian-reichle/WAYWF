@@ -10,7 +10,11 @@ namespace WAYWF.Agent.Core.Win32
 		public UnmanagedBuffer(int size)
 			: base(true)
 		{
-			if (size < 0) throw new ArgumentOutOfRangeException(nameof(size));
+			if (size < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size));
+			}
+
 			SetHandle(Marshal.AllocCoTaskMem(size));
 			Initialize(unchecked((ulong)size));
 		}

@@ -275,7 +275,10 @@ namespace WAYWF.Agent.Core
 			int rva;
 
 			import.GetMethodProps(mb, pulCodeRVA: &rva);
-			if (rva == 0) return null;
+			if (rva == 0)
+			{
+				return null;
+			}
 
 			var methodAddress = module.GetBaseAddress() + rva;
 			var il = module.GetMethodILBytes(methodAddress);

@@ -434,7 +434,10 @@ namespace WAYWF.Agent.Core
 
 		static unsafe ulong GetEnumValue(MetaKnownType type, IntPtr valuePtr)
 		{
-			if (valuePtr == IntPtr.Zero) throw new ArgumentNullException(nameof(valuePtr));
+			if (valuePtr == IntPtr.Zero)
+			{
+				throw new ArgumentNullException(nameof(valuePtr));
+			}
 
 			return type.Size switch
 			{
