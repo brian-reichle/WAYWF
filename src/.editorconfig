@@ -10,9 +10,133 @@ dotnet_diagnostic.CA1859.severity = none
 # CA2263: Prefer generic overload when type is known
 dotnet_diagnostic.CA2263.severity = warning
 
+# IDE0040: Add accessibility modifiers
+# This directly contradicts our coding conventions.
+dotnet_diagnostic.IDE0040.severity = none
+
 # IDE0130: Namespace does not match folder structure
 # Matching the namespace to folder structure is too restrictive and unnecessary.
 dotnet_diagnostic.IDE0130.severity = none
+
+# SA0001: Xml comment analysis disabled
+# We are not producing an externally consumable library
+dotnet_diagnostic.SA0001.severity = none
+
+# SA1008: Opening parenthesis should be spaced correctly
+# TODO: FIX
+dotnet_diagnostic.SA1008.severity = none
+
+# SA1101: Prefix local calls with this
+# We don't use `this.` unless it's needed to resolve ambiguity.
+dotnet_diagnostic.SA1101.severity = none
+
+# SA1119: Statement should not use unnecessary parenthesis
+# TODO: FIX
+dotnet_diagnostic.SA1119.severity = none
+
+# SA1124: Do not use regions
+# TODO: FIX
+dotnet_diagnostic.SA1124.severity = none
+
+# SA1129: Do not use default value type constructor
+# TODO: FIX
+dotnet_diagnostic.SA1129.severity = none
+
+# SA1130: Use lambda syntax
+# TODO: FIX
+dotnet_diagnostic.SA1130.severity = none
+
+# SA1201: Elements should appear in the correct order
+# Fields should be near the end of the containing type
+# (just before any nested types).
+dotnet_diagnostic.SA1201.severity = none
+
+# SA1202: Elements should be ordered by access
+# Going to hold off on enforcing any particular element ordering for now.
+dotnet_diagnostic.SA1202.severity = none
+
+# SA1204: Static elements should appear before instance elements
+# Going to hold off on enforcing any particular element ordering for now.
+dotnet_diagnostic.SA1204.severity = none
+
+# SA1205: Partial elements should declare access
+# This directly contradicts our coding conventions.
+dotnet_diagnostic.SA1205.severity = none
+
+# SA1214: Readonly fields should appear before non-readonly fields
+# TODO: FIX
+dotnet_diagnostic.SA1214.severity = none
+
+# SA1307: Accessible fields should begin with upper-case letter
+# TODO: FIX
+dotnet_diagnostic.SA1307.severity = none
+
+# SA1309: Field names should not begin with underscore
+# This directly contradicts our coding conventions.
+dotnet_diagnostic.SA1309.severity = none
+
+# SA1310: Field names should not contain underscore
+# We have a lot of native interop code. Such code should try to match names from
+# the native definitions and that often contains underscores.
+dotnet_diagnostic.SA1310.severity = none
+
+# SA1400: Access modifier must be declared
+# This rule contradicts our coding convention of NOT specifying access modifiers
+# when it would be the default.
+dotnet_diagnostic.SA1400.severity = none
+
+# SA1401: Fields should be private
+# TODO: FIX
+dotnet_diagnostic.SA1401.severity = none
+
+# SA1402: File may only contain a single type
+# TODO: FIX
+dotnet_diagnostic.SA1402.severity = none
+
+# SA1404: Code analysis suppression should have justification
+# TODO: FIX
+dotnet_diagnostic.SA1404.severity = none
+
+# SA1407: Arithmetic expressions should declare precedence
+# arithmetic precedence is well defined in mathematics,
+# far better than for other operators in C#. So saying that
+# arithmetic expressions need parentheses while those other
+# expressions dont (SA1119) is ridiculous.
+dotnet_diagnostic.SA1407.severity = none
+
+# SA1501: Statement should not be on a single line
+# TODO: FIX
+dotnet_diagnostic.SA1501.severity = none
+
+# SA1503: Braces should not be omitted
+# TODO: FIX
+dotnet_diagnostic.SA1503.severity = none
+
+# SA1512: Single-line comments should not be followed by blank line
+# Removing the blank line can imply an association that isn't always
+# appropriate.
+dotnet_diagnostic.SA1512.severity = none
+
+# SA1513: Closing brace should be followed by blank line
+# TODO: FIX
+dotnet_diagnostic.SA1513.severity = none
+
+# SA1515: Single-line comment should be preceded by blank line
+# TODO: FIX
+dotnet_diagnostic.SA1515.severity = none
+
+# SA1516: Elements must be separated by blank line
+# This would be a good rule if it gave an exemption
+# for single-line members.
+dotnet_diagnostic.SA1516.severity = none
+
+# SA1629: Documentation text should end with a period
+# TODO: FIX
+dotnet_diagnostic.SA1629.severity = none
+
+# SA1633: File should have header
+# TODO: FIX
+dotnet_diagnostic.SA1633.severity = none
 
 # SX1309: Field names must begin with underscore
 dotnet_diagnostic.SX1309.severity = warning
