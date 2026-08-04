@@ -7,7 +7,7 @@ namespace WAYWF.Agent.Core.Win32
 {
 	sealed class CryptContextHandle : SafeHandle
 	{
-		CryptContextHandle()
+		public CryptContextHandle()
 			: base(IntPtr.Zero, true)
 		{
 		}

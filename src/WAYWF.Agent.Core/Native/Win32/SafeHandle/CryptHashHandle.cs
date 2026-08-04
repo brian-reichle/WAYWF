@@ -7,7 +7,7 @@ namespace WAYWF.Agent.Core.Win32
 {
 	sealed class CryptHashHandle : SafeHandle
 	{
-		CryptHashHandle()
+		public CryptHashHandle()
 			: base(IntPtr.Zero, true)
 		{
 		}
