@@ -143,6 +143,7 @@ namespace WAYWF.Agent.Core
 				_builder.Append(',', type.Rank - 1);
 				_builder.Append(']');
 			}
+
 			return type;
 		}
 

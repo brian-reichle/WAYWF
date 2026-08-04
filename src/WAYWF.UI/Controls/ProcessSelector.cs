@@ -94,6 +94,7 @@ namespace WAYWF.UI
 				{
 					OnProcessSelected(tmp);
 				}
+
 				return;
 			}
 

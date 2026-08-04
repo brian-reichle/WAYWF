@@ -89,10 +89,6 @@ dotnet_diagnostic.SA1503.severity = none
 # appropriate.
 dotnet_diagnostic.SA1512.severity = none
 
-# SA1513: Closing brace should be followed by blank line
-# TODO: FIX
-dotnet_diagnostic.SA1513.severity = none
-
 # SA1516: Elements must be separated by blank line
 # This would be a good rule if it gave an exemption
 # for single-line members.
