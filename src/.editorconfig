@@ -22,10 +22,6 @@ dotnet_diagnostic.IDE0130.severity = none
 # We are not producing an externally consumable library
 dotnet_diagnostic.SA0001.severity = none
 
-# SA1008: Opening parenthesis should be spaced correctly
-# TODO: FIX
-dotnet_diagnostic.SA1008.severity = none
-
 # SA1101: Prefix local calls with this
 # We don't use `this.` unless it's needed to resolve ambiguity.
 dotnet_diagnostic.SA1101.severity = none
