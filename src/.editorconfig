@@ -93,10 +93,6 @@ dotnet_diagnostic.SA1512.severity = none
 # TODO: FIX
 dotnet_diagnostic.SA1513.severity = none
 
-# SA1515: Single-line comment should be preceded by blank line
-# TODO: FIX
-dotnet_diagnostic.SA1515.severity = none
-
 # SA1516: Elements must be separated by blank line
 # This would be a good rule if it gave an exemption
 # for single-line members.
