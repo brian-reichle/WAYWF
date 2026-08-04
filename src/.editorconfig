@@ -8,5 +8,4 @@ dotnet_diagnostic.CA1419.severity = warning
 dotnet_diagnostic.CA1859.severity = none
 
 # CA2263: Prefer generic overload when type is known
-# TODO: FIX
-dotnet_diagnostic.CA2263.severity = none
+dotnet_diagnostic.CA2263.severity = warning

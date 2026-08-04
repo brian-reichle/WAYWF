@@ -38,7 +38,7 @@ namespace WAYWF.Agent.Core
 		public RuntimeVirtualAddress Map(CORDB_ADDRESS address)
 		{
 			var ptr = (IntPtr)address;
-			var size = (IntPtr)Marshal.SizeOf(typeof(MEMORY_BASIC_INFORMATION));
+			var size = (IntPtr)Marshal.SizeOf<MEMORY_BASIC_INFORMATION>();
 			var count = NativeMethods.VirtualQueryEx(_handle, ptr, out var info, size);
 
 			if (count != size || info.AllocationProtect == 0 || (info.Type & MEM_FLAGS.MEM_IMAGE) == 0)
