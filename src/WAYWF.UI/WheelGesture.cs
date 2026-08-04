@@ -5,8 +5,8 @@ namespace WAYWF.UI
 {
 	sealed class WheelGesture : MouseGesture
 	{
-		public static WheelGesture Up = new WheelGesture(true);
-		public static WheelGesture Down = new WheelGesture(false);
+		public static readonly WheelGesture Up = new WheelGesture(true);
+		public static readonly WheelGesture Down = new WheelGesture(false);
 
 		WheelGesture(bool up)
 		{
