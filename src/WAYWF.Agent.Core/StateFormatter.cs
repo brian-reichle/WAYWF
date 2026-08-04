@@ -511,8 +511,6 @@ namespace WAYWF.Agent.Core
 			_writer.WriteEndElement();
 		}
 
-		#region IRuntimeFrameVisitor Members
-
 		void IRuntimeFrameVisitor.Visit(RuntimeILFrame frame)
 		{
 			var function = frame.Method;
@@ -579,8 +577,6 @@ namespace WAYWF.Agent.Core
 		{
 			_writer.WriteElementString("internalFrame", frame.InternalFrameType.ToString());
 		}
-
-		#endregion
 
 		string Format(MetaMethod method, IMetaGenericContext context)
 		{

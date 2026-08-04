@@ -38,10 +38,6 @@ namespace WAYWF.Agent.Data
 		public ImmutableArray<RuntimeValue> LocalValues { get; }
 		public SourceAsyncState State { get; }
 
-		#region IMetaGenericContext Members
-
 		int IMetaGenericContext.StartOfMethodArgs => Descriptor.AsyncMethod.DeclaringType.TypeArgs;
-
-		#endregion
 	}
 }

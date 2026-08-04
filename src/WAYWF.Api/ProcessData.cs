@@ -52,14 +52,10 @@ namespace WAYWF.Api
 			return false;
 		}
 
-		#region INotifyPropertyChanged Members
-
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
 		{
 			add { }
 			remove { }
 		}
-
-		#endregion
 	}
 }

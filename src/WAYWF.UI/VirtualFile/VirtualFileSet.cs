@@ -86,8 +86,6 @@ namespace WAYWF.UI.VirtualFile
 			return Enumerable.Empty<VirtualFileBase>().GetEnumerator();
 		}
 
-		#region IList<VirtualFileBase> Members
-
 		void IList<VirtualFileBase>.Insert(int index, VirtualFileBase item) => throw new NotSupportedException();
 		void IList<VirtualFileBase>.RemoveAt(int index) => throw new NotSupportedException();
 
@@ -98,10 +96,6 @@ namespace WAYWF.UI.VirtualFile
 			set => throw new NotSupportedException();
 		}
 
-		#endregion
-
-		#region ICollection<VirtualFileBase> Members
-
 		void ICollection<VirtualFileBase>.Add(VirtualFileBase item) => throw new NotSupportedException();
 		void ICollection<VirtualFileBase>.Clear() => throw new NotSupportedException();
 
@@ -110,14 +104,8 @@ namespace WAYWF.UI.VirtualFile
 
 		bool ICollection<VirtualFileBase>.Remove(VirtualFileBase item) => throw new NotSupportedException();
 
-		#endregion
-
-		#region IEnumerable Members
-
 		[DebuggerStepThrough]
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		#endregion
 
 		void Regenerate()
 		{

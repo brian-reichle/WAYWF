@@ -35,11 +35,7 @@ namespace WAYWF.Agent.Core.CorDebugApi
 		public bool Equals(CORDB_ADDRESS other) => _address == other._address;
 		public int CompareTo(CORDB_ADDRESS other) => _address.CompareTo(other._address);
 
-		#region IComparable Members
-
 		int IComparable.CompareTo(object obj) => CompareTo((CORDB_ADDRESS)obj);
-
-		#endregion
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		readonly long _address;

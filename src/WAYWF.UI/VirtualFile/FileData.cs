@@ -126,8 +126,6 @@ namespace WAYWF.UI
 			}
 		}
 
-		#region IDataObject Members
-
 		int IDataObject.DAdvise(ref FORMATETC pFormatetc, ADVF advf, IAdviseSink adviseSink, out int connection)
 		{
 			connection = 0;
@@ -149,8 +147,6 @@ namespace WAYWF.UI
 		{
 			throw new NotSupportedException();
 		}
-
-		#endregion
 
 		static TYMED GetPreferredTYMED(TYMED tymed)
 		{

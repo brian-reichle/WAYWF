@@ -23,18 +23,10 @@ namespace WAYWF.Options
 			return _lookup.TryGetValue(name, out option);
 		}
 
-		#region IEnumerable<CmdLineOption> Members
-
 		public IEnumerator<CmdLineOption> GetEnumerator() => _lookup.Values.GetEnumerator();
-
-		#endregion
-
-		#region IEnumerable Members
 
 		[DebuggerStepThrough]
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		#endregion
 
 		readonly Dictionary<string, CmdLineOption> _lookup;
 	}

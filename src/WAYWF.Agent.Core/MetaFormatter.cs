@@ -146,8 +146,6 @@ namespace WAYWF.Agent.Core
 			return type;
 		}
 
-		#region IMetaTypeVisitor Members
-
 		void IMetaTypeVisitor.VisitArray(MetaArrayType metaType)
 		{
 			var current = GetElementType(metaType.ElementType);
@@ -210,8 +208,6 @@ namespace WAYWF.Agent.Core
 		{
 			Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
 		}
-
-		#endregion
 
 		readonly StringBuilder _builder = new StringBuilder();
 	}

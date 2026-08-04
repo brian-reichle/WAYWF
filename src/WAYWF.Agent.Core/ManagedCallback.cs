@@ -41,8 +41,6 @@ namespace WAYWF.Agent.Core
 			_stepperLookup.Clear();
 		}
 
-		#region ICorDebugManagedCallback Members
-
 		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pBreakpoint)
 		{
 			Marshal.Release(pBreakpoint);
@@ -189,10 +187,6 @@ namespace WAYWF.Agent.Core
 			EndMessage(pAppDomain.GetProcess());
 		}
 
-		#endregion
-
-		#region ICorDebugManagedCallback2 Members
-
 		public void FunctionRemapOpportunity(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pOldFunction, IntPtr pNewFunction, int oldILOffset)
 		{
 			Marshal.Release(pOldFunction);
@@ -245,8 +239,6 @@ namespace WAYWF.Agent.Core
 				EndMessage((ICorDebugProcess)pController);
 			}
 		}
-
-		#endregion
 
 		void EndMessage(ICorDebugProcess process)
 		{

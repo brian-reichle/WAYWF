@@ -10,15 +10,11 @@ namespace WAYWF.UI
 		public Version Version => _assembly.GetName().Version;
 		public string Copyright => GetAttribute<AssemblyCopyrightAttribute>().Copyright;
 
-		#region INotifyPropertyChanged Members
-
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
 		{
 			add { }
 			remove { }
 		}
-
-		#endregion
 
 		T GetAttribute<T>()
 			where T : Attribute
