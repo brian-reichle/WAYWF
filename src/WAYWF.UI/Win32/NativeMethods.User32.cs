@@ -1,6 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -30,7 +29,6 @@ namespace WAYWF.UI.Win32
 		// HWND WindowFromPoint(
 		//     [in]  POINT Point
 		// );
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0")]
 		[DllImport("user32.dll")]
 		[SuppressUnmanagedCodeSecurity]
 		public static extern IntPtr WindowFromPoint(

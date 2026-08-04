@@ -13,7 +13,7 @@ namespace WAYWF.Agent.Core.CorDebugApi
 			_address = address;
 		}
 
-		public override bool Equals(object obj) => obj is CORDB_ADDRESS && Equals((CORDB_ADDRESS)obj);
+		public override bool Equals(object obj) => obj is CORDB_ADDRESS address && Equals(address);
 		public override int GetHashCode() => _address.GetHashCode();
 		public override string ToString() => _address.ToString("X16", CultureInfo.InvariantCulture);
 

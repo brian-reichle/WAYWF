@@ -14,7 +14,7 @@ namespace WAYWF.Agent.Core.CorDebugApi
 		readonly long _token2;
 
 		public bool Equals(COR_TYPEID other) => _token1 == other._token1 && _token2 == other._token2;
-		public override bool Equals(object obj) => obj is COR_TYPEID && Equals((COR_TYPEID)obj);
+		public override bool Equals(object obj) => obj is COR_TYPEID typeID && Equals(typeID);
 		public override int GetHashCode() => _token1.GetHashCode() ^ _token2.GetHashCode();
 	}
 }

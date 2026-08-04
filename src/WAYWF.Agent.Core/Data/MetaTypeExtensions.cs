@@ -183,7 +183,7 @@ namespace WAYWF.Agent.Core
 			}
 		}
 
-		struct Context
+		readonly struct Context
 		{
 			public Context(ICorDebugValue value, ImmutableArray<MetaTypeBase> typeArgs)
 			{

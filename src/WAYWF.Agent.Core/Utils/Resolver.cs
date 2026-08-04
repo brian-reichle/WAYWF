@@ -103,10 +103,7 @@ namespace WAYWF.Agent.Core
 
 			while (moduleEnum.Next(1, out var otherModule))
 			{
-				if (fallbackModule == null)
-				{
-					fallbackModule = otherModule;
-				}
+				fallbackModule ??= otherModule;
 
 				result = TryResolveTypeByName(otherModule, className, out token);
 
