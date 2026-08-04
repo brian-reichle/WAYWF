@@ -51,7 +51,9 @@ namespace WAYWF.UI.Win32
 			BitmapSource result;
 
 			RuntimeHelpers.PrepareConstrainedRegions();
-			try { }
+			try
+			{
+			}
 			finally
 			{
 				if (NativeMethods.SHGetFileInfo(

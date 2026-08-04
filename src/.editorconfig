@@ -80,10 +80,6 @@ dotnet_diagnostic.SA1402.severity = none
 # expressions dont (SA1119) is ridiculous.
 dotnet_diagnostic.SA1407.severity = none
 
-# SA1501: Statement should not be on a single line
-# TODO: FIX
-dotnet_diagnostic.SA1501.severity = none
-
 # SA1503: Braces should not be omitted
 # TODO: FIX
 dotnet_diagnostic.SA1503.severity = none
