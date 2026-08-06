@@ -91,7 +91,10 @@ namespace WAYWF.Agent.Core
 		public static unsafe T GetValue<T>(this ICorDebugGenericValue value)
 			where T : unmanaged
 		{
-			if (value.GetSize() != sizeof(T)) throw new ArgumentNullException(nameof(value), "size mismatch");
+			if (value.GetSize() != sizeof(T))
+			{
+				throw new ArgumentNullException(nameof(value), "size mismatch");
+			}
 
 			T tmp;
 			value.GetValue((IntPtr)(&tmp));

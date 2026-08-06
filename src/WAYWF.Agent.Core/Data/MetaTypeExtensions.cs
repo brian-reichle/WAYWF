@@ -157,7 +157,7 @@ namespace WAYWF.Agent.Core
 			{
 				unchecked
 				{
-					return (Type.GetTypeCode(obj.GetType())) switch
+					return Type.GetTypeCode(obj.GetType()) switch
 					{
 						TypeCode.Boolean => ((bool)obj) ? 1u : 0u,
 						TypeCode.Char => (char)obj,

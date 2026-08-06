@@ -18,7 +18,9 @@ namespace WAYWF.UI.Win32
 		public void TransferOwnershipTo(out IntPtr hMem)
 		{
 			RuntimeHelpers.PrepareConstrainedRegions();
-			try { }
+			try
+			{
+			}
 			finally
 			{
 				hMem = handle;
@@ -29,7 +31,9 @@ namespace WAYWF.UI.Win32
 		public void TransferOwnershipAsStreamTo(out IntPtr stream)
 		{
 			RuntimeHelpers.PrepareConstrainedRegions();
-			try { }
+			try
+			{
+			}
 			finally
 			{
 				var hr = NativeMethods.CreateStreamOnHGlobal(handle, fDeleteOnRelease: true, out stream);

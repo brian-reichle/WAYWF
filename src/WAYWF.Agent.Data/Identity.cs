@@ -31,9 +31,9 @@ namespace WAYWF.Agent.Data
 		}
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		int _id;
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		readonly IdentitySource _source;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		int _id;
 
 		public override string ToString() => ID.ToString(CultureInfo.InvariantCulture);
 

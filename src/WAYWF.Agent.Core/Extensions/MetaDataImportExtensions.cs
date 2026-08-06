@@ -410,10 +410,16 @@ namespace WAYWF.Agent.Core
 		{
 			const byte FIELD = 0x06;
 
-			if (sigLen <= 0) throw new InvalidSignatureException();
+			if (sigLen <= 0)
+			{
+				throw new InvalidSignatureException();
+			}
 
 			var reader = new BlobReader(sigPtr, sigLen);
-			if (reader.ReadByte() != FIELD) throw new InvalidSignatureException();
+			if (reader.ReadByte() != FIELD)
+			{
+				throw new InvalidSignatureException();
+			}
 
 			var type = (CorElementType)reader.ReadByte();
 

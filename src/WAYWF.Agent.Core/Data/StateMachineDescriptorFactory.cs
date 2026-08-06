@@ -138,6 +138,7 @@ namespace WAYWF.Agent.Core
 						{
 							return true;
 						}
+
 						break;
 
 					case TokenType.TypeSpec:
@@ -148,6 +149,7 @@ namespace WAYWF.Agent.Core
 							fieldToken = import.FindField(classToken, name, IntPtr.Zero);
 							return true;
 						}
+
 						break;
 				}
 			}
@@ -268,6 +270,7 @@ namespace WAYWF.Agent.Core
 					{
 						return ImmutableArray<MetaDataToken>.Empty;
 					}
+
 					break;
 
 				default:

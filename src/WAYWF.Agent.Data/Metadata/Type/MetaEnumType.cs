@@ -11,8 +11,15 @@ namespace WAYWF.Agent.Data
 		public MetaEnumType(MetaModule module, MetaDataToken token, MetaResolvedType declaringType, string name, MetaKnownType underlyingType, bool isFlags, ImmutableArray<string> labels, ImmutableArray<ulong> values)
 			: base(module, token, declaringType, name, 0)
 		{
-			if (underlyingType == null) throw new ArgumentNullException(nameof(underlyingType));
-			if (labels.Length != values.Length) throw new ArgumentException("length mismatch.");
+			if (underlyingType == null)
+			{
+				throw new ArgumentNullException(nameof(underlyingType));
+			}
+
+			if (labels.Length != values.Length)
+			{
+				throw new ArgumentException("length mismatch.");
+			}
 
 			UnderlyingType = underlyingType;
 			_isFlags = isFlags;
@@ -49,7 +56,10 @@ namespace WAYWF.Agent.Data
 			for (var i = _values.Length - 1; i >= 0; i--)
 			{
 				var tmp = _values[i];
-				if (tmp == 0) continue;
+				if (tmp == 0)
+				{
+					continue;
+				}
 
 				if ((value & tmp) == tmp)
 				{

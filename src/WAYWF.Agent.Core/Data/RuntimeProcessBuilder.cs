@@ -401,7 +401,7 @@ namespace WAYWF.Agent.Core
 
 		static RuntimeFrame GetInternalFrame(ICorDebugInternalFrame frame)
 		{
-			return new RuntimeInternalFrame((frame.GetFrameType()) switch
+			return new RuntimeInternalFrame(frame.GetFrameType() switch
 			{
 				CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION => RuntimeInternalFrameKind.AppDomainTransition,
 				CorDebugInternalFrameType.STUBFRAME_INTERNALCALL => RuntimeInternalFrameKind.InternalCall,
@@ -453,19 +453,13 @@ namespace WAYWF.Agent.Core
 
 			_callback.RegisterStepAction(
 				stepper,
-				delegate
+				obj =>
 				{
 					var end = Stopwatch.GetTimestamp();
 					rtFrame.Duration = (end - _start) * _tickDuration;
 				});
 		}
 
-		RuntimeNative _native;
-		Version _clrVersion;
-		ImmutableArray<RuntimeAppDomain> _appDomains;
-		ImmutableArray<RuntimeThread> _threads;
-		ImmutableArray<PendingStateMachineTask> _pendingTasks = ImmutableArray<PendingStateMachineTask>.Empty;
-		long _start;
 		readonly CaptureOptions _options;
 		readonly ICorDebugProcess _process;
 		readonly ProcessHandle _handle;
@@ -474,5 +468,12 @@ namespace WAYWF.Agent.Core
 		readonly SourceProvider _sourceCache;
 		readonly RuntimeValueFactory _objects;
 		readonly ManagedCallback _callback;
+
+		RuntimeNative _native;
+		Version _clrVersion;
+		ImmutableArray<RuntimeAppDomain> _appDomains;
+		ImmutableArray<RuntimeThread> _threads;
+		ImmutableArray<PendingStateMachineTask> _pendingTasks = ImmutableArray<PendingStateMachineTask>.Empty;
+		long _start;
 	}
 }

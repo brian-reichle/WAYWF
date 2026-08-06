@@ -8,8 +8,15 @@ namespace WAYWF.Agent.Data
 	{
 		public StateMachineDescriptor(MetaMethod asyncMethod, MetaDataToken moveNextMethod, MetaResolvedType stateMachineType, SMField stateField, SMField thisField, ImmutableArray<MetaDataToken> taskFieldSequence, ImmutableArray<SMField> paramFields, ImmutableArray<MetaField> localFields)
 		{
-			if (asyncMethod == null) throw new ArgumentNullException(nameof(asyncMethod));
-			if (stateMachineType == null) throw new ArgumentNullException(nameof(stateMachineType));
+			if (asyncMethod == null)
+			{
+				throw new ArgumentNullException(nameof(asyncMethod));
+			}
+
+			if (stateMachineType == null)
+			{
+				throw new ArgumentNullException(nameof(stateMachineType));
+			}
 
 			AsyncMethod = asyncMethod;
 			MoveNextMethod = moveNextMethod;

@@ -434,7 +434,10 @@ namespace WAYWF.Agent.Core
 
 		static unsafe ulong GetEnumValue(MetaKnownType type, IntPtr valuePtr)
 		{
-			if (valuePtr == IntPtr.Zero) throw new ArgumentNullException(nameof(valuePtr));
+			if (valuePtr == IntPtr.Zero)
+			{
+				throw new ArgumentNullException(nameof(valuePtr));
+			}
 
 			return type.Size switch
 			{
@@ -659,12 +662,12 @@ namespace WAYWF.Agent.Core
 				MethodLookup = new Dictionary<MetaDataToken, MetaMethod>();
 			}
 
-			public readonly MetaModule Module;
-			public readonly Dictionary<MetaDataToken, MetaType> TypeLookup;
-			public readonly Dictionary<MetaDataToken, MetaTypeBase> TypeSpecLookup;
-			public readonly Dictionary<MetaDataToken, MetaMethod> MethodLookup;
-			public MetaNullableType Nullable;
-			public MetaGCHandleType GCHandle;
+			public MetaModule Module { get; }
+			public Dictionary<MetaDataToken, MetaType> TypeLookup { get; }
+			public Dictionary<MetaDataToken, MetaTypeBase> TypeSpecLookup { get; }
+			public Dictionary<MetaDataToken, MetaMethod> MethodLookup { get; }
+			public MetaNullableType Nullable { get; set; }
+			public MetaGCHandleType GCHandle { get; set; }
 		}
 
 		class SigContext : ISignatureContext

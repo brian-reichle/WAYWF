@@ -511,8 +511,6 @@ namespace WAYWF.Agent.Core
 			_writer.WriteEndElement();
 		}
 
-		#region IRuntimeFrameVisitor Members
-
 		void IRuntimeFrameVisitor.Visit(RuntimeILFrame frame)
 		{
 			var function = frame.Method;
@@ -579,8 +577,6 @@ namespace WAYWF.Agent.Core
 		{
 			_writer.WriteElementString("internalFrame", frame.InternalFrameType.ToString());
 		}
-
-		#endregion
 
 		string Format(MetaMethod method, IMetaGenericContext context)
 		{
@@ -746,8 +742,8 @@ namespace WAYWF.Agent.Core
 
 			public override void Visit(RuntimeNullValue value)
 			{
-				_writer.WriteStartElement("null");
-				_writer.WriteEndElement();
+				Writer.WriteStartElement("null");
+				Writer.WriteEndElement();
 			}
 
 			public override void Visit(RuntimeSimpleValue value)
@@ -776,18 +772,18 @@ namespace WAYWF.Agent.Core
 
 			public override void Visit(RuntimePointerValue value)
 			{
-				_writer.WriteStartElement("pointerValue");
-				_writer.WriteAttributeString("type", _formatter.Format(value.Type, null));
-				_writer.WriteAttributeString("address", value.Address.ToString());
+				Writer.WriteStartElement("pointerValue");
+				Writer.WriteAttributeString("type", Formatter.Format(value.Type, null));
+				Writer.WriteAttributeString("address", value.Address.ToString());
 				value.Value?.Apply(this);
-				_writer.WriteEndElement();
+				Writer.WriteEndElement();
 			}
 
 			void WriteRef(Identity id)
 			{
-				_writer.WriteStartElement("valueRef");
-				_writer.WriteAttributeString("objectId", id.ToString());
-				_writer.WriteEndElement();
+				Writer.WriteStartElement("valueRef");
+				Writer.WriteAttributeString("objectId", id.ToString());
+				Writer.WriteEndElement();
 			}
 		}
 
@@ -819,8 +815,8 @@ namespace WAYWF.Agent.Core
 		{
 			public ValueWriter(StateFormatter formatter)
 			{
-				_formatter = formatter;
-				_writer = formatter._writer;
+				Formatter = formatter;
+				Writer = formatter._writer;
 			}
 
 			public virtual void Visit(RuntimeNullValue value)
@@ -829,7 +825,7 @@ namespace WAYWF.Agent.Core
 
 			public virtual void Visit(RuntimeSimpleValue value)
 			{
-				_writer.WriteStartElement("value");
+				Writer.WriteStartElement("value");
 
 				WriteStandardAttributes(value);
 
@@ -839,43 +835,43 @@ namespace WAYWF.Agent.Core
 
 					if (!IsStringXmlSafe(text))
 					{
-						_writer.WriteAttributeString("suppressed", TrueString);
+						Writer.WriteAttributeString("suppressed", TrueString);
 					}
 					else if (RequiresCDATA(text))
 					{
-						_writer.WriteCData(text);
+						Writer.WriteCData(text);
 					}
 					else
 					{
-						_writer.WriteString(text);
+						Writer.WriteString(text);
 					}
 				}
 
-				_writer.WriteEndElement();
+				Writer.WriteEndElement();
 			}
 
 			public virtual void Visit(RuntimeRcwValue value)
 			{
-				_writer.WriteStartElement("rcwValue");
+				Writer.WriteStartElement("rcwValue");
 
 				WriteStandardAttributes(value);
 
 				foreach (var type in value.InterfaceTypes)
 				{
-					_writer.WriteStartElement("managed");
-					_writer.WriteAttributeString("type", _formatter.Format(type, null));
-					_writer.WriteEndElement();
+					Writer.WriteStartElement("managed");
+					Writer.WriteAttributeString("type", Formatter.Format(type, null));
+					Writer.WriteEndElement();
 				}
 
 				foreach (var ptr in value.InterfacePointers)
 				{
-					_writer.WriteStartElement("native");
-					_writer.WriteAttributeString("ptr", ptr.InterfaceAddress.ToString());
-					_writer.WriteAttributeString("vtbl", ptr.VtblAddress.ToString());
-					_writer.WriteEndElement();
+					Writer.WriteStartElement("native");
+					Writer.WriteAttributeString("ptr", ptr.InterfaceAddress.ToString());
+					Writer.WriteAttributeString("vtbl", ptr.VtblAddress.ToString());
+					Writer.WriteEndElement();
 				}
 
-				_writer.WriteEndElement();
+				Writer.WriteEndElement();
 			}
 
 			public virtual void Visit(RuntimePointerValue value)
@@ -891,14 +887,14 @@ namespace WAYWF.Agent.Core
 			{
 				if (MakeGlobal(value))
 				{
-					_writer.WriteAttributeString("objectId", value.ID.ToString());
+					Writer.WriteAttributeString("objectId", value.ID.ToString());
 				}
 
-				_writer.WriteAttributeString("type", _formatter.Format(value.Type, null));
+				Writer.WriteAttributeString("type", Formatter.Format(value.Type, null));
 			}
 
-			protected readonly StateFormatter _formatter;
-			protected readonly XmlWriter _writer;
+			protected StateFormatter Formatter { get; set; }
+			protected XmlWriter Writer { get; set; }
 		}
 	}
 }

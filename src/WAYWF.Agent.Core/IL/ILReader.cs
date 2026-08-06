@@ -43,28 +43,14 @@ namespace WAYWF.Agent.Core.IL
 			}
 		}
 
-		#region IEnumerable Members
-
 		[DebuggerStepThrough]
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		#endregion
-
-		#region IEnumerator<Instruction> Members
-
 		Instruction IEnumerator<Instruction>.Current => _current;
-
-		#endregion
-
-		#region IDisposable Members
 
 		void IDisposable.Dispose()
 		{
 		}
-
-		#endregion
-
-		#region IEnumerator Members
 
 		object IEnumerator.Current => _current;
 
@@ -76,8 +62,6 @@ namespace WAYWF.Agent.Core.IL
 			_offset = 0;
 			_current = null;
 		}
-
-		#endregion
 
 		Instruction ReadInlineNoneInstruction(OpCode opcode)
 		{

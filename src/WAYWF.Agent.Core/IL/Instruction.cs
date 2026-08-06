@@ -16,16 +16,4 @@ namespace WAYWF.Agent.Core.IL
 		public int Offset { get; }
 		public OpCode OpCode { get; }
 	}
-
-	[DebuggerDisplay("{OpCode} {Value}")]
-	class Instruction<T> : Instruction
-	{
-		public Instruction(int offset, OpCode opCode, T value)
-			: base(offset, opCode)
-		{
-			Value = value;
-		}
-
-		public T Value { get; }
-	}
 }

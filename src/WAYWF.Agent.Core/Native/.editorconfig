@@ -1,0 +1,6 @@
+[*.cs]
+
+# SA1307: Accessible fields should begin with upper-case letter
+# Disabling for interop structs as it's more important that they match
+# the names used in their native definitions.
+dotnet_diagnostic.SA1307.severity = none

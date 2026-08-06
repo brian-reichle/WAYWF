@@ -256,12 +256,13 @@ namespace WAYWF.Agent.Core
 
 		const int HiddenLine = 0x00FeeFee;
 
-		bool _isDisposed;
-		ISymUnmanagedBinder _binder;
 		readonly IIdentitySource _documentIdentities;
 		readonly Dictionary<ICorDebugModule, ModuleInfo> _readerCache;
 		readonly Dictionary<string, SourceDocument> _documentPathCache;
 		readonly Dictionary<ISymUnmanagedDocument, SourceDocument> _documentCache;
+
+		bool _isDisposed;
+		ISymUnmanagedBinder _binder;
 
 		sealed class ModuleInfo
 		{
@@ -294,6 +295,7 @@ namespace WAYWF.Agent.Core
 					if (index < 0)
 					{
 						index = ~index;
+
 						// at this point, index is where the value would be inserted ... but we want the
 						// largest value less than offset, which means we need to subtract 1.
 						index--;

@@ -133,7 +133,7 @@ namespace WAYWF.UI
 			}
 		}
 
-		string _suggestedFilename;
 		readonly VirtualFileSet _virtualFiles = new VirtualFileSet();
+		string _suggestedFilename;
 	}
 }

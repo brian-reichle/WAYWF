@@ -143,10 +143,9 @@ namespace WAYWF.Agent.Core
 				_builder.Append(',', type.Rank - 1);
 				_builder.Append(']');
 			}
+
 			return type;
 		}
-
-		#region IMetaTypeVisitor Members
 
 		void IMetaTypeVisitor.VisitArray(MetaArrayType metaType)
 		{
@@ -210,8 +209,6 @@ namespace WAYWF.Agent.Core
 		{
 			Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
 		}
-
-		#endregion
 
 		readonly StringBuilder _builder = new StringBuilder();
 	}
