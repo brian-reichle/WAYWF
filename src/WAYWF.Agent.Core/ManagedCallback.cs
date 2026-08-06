@@ -261,10 +261,9 @@ namespace WAYWF.Agent.Core
 			}
 		}
 
-		bool _threadStarted;
 		readonly TaskCompletionSource<object> _loadedEvent;
 		readonly TaskCompletionSource<object> _terminationEvent;
-
 		readonly Dictionary<ICorDebugStepper, Action<ICorDebugStepper>> _stepperLookup = new Dictionary<ICorDebugStepper, Action<ICorDebugStepper>>();
+		bool _threadStarted;
 	}
 }

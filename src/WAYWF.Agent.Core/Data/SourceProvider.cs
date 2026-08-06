@@ -256,12 +256,13 @@ namespace WAYWF.Agent.Core
 
 		const int HiddenLine = 0x00FeeFee;
 
-		bool _isDisposed;
-		ISymUnmanagedBinder _binder;
 		readonly IIdentitySource _documentIdentities;
 		readonly Dictionary<ICorDebugModule, ModuleInfo> _readerCache;
 		readonly Dictionary<string, SourceDocument> _documentPathCache;
 		readonly Dictionary<ISymUnmanagedDocument, SourceDocument> _documentCache;
+
+		bool _isDisposed;
+		ISymUnmanagedBinder _binder;
 
 		sealed class ModuleInfo
 		{

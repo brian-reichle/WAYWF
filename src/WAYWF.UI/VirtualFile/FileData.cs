@@ -360,8 +360,8 @@ namespace WAYWF.UI
 				}
 			}
 
-			int _index;
 			readonly FORMATETC[] _list;
+			int _index;
 		}
 	}
 }

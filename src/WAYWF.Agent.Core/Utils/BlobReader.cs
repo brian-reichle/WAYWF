@@ -193,9 +193,9 @@ namespace WAYWF.Agent.Core
 
 		public bool EOF => _buffer >= _end;
 
-		byte* _buffer;
 		readonly byte* _start;
 		readonly byte* _end;
+		byte* _buffer;
 
 		sealed class TypeProxy
 		{

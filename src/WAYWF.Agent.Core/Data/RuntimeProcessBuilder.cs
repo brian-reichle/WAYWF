@@ -460,12 +460,6 @@ namespace WAYWF.Agent.Core
 				});
 		}
 
-		RuntimeNative _native;
-		Version _clrVersion;
-		ImmutableArray<RuntimeAppDomain> _appDomains;
-		ImmutableArray<RuntimeThread> _threads;
-		ImmutableArray<PendingStateMachineTask> _pendingTasks = ImmutableArray<PendingStateMachineTask>.Empty;
-		long _start;
 		readonly CaptureOptions _options;
 		readonly ICorDebugProcess _process;
 		readonly ProcessHandle _handle;
@@ -474,5 +468,12 @@ namespace WAYWF.Agent.Core
 		readonly SourceProvider _sourceCache;
 		readonly RuntimeValueFactory _objects;
 		readonly ManagedCallback _callback;
+
+		RuntimeNative _native;
+		Version _clrVersion;
+		ImmutableArray<RuntimeAppDomain> _appDomains;
+		ImmutableArray<RuntimeThread> _threads;
+		ImmutableArray<PendingStateMachineTask> _pendingTasks = ImmutableArray<PendingStateMachineTask>.Empty;
+		long _start;
 	}
 }
