@@ -43,10 +43,6 @@ dotnet_diagnostic.SA1204.severity = none
 # This directly contradicts our coding conventions.
 dotnet_diagnostic.SA1205.severity = none
 
-# SA1307: Accessible fields should begin with upper-case letter
-# TODO: FIX
-dotnet_diagnostic.SA1307.severity = none
-
 # SA1309: Field names should not begin with underscore
 # This directly contradicts our coding conventions.
 dotnet_diagnostic.SA1309.severity = none
