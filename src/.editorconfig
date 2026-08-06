@@ -57,10 +57,6 @@ dotnet_diagnostic.SA1310.severity = none
 # when it would be the default.
 dotnet_diagnostic.SA1400.severity = none
 
-# SA1401: Fields should be private
-# TODO: FIX
-dotnet_diagnostic.SA1401.severity = none
-
 # SA1407: Arithmetic expressions should declare precedence
 # arithmetic precedence is well defined in mathematics,
 # far better than for other operators in C#. So saying that

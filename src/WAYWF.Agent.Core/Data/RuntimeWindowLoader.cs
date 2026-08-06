@@ -34,7 +34,7 @@ namespace WAYWF.Agent.Core
 				}
 			}
 
-			return host._windows.ToImmutable();
+			return host.Windows.ToImmutable();
 		}
 
 		static bool Callback(IntPtr hwnd, IntPtr lParam)
@@ -48,18 +48,18 @@ namespace WAYWF.Agent.Core
 		{
 			var threadID = NativeMethods.GetWindowThreadProcessId(hwnd, out var processID);
 
-			if (processID == host._pid)
+			if (processID == host.Pid)
 			{
 				var isVisible = NativeMethods.IsWindowVisible(hwnd);
 				var isEnabled = NativeMethods.IsWindowEnabled(hwnd);
 
-				host._windows.Add(
+				host.Windows.Add(
 					new RuntimeWindow(
 						threadID,
 						hwnd,
 						GetOwner(hwnd),
-						GetWindowText(host._builder, hwnd),
-						GetWindowClassName(host._builder, hwnd),
+						GetWindowText(host.Builder, hwnd),
+						GetWindowClassName(host.Builder, hwnd),
 						isVisible,
 						isEnabled));
 			}
@@ -126,14 +126,14 @@ namespace WAYWF.Agent.Core
 		{
 			public Host(int pid)
 			{
-				_pid = pid;
-				_windows = ImmutableArray.CreateBuilder<RuntimeWindow>();
-				_builder = new StringBuilder();
+				Pid = pid;
+				Windows = ImmutableArray.CreateBuilder<RuntimeWindow>();
+				Builder = new StringBuilder();
 			}
 
-			public readonly int _pid;
-			public readonly ImmutableArray<RuntimeWindow>.Builder _windows;
-			public readonly StringBuilder _builder;
+			public int Pid { get; }
+			public ImmutableArray<RuntimeWindow>.Builder Windows { get; }
+			public StringBuilder Builder { get; }
 		}
 	}
 }
