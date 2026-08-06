@@ -1,4 +1,11 @@
 <Solution>
+  <Folder Name="/_Solution_/">
+    <File Path="../Directory.Build.props" />
+    <File Path="../Directory.Packages.props" />
+    <File Path="../global.json" />
+    <File Path="../stylecop.json" />
+    <File Path=".editorconfig" />
+  </Folder>
   <Project Path="WAYWF.Agent.Core/WAYWF.Agent.Core.csproj" />
   <Project Path="WAYWF.Agent.Data/WAYWF.Agent.Data.csproj" />
   <Project Path="WAYWF.Agent.Shared/WAYWF.Agent.Shared.shproj" />
