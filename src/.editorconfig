@@ -74,6 +74,11 @@ dotnet_diagnostic.SA1512.severity = none
 # for single-line members.
 dotnet_diagnostic.SA1516.severity = none
 
+# SA1519: Braces should not be omitted from multi-line child statement
+# Unfortunally, this includes nested `fixed` blocks. Such blocks should
+# really be exempt in the same way as nested using blocks.
+dotnet_diagnostic.SA1519.severity = none
+
 # SX1309: Field names must begin with underscore
 dotnet_diagnostic.SX1309.severity = warning
 
