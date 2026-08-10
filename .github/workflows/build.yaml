@@ -26,3 +26,6 @@ jobs:
       uses: actions/setup-dotnet@v6
     - name: Build WAYWF
       run: dotnet build src --configuration ${{ matrix.configuration }}
+    - name: Run Tests
+      if: matrix.configuration == 'Debug'
+      run: dotnet test src --no-build

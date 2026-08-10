@@ -2,6 +2,7 @@
   <Folder Name="/Agent/">
     <Project Path="WAYWF.Agent.Core/WAYWF.Agent.Core.csproj" />
     <Project Path="WAYWF.Agent.Data/WAYWF.Agent.Data.csproj" />
+    <Project Path="WAYWF.Agent.Data.Test/WAYWF.Agent.Data.Test.csproj" />
     <Project Path="WAYWF.Agent.Shared/WAYWF.Agent.Shared.shproj" />
     <Project Path="WAYWF.Agent.x86/WAYWF.Agent.x86.csproj" />
     <Project Path="WAYWF.Agent/WAYWF.Agent.csproj" />
