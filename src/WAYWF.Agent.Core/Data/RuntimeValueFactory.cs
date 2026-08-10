@@ -11,7 +11,7 @@ namespace WAYWF.Agent.Core
 		{
 			_cache = cache;
 			_mapper = mapper;
-			_objects = new Dictionary<CORDB_ADDRESS, RuntimeValue>();
+			_objects = [];
 			_valueIdentites = Identity.NewSource();
 		}
 
@@ -36,7 +36,7 @@ namespace WAYWF.Agent.Core
 					return RuntimeNullValue.Instance;
 				}
 			}
-			else if (!(value is ICorDebugHeapValue))
+			else if (value is not ICorDebugHeapValue)
 			{
 				return CreateValue(value);
 			}

@@ -624,7 +624,7 @@ namespace WAYWF.Agent.Core
 			}
 			else
 			{
-				_formatter.TypeArgs = ImmutableArray<MetaTypeBase>.Empty;
+				_formatter.TypeArgs = [];
 				_formatter.MethodArgsStart = 0;
 			}
 		}

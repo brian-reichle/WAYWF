@@ -18,6 +18,10 @@ dotnet_diagnostic.IDE0040.severity = none
 # Matching the namespace to folder structure is too restrictive and unnecessary.
 dotnet_diagnostic.IDE0130.severity = none
 
+# IDE0305: Simplify collection initialization
+# Instance members like `.ToArray()` are clearer.
+dotnet_diagnostic.IDE0305.severity = none
+
 # SA0001: Xml comment analysis disabled
 # We are not producing an externally consumable library
 dotnet_diagnostic.SA0001.severity = none

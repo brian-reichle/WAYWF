@@ -132,12 +132,12 @@ namespace WAYWF.UI.VirtualFile
 			}
 			else
 			{
-				return new VirtualFileBase[]
-				{
+				return
+				[
 					new XmlVirtualFile(baseFileName, xmlContent),
 					new HtmlVirtualFile(baseFileName, xmlContent),
 					TransformVirtualData.Instance,
-				};
+				];
 			}
 		}
 
@@ -155,9 +155,9 @@ namespace WAYWF.UI.VirtualFile
 		string _xmlContent;
 		VirtualFileBase[] _files = _defaultFileList;
 
-		static readonly VirtualFileBase[] _defaultFileList = new VirtualFileBase[]
-		{
+		static readonly VirtualFileBase[] _defaultFileList =
+		[
 			TransformVirtualData.Instance,
-		};
+		];
 	}
 }

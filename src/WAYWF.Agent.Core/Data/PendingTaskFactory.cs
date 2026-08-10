@@ -21,7 +21,7 @@ namespace WAYWF.Agent.Core
 		{
 			if (!process.AreGCStructuresValid())
 			{
-				return ImmutableArray<PendingStateMachineTask>.Empty;
+				return [];
 			}
 
 			var e = process.EnumerateHeap();
@@ -239,7 +239,7 @@ namespace WAYWF.Agent.Core
 			return false;
 		}
 
-		readonly Dictionary<COR_TYPEID, StateMachineDescriptor> _cache = new Dictionary<COR_TYPEID, StateMachineDescriptor>();
+		readonly Dictionary<COR_TYPEID, StateMachineDescriptor> _cache = [];
 		readonly StateMachineDescriptorFactory _descriptorFactory;
 		readonly MetaDataCache _mdCache;
 		readonly RuntimeValueFactory _objects;

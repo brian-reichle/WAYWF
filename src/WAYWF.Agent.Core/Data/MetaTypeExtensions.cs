@@ -10,7 +10,7 @@ namespace WAYWF.Agent.Core
 	{
 		public static bool TryGetValue(this MetaTypeBase type, ICorDebugValue value, out object result)
 		{
-			var tmp = type.Apply(Visitor.Instance, new Context(value, ImmutableArray<MetaTypeBase>.Empty));
+			var tmp = type.Apply(Visitor.Instance, new Context(value, []));
 
 			if (tmp == UnknownValue)
 			{
@@ -124,7 +124,7 @@ namespace WAYWF.Agent.Core
 					return UnknownValue;
 				}
 
-				return innerType.Apply(this, new Context(valueValue, ImmutableArray<MetaTypeBase>.Empty));
+				return innerType.Apply(this, new Context(valueValue, []));
 			}
 
 			public object VisitPointer(MetaPointerType metaType, Context context) => UnknownValue;

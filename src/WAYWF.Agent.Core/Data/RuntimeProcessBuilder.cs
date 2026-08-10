@@ -131,8 +131,8 @@ namespace WAYWF.Agent.Core
 				return new RuntimeThread(
 					thread.GetID(),
 					Translate(thread.GetUserState()),
-					ImmutableArray<RuntimeFrameChain>.Empty,
-					ImmutableArray<RuntimeBlockingObject>.Empty);
+					[],
+					[]);
 			}
 			else
 			{
@@ -140,7 +140,7 @@ namespace WAYWF.Agent.Core
 
 				var blockingObjects = thread is ICorDebugThread4 thread4
 					? GetBlockingObjects(thread4.GetBlockingObjects())
-					: ImmutableArray<RuntimeBlockingObject>.Empty;
+					: [];
 
 				return new RuntimeThread(
 					thread.GetID(),
@@ -265,7 +265,7 @@ namespace WAYWF.Agent.Core
 			var function = frame.GetFunction();
 			var typeArgs = frame is ICorDebugILFrame2 frame2
 				? _cache.GetTypes(frame2.EnumerateTypeParameters())
-				: ImmutableArray<MetaTypeBase>.Empty;
+				: [];
 
 			var metaFunc = _cache.GetMethod(function);
 			var signature = metaFunc.Signature;
@@ -293,13 +293,13 @@ namespace WAYWF.Agent.Core
 			}
 			else
 			{
-				paramValues = ImmutableArray<RuntimeValue>.Empty;
+				paramValues = [];
 				@this = null;
 			}
 
 			var localValues = metaFunc.Locals.Length > 0
 				? ExtractLocals(frame, metaFunc.Locals)
-				: ImmutableArray<RuntimeValue>.Empty;
+				: [];
 
 			var ilMapping = frame.GetIP(out var ilOffset);
 
@@ -317,7 +317,7 @@ namespace WAYWF.Agent.Core
 			else
 			{
 				source = null;
-				localNames = ImmutableArray<string>.Empty;
+				localNames = [];
 			}
 
 			var ilFrame = new RuntimeILFrame(
@@ -473,7 +473,7 @@ namespace WAYWF.Agent.Core
 		Version _clrVersion;
 		ImmutableArray<RuntimeAppDomain> _appDomains;
 		ImmutableArray<RuntimeThread> _threads;
-		ImmutableArray<PendingStateMachineTask> _pendingTasks = ImmutableArray<PendingStateMachineTask>.Empty;
+		ImmutableArray<PendingStateMachineTask> _pendingTasks = [];
 		long _start;
 	}
 }

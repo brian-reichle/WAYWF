@@ -268,23 +268,23 @@ namespace WAYWF.Agent.Core
 				case TokenType.TypeRef:
 					if (Resolver.TryResolve(ref module, ref classToken) != ResolutionResult.Success)
 					{
-						return ImmutableArray<MetaDataToken>.Empty;
+						return [];
 					}
 
 					break;
 
 				default:
-					return ImmutableArray<MetaDataToken>.Empty;
+					return [];
 			}
 
 			var taskField = FindTaskField(module, classToken);
 
 			if (taskField.IsNil)
 			{
-				return ImmutableArray<MetaDataToken>.Empty;
+				return [];
 			}
 
-			return ImmutableArray.Create(builderField, taskField);
+			return [builderField, taskField];
 		}
 
 		static MetaDataToken FindTaskField(ICorDebugModule module, MetaDataToken classToken)

@@ -62,11 +62,7 @@ namespace WAYWF.UI
 			base.OnApplyTemplate();
 
 			_popup = (Popup)GetTemplateChild("PART_Popup");
-
-			if (_popup != null)
-			{
-				_popup.Placement = PlacementMode.Relative;
-			}
+			_popup?.Placement = PlacementMode.Relative;
 		}
 
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

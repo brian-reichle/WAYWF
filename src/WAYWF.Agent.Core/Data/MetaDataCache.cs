@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.MetaDataApi;
 using WAYWF.Agent.Data;
@@ -16,8 +17,8 @@ namespace WAYWF.Agent.Core
 		public MetaDataCache()
 		{
 			_moduleIdentities = Identity.NewSource();
-			_assemblyLookup = new Dictionary<ICorDebugAssembly, MetaAssembly>();
-			_moduleLookup = new Dictionary<ICorDebugModule, ModuleData>();
+			_assemblyLookup = [];
+			_moduleLookup = [];
 		}
 
 		public MetaAssembly GetAssembly(ICorDebugAssembly assembly)
@@ -143,7 +144,7 @@ namespace WAYWF.Agent.Core
 
 			if (tokens.Length == 0)
 			{
-				return Array.Empty<MetaField>();
+				return [];
 			}
 
 			var moduleData = GetModuleData(module);
@@ -354,8 +355,8 @@ namespace WAYWF.Agent.Core
 		static unsafe MetaEnumType CreateEnumTypeDef(ModuleData data, ICorDebugModule module, MetaDataToken token, MetaResolvedType declaringType, string name)
 		{
 			var import = module.GetMetaDataImport();
-			var labelsList = ImmutableArray.CreateBuilder<string>();
-			var valuesList = ImmutableArray.CreateBuilder<ulong>();
+			var labelsList = new List<string>();
+			var valuesList = new List<ulong>();
 			var hEnum = IntPtr.Zero;
 			MetaKnownType underlyingType = null;
 			List<IntPtr> ptrList = null;
@@ -397,7 +398,7 @@ namespace WAYWF.Agent.Core
 					{
 						if (underlyingType == null)
 						{
-							ptrList ??= new List<IntPtr>();
+							ptrList ??= [];
 
 							ptrList.Add(valuePtr);
 						}
@@ -429,7 +430,15 @@ namespace WAYWF.Agent.Core
 			Array.Sort(values, labels);
 
 			var isFlags = module.HasFlagsAttribute(token);
-			return new MetaEnumType(data.Module, token, declaringType, name, underlyingType, isFlags, labels.ToImmutableArray(), values.ToImmutableArray());
+			return new MetaEnumType(
+				data.Module,
+				token,
+				declaringType,
+				name,
+				underlyingType,
+				isFlags,
+				ImmutableCollectionsMarshal.AsImmutableArray(labels),
+				ImmutableCollectionsMarshal.AsImmutableArray(values));
 		}
 
 		static unsafe ulong GetEnumValue(MetaKnownType type, IntPtr valuePtr)
@@ -600,7 +609,7 @@ namespace WAYWF.Agent.Core
 
 				if (localToken.IsNil)
 				{
-					localSig = ImmutableArray<MetaVariable>.Empty;
+					localSig = [];
 				}
 				else
 				{
@@ -657,9 +666,9 @@ namespace WAYWF.Agent.Core
 			public ModuleData(MetaModule module)
 			{
 				Module = module;
-				TypeLookup = new Dictionary<MetaDataToken, MetaType>();
-				TypeSpecLookup = new Dictionary<MetaDataToken, MetaTypeBase>();
-				MethodLookup = new Dictionary<MetaDataToken, MetaMethod>();
+				TypeLookup = [];
+				TypeSpecLookup = [];
+				MethodLookup = [];
 			}
 
 			public MetaModule Module { get; }
