@@ -16,8 +16,8 @@ namespace WAYWF.Agent.Core
 		public MetaDataCache()
 		{
 			_moduleIdentities = Identity.NewSource();
-			_assemblyLookup = new Dictionary<ICorDebugAssembly, MetaAssembly>();
-			_moduleLookup = new Dictionary<ICorDebugModule, ModuleData>();
+			_assemblyLookup = [];
+			_moduleLookup = [];
 		}
 
 		public MetaAssembly GetAssembly(ICorDebugAssembly assembly)
@@ -143,7 +143,7 @@ namespace WAYWF.Agent.Core
 
 			if (tokens.Length == 0)
 			{
-				return Array.Empty<MetaField>();
+				return [];
 			}
 
 			var moduleData = GetModuleData(module);
@@ -397,7 +397,7 @@ namespace WAYWF.Agent.Core
 					{
 						if (underlyingType == null)
 						{
-							ptrList ??= new List<IntPtr>();
+							ptrList ??= [];
 
 							ptrList.Add(valuePtr);
 						}
@@ -600,7 +600,7 @@ namespace WAYWF.Agent.Core
 
 				if (localToken.IsNil)
 				{
-					localSig = ImmutableArray<MetaVariable>.Empty;
+					localSig = [];
 				}
 				else
 				{
@@ -657,9 +657,9 @@ namespace WAYWF.Agent.Core
 			public ModuleData(MetaModule module)
 			{
 				Module = module;
-				TypeLookup = new Dictionary<MetaDataToken, MetaType>();
-				TypeSpecLookup = new Dictionary<MetaDataToken, MetaTypeBase>();
-				MethodLookup = new Dictionary<MetaDataToken, MetaMethod>();
+				TypeLookup = [];
+				TypeSpecLookup = [];
+				MethodLookup = [];
 			}
 
 			public MetaModule Module { get; }

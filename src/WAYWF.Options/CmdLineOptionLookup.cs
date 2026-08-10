@@ -10,7 +10,7 @@ namespace WAYWF.Options
 	{
 		public CmdLineOptionLookup()
 		{
-			_lookup = new Dictionary<string, CmdLineOption>();
+			_lookup = [];
 		}
 
 		public void Add(string name, bool takesArg, Action<CmdLineOptions, string> action)

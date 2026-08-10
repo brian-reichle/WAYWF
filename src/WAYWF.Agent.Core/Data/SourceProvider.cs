@@ -14,9 +14,9 @@ namespace WAYWF.Agent.Core
 		public SourceProvider()
 		{
 			_documentIdentities = Identity.NewSource();
-			_readerCache = new Dictionary<ICorDebugModule, ModuleInfo>();
-			_documentPathCache = new Dictionary<string, SourceDocument>();
-			_documentCache = new Dictionary<ISymUnmanagedDocument, SourceDocument>();
+			_readerCache = [];
+			_documentPathCache = [];
+			_documentCache = [];
 		}
 
 		public void Dispose()
@@ -81,14 +81,14 @@ namespace WAYWF.Agent.Core
 		{
 			if (localCount == 0)
 			{
-				return ImmutableArray<string>.Empty;
+				return [];
 			}
 
 			var info = GetModuleInfo(module);
 
 			if (info == null)
 			{
-				return ImmutableArray<string>.Empty;
+				return [];
 			}
 
 			var method = info.Reader.GetMethod(token);
@@ -160,7 +160,7 @@ namespace WAYWF.Agent.Core
 		{
 			var method = module.Reader.GetMethod(token);
 
-			if (!(method is ISymUnmanagedAsyncMethod aMethod) || !aMethod.IsAsyncMethod())
+			if (method is not ISymUnmanagedAsyncMethod aMethod || !aMethod.IsAsyncMethod())
 			{
 				return null;
 			}
@@ -269,8 +269,8 @@ namespace WAYWF.Agent.Core
 			public ModuleInfo(ISymUnmanagedReader reader)
 			{
 				Reader = reader;
-				Methods = new Dictionary<MetaDataToken, MethodInfo>();
-				AsyncMethods = new Dictionary<MetaDataToken, AsyncMethodInfo>();
+				Methods = [];
+				AsyncMethods = [];
 			}
 
 			public ISymUnmanagedReader Reader { get; }

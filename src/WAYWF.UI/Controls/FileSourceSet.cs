@@ -37,19 +37,12 @@ namespace WAYWF.UI
 
 		public override void OnApplyTemplate()
 		{
-			if (_list != null)
-			{
-				_list.StartDrag -= ListStartDrag;
-			}
+			_list?.StartDrag -= ListStartDrag;
 
 			base.OnApplyTemplate();
 
 			_list = GetTemplateChild("PART_List") as MultiDragList;
-
-			if (_list != null)
-			{
-				_list.StartDrag += ListStartDrag;
-			}
+			_list?.StartDrag += ListStartDrag;
 		}
 
 		static FileData CreateFileData(MultiDragList list)

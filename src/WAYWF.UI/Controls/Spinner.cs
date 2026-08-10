@@ -57,10 +57,7 @@ namespace WAYWF.UI
 
 		public override void OnApplyTemplate()
 		{
-			if (_textBox != null)
-			{
-				_textBox.TextChanged -= new TextChangedEventHandler(TextBoxTextChanged);
-			}
+			_textBox?.TextChanged -= new TextChangedEventHandler(TextBoxTextChanged);
 
 			base.OnApplyTemplate();
 
@@ -107,10 +104,7 @@ namespace WAYWF.UI
 			var control = (Spinner)sender;
 			var tb = control._textBox;
 
-			if (tb != null)
-			{
-				tb.Text = e.NewValue.ToString();
-			}
+			tb?.Text = e.NewValue.ToString();
 		}
 
 		static object CoerceValue(object sender, object baseValue)

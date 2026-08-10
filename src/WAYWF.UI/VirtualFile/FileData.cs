@@ -331,10 +331,7 @@ namespace WAYWF.UI
 				Array.Copy(_list, _index, rgelt, 0, count);
 			coppied:
 
-				if (pceltFetched != null)
-				{
-					pceltFetched[0] = count;
-				}
+				pceltFetched?[0] = count;
 
 				_index += count;
 				return result;

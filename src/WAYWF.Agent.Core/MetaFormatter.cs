@@ -7,7 +7,7 @@ namespace WAYWF.Agent.Core
 {
 	sealed class MetaFormatter : IMetaTypeVisitor
 	{
-		public ImmutableArray<MetaTypeBase> TypeArgs { get; set; } = ImmutableArray<MetaTypeBase>.Empty;
+		public ImmutableArray<MetaTypeBase> TypeArgs { get; set; } = [];
 		public int MethodArgsStart { get; set; }
 
 		public override string ToString() => _builder.ToString();
@@ -57,7 +57,7 @@ namespace WAYWF.Agent.Core
 		{
 			if (type.DeclaringType != null)
 			{
-				Write(type.DeclaringType, ImmutableArray<MetaTypeBase>.Empty);
+				Write(type.DeclaringType, []);
 				_builder.Append('.');
 			}
 
@@ -199,15 +199,15 @@ namespace WAYWF.Agent.Core
 			}
 		}
 
-		void IMetaTypeVisitor.VisitEnum(MetaEnumType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
-		void IMetaTypeVisitor.VisitGCHandle(MetaGCHandleType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
-		void IMetaTypeVisitor.VisitKnownType(MetaKnownType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
-		void IMetaTypeVisitor.VisitNullable(MetaNullableType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
-		void IMetaTypeVisitor.VisitSimpleResolved(MetaSimpleResolvedType metaType) => Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
+		void IMetaTypeVisitor.VisitEnum(MetaEnumType metaType) => Write(metaType, []);
+		void IMetaTypeVisitor.VisitGCHandle(MetaGCHandleType metaType) => Write(metaType, []);
+		void IMetaTypeVisitor.VisitKnownType(MetaKnownType metaType) => Write(metaType, []);
+		void IMetaTypeVisitor.VisitNullable(MetaNullableType metaType) => Write(metaType, []);
+		void IMetaTypeVisitor.VisitSimpleResolved(MetaSimpleResolvedType metaType) => Write(metaType, []);
 
 		void IMetaTypeVisitor.VisitUnresolved(MetaUnresolvedType metaType)
 		{
-			Write(metaType, ImmutableArray<MetaTypeBase>.Empty);
+			Write(metaType, []);
 		}
 
 		readonly StringBuilder _builder = new StringBuilder();
