@@ -20,6 +20,8 @@ insert_final_newline = false
 
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference
 [*.{cs,vb}]
+dotnet_separate_import_directive_groups = false:warning
+dotnet_sort_system_directives_first = true:warning
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_collection_initializer = true:none
 dotnet_style_explicit_tuple_names = true:suggestion
@@ -46,6 +48,8 @@ csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_open_brace = all
 csharp_new_line_between_query_expression_clauses = true
+
+csharp_preferred_modifier_order = public,private,protected,internal,file,static,const,new,readonly,volatile,virtual,sealed,override,abstract,required,unsafe,async:warning
 
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
@@ -86,7 +90,13 @@ csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_prefer_primary_constructors = false:none
 csharp_style_prefer_switch_expression = false:none
+dotnet_style_require_accessibility_modifiers = never:warning
 csharp_style_throw_expression = false:none
 csharp_style_var_elsewhere = true:suggestion
 csharp_style_var_for_built_in_types = true:warning
 csharp_style_var_when_type_is_apparent = true:warning
+
+csharp_using_directive_placement = outside_namespace:warning
+
+file_header_template = Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
