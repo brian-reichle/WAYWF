@@ -5,375 +5,374 @@ using System.Reflection;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class MetaSignatureParser
 {
-	static class MetaSignatureParser
+	public static MetaMethodSignature ReadMethodDefSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
 	{
-		public static MetaMethodSignature ReadMethodDefSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
+		var sig = new Signature(context, sigPtr, sigLen);
+		var result = ReadMethodSig(sig, allowSentinel: false, isTopLevel: true);
+		if (!sig.EOF)
 		{
-			var sig = new Signature(context, sigPtr, sigLen);
-			var result = ReadMethodSig(sig, allowSentinel: false, isTopLevel: true);
-			if (!sig.EOF)
-			{
-				throw new InvalidSignatureException();
-			}
-
-			return result;
+			throw new InvalidSignatureException();
 		}
 
-		public static ImmutableArray<MetaVariable> ReadLocalSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
-		{
-			var sig = new Signature(context, sigPtr, sigLen);
-			var result = ReadLocalSig(sig);
-			if (!sig.EOF)
-			{
-				throw new InvalidSignatureException();
-			}
+		return result;
+	}
 
-			return result;
+	public static ImmutableArray<MetaVariable> ReadLocalSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
+	{
+		var sig = new Signature(context, sigPtr, sigLen);
+		var result = ReadLocalSig(sig);
+		if (!sig.EOF)
+		{
+			throw new InvalidSignatureException();
 		}
 
-		public static MetaTypeBase ReadTypeSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
-		{
-			var sig = new Signature(context, sigPtr, sigLen);
-			var result = ReadTypeCore(sig);
-			if (!sig.EOF)
-			{
-				throw new InvalidSignatureException();
-			}
+		return result;
+	}
 
-			return result;
+	public static MetaTypeBase ReadTypeSig(ISignatureContext context, IntPtr sigPtr, int sigLen)
+	{
+		var sig = new Signature(context, sigPtr, sigLen);
+		var result = ReadTypeCore(sig);
+		if (!sig.EOF)
+		{
+			throw new InvalidSignatureException();
 		}
 
-		public static MetaTypeBase ReadFieldType(ISignatureContext context, IntPtr sigPtr, int sigLen)
-		{
-			var sig = new Signature(context, sigPtr, sigLen);
-			var result = ReadFieldType(sig);
-			if (!sig.EOF)
-			{
-				throw new InvalidSignatureException();
-			}
+		return result;
+	}
 
-			return result;
+	public static MetaTypeBase ReadFieldType(ISignatureContext context, IntPtr sigPtr, int sigLen)
+	{
+		var sig = new Signature(context, sigPtr, sigLen);
+		var result = ReadFieldType(sig);
+		if (!sig.EOF)
+		{
+			throw new InvalidSignatureException();
 		}
 
-		static MetaMethodSignature ReadMethodSig(Signature sig, bool allowSentinel, bool isTopLevel)
+		return result;
+	}
+
+	static MetaMethodSignature ReadMethodSig(Signature sig, bool allowSentinel, bool isTopLevel)
+	{
+		const CallingConventions mask =
+			CallingConventions.HasThis |
+			CallingConventions.ExplicitThis;
+
+		const byte Default = 0x00;
+		const byte VarArgs = 0x05;
+		const byte Generic = 0x10;
+
+		var preamble = sig.ReadByte();
+		var genParamCount = 0;
+		CallingConventions callingConvention;
+
+		switch (unchecked((byte)~mask & preamble))
 		{
-			const CallingConventions mask =
-				CallingConventions.HasThis |
-				CallingConventions.ExplicitThis;
+			case VarArgs:
+				callingConvention = CallingConventions.VarArgs;
+				break;
 
-			const byte Default = 0x00;
-			const byte VarArgs = 0x05;
-			const byte Generic = 0x10;
+			case Generic:
+				genParamCount = sig.ReadCompressedUInt();
+				goto case Default;
 
-			var preamble = sig.ReadByte();
-			var genParamCount = 0;
-			CallingConventions callingConvention;
+			case Default:
+				callingConvention = CallingConventions.Standard;
+				allowSentinel = false;
+				break;
 
-			switch (unchecked((byte)~mask & preamble))
+			default:
+				throw new InvalidSignatureException();
+		}
+
+		callingConvention |= mask & (CallingConventions)preamble;
+
+		var paramCount = sig.ReadCompressedUInt();
+		var parameters = ImmutableArray.CreateBuilder<MetaVariable>(paramCount);
+		parameters.Count = paramCount;
+
+		var resultParam = ReadParameter(sig, null);
+
+		for (var i = 0; i < parameters.Count; i++)
+		{
+			if ((CorElementType)sig.PeekByte() == CorElementType.ELEMENT_TYPE_SENTINEL)
 			{
-				case VarArgs:
-					callingConvention = CallingConventions.VarArgs;
-					break;
-
-				case Generic:
-					genParamCount = sig.ReadCompressedUInt();
-					goto case Default;
-
-				case Default:
-					callingConvention = CallingConventions.Standard;
-					allowSentinel = false;
-					break;
-
-				default:
-					throw new InvalidSignatureException();
-			}
-
-			callingConvention |= mask & (CallingConventions)preamble;
-
-			var paramCount = sig.ReadCompressedUInt();
-			var parameters = ImmutableArray.CreateBuilder<MetaVariable>(paramCount);
-			parameters.Count = paramCount;
-
-			var resultParam = ReadParameter(sig, null);
-
-			for (var i = 0; i < parameters.Count; i++)
-			{
-				if ((CorElementType)sig.PeekByte() == CorElementType.ELEMENT_TYPE_SENTINEL)
+				if (!allowSentinel)
 				{
-					if (!allowSentinel)
-					{
-						throw new InvalidSignatureException();
-					}
-
-					sig.ReadByte();
-					allowSentinel = false;
+					throw new InvalidSignatureException();
 				}
 
-				parameters[i] = ReadParameter(sig, isTopLevel ? i + 1 : default(int?));
+				sig.ReadByte();
+				allowSentinel = false;
 			}
 
-			return new MetaMethodSignature(callingConvention, genParamCount, resultParam, parameters.MoveToImmutable());
+			parameters[i] = ReadParameter(sig, isTopLevel ? i + 1 : default(int?));
 		}
 
-		static ImmutableArray<MetaVariable> ReadLocalSig(Signature sig)
+		return new MetaMethodSignature(callingConvention, genParamCount, resultParam, parameters.MoveToImmutable());
+	}
+
+	static ImmutableArray<MetaVariable> ReadLocalSig(Signature sig)
+	{
+		if (sig.ReadByte() != LOCAL_SIG)
 		{
-			if (sig.ReadByte() != LOCAL_SIG)
-			{
+			throw new InvalidSignatureException();
+		}
+
+		var count = sig.ReadCompressedUInt();
+		var locals = ImmutableArray.CreateBuilder<MetaVariable>(count);
+		locals.Count = count;
+
+		for (var i = 0; i < locals.Count; i++)
+		{
+			locals[i] = ReadLocal(sig, i);
+		}
+
+		return locals.ToImmutable();
+	}
+
+	static MetaTypeBase ReadFieldType(Signature sig)
+	{
+		if (sig.ReadByte() != FIELD_SIG)
+		{
+			throw new InvalidSignatureException();
+		}
+
+		SkipCMODList(sig);
+		return ReadTypeCore(sig);
+	}
+
+	static MetaTypeBase ReadTypeCore(Signature sig)
+	{
+		var elementType = (CorElementType)sig.ReadByte();
+
+		switch (elementType)
+		{
+			case CorElementType.ELEMENT_TYPE_BOOLEAN:
+			case CorElementType.ELEMENT_TYPE_CHAR:
+			case CorElementType.ELEMENT_TYPE_I1:
+			case CorElementType.ELEMENT_TYPE_U1:
+			case CorElementType.ELEMENT_TYPE_I2:
+			case CorElementType.ELEMENT_TYPE_U2:
+			case CorElementType.ELEMENT_TYPE_I4:
+			case CorElementType.ELEMENT_TYPE_U4:
+			case CorElementType.ELEMENT_TYPE_I8:
+			case CorElementType.ELEMENT_TYPE_U8:
+			case CorElementType.ELEMENT_TYPE_R4:
+			case CorElementType.ELEMENT_TYPE_R8:
+			case CorElementType.ELEMENT_TYPE_I:
+			case CorElementType.ELEMENT_TYPE_U:
+			case CorElementType.ELEMENT_TYPE_OBJECT:
+			case CorElementType.ELEMENT_TYPE_STRING:
+			case CorElementType.ELEMENT_TYPE_VOID:
+				return MetaDataCache.GetType(elementType);
+
+			case CorElementType.ELEMENT_TYPE_ARRAY:
+				return ReadArray(sig);
+
+			case CorElementType.ELEMENT_TYPE_CLASS:
+			case CorElementType.ELEMENT_TYPE_VALUETYPE:
+				return ReadClass(sig);
+
+			case CorElementType.ELEMENT_TYPE_MVAR:
+				return ReadVar(method: true, sig);
+
+			case CorElementType.ELEMENT_TYPE_VAR:
+				return ReadVar(method: false, sig);
+
+			case CorElementType.ELEMENT_TYPE_PTR:
+				return ReadPointer(sig);
+
+			case CorElementType.ELEMENT_TYPE_GENERICINST:
+				return ReadGenericInst(sig);
+
+			case CorElementType.ELEMENT_TYPE_SZARRAY:
+				return ReadSZArray(sig);
+
+			case CorElementType.ELEMENT_TYPE_FNPTR:
+				return ReadFunctionPTR(sig);
+
+			default:
 				throw new InvalidSignatureException();
-			}
-
-			var count = sig.ReadCompressedUInt();
-			var locals = ImmutableArray.CreateBuilder<MetaVariable>(count);
-			locals.Count = count;
-
-			for (var i = 0; i < locals.Count; i++)
-			{
-				locals[i] = ReadLocal(sig, i);
-			}
-
-			return locals.ToImmutable();
 		}
+	}
 
-		static MetaTypeBase ReadFieldType(Signature sig)
+	static MetaArrayType ReadArray(Signature sig)
+	{
+		var baseType = ReadTypeCore(sig);
+		var rank = sig.ReadCompressedUInt();
+		var numSizes = sig.ReadCompressedUInt();
+
+		for (var i = 0; i < numSizes; i++)
 		{
-			if (sig.ReadByte() != FIELD_SIG)
-			{
-				throw new InvalidSignatureException();
-			}
-
-			SkipCMODList(sig);
-			return ReadTypeCore(sig);
+			sig.ReadCompressedUInt();
 		}
 
-		static MetaTypeBase ReadTypeCore(Signature sig)
+		var numLoBounds = sig.ReadCompressedUInt();
+
+		for (var i = 0; i < numLoBounds; i++)
 		{
-			var elementType = (CorElementType)sig.ReadByte();
-
-			switch (elementType)
-			{
-				case CorElementType.ELEMENT_TYPE_BOOLEAN:
-				case CorElementType.ELEMENT_TYPE_CHAR:
-				case CorElementType.ELEMENT_TYPE_I1:
-				case CorElementType.ELEMENT_TYPE_U1:
-				case CorElementType.ELEMENT_TYPE_I2:
-				case CorElementType.ELEMENT_TYPE_U2:
-				case CorElementType.ELEMENT_TYPE_I4:
-				case CorElementType.ELEMENT_TYPE_U4:
-				case CorElementType.ELEMENT_TYPE_I8:
-				case CorElementType.ELEMENT_TYPE_U8:
-				case CorElementType.ELEMENT_TYPE_R4:
-				case CorElementType.ELEMENT_TYPE_R8:
-				case CorElementType.ELEMENT_TYPE_I:
-				case CorElementType.ELEMENT_TYPE_U:
-				case CorElementType.ELEMENT_TYPE_OBJECT:
-				case CorElementType.ELEMENT_TYPE_STRING:
-				case CorElementType.ELEMENT_TYPE_VOID:
-					return MetaDataCache.GetType(elementType);
-
-				case CorElementType.ELEMENT_TYPE_ARRAY:
-					return ReadArray(sig);
-
-				case CorElementType.ELEMENT_TYPE_CLASS:
-				case CorElementType.ELEMENT_TYPE_VALUETYPE:
-					return ReadClass(sig);
-
-				case CorElementType.ELEMENT_TYPE_MVAR:
-					return ReadVar(method: true, sig);
-
-				case CorElementType.ELEMENT_TYPE_VAR:
-					return ReadVar(method: false, sig);
-
-				case CorElementType.ELEMENT_TYPE_PTR:
-					return ReadPointer(sig);
-
-				case CorElementType.ELEMENT_TYPE_GENERICINST:
-					return ReadGenericInst(sig);
-
-				case CorElementType.ELEMENT_TYPE_SZARRAY:
-					return ReadSZArray(sig);
-
-				case CorElementType.ELEMENT_TYPE_FNPTR:
-					return ReadFunctionPTR(sig);
-
-				default:
-					throw new InvalidSignatureException();
-			}
+			sig.ReadCompressedInt();
 		}
 
-		static MetaArrayType ReadArray(Signature sig)
+		return new MetaArrayType(baseType, rank);
+	}
+
+	static MetaArrayType ReadSZArray(Signature sig)
+	{
+		SkipCMODList(sig);
+		var baseType = ReadTypeCore(sig);
+		return new MetaArrayType(baseType, 1);
+	}
+
+	static MetaType ReadClass(Signature sig)
+	{
+		return sig.Context.GetType(sig.ReadTypeDefOrRefOrSpecEncoded());
+	}
+
+	static MetaPointerType ReadPointer(Signature sig)
+	{
+		SkipCMODList(sig);
+		var baseType = ReadTypeCore(sig);
+		return new MetaPointerType(baseType);
+	}
+
+	static MetaGenType ReadGenericInst(Signature sig)
+	{
+		sig.ReadByte();
+		var baseType = ReadClass(sig);
+		var genArgCount = sig.ReadCompressedUInt();
+		var genArguments = ImmutableArray.CreateBuilder<MetaTypeBase>(genArgCount);
+		genArguments.Count = genArgCount;
+
+		for (var i = 0; i < genArgCount; i++)
 		{
-			var baseType = ReadTypeCore(sig);
-			var rank = sig.ReadCompressedUInt();
-			var numSizes = sig.ReadCompressedUInt();
-
-			for (var i = 0; i < numSizes; i++)
-			{
-				sig.ReadCompressedUInt();
-			}
-
-			var numLoBounds = sig.ReadCompressedUInt();
-
-			for (var i = 0; i < numLoBounds; i++)
-			{
-				sig.ReadCompressedInt();
-			}
-
-			return new MetaArrayType(baseType, rank);
+			genArguments[i] = ReadTypeCore(sig);
 		}
 
-		static MetaArrayType ReadSZArray(Signature sig)
-		{
-			SkipCMODList(sig);
-			var baseType = ReadTypeCore(sig);
-			return new MetaArrayType(baseType, 1);
-		}
+		return new MetaGenType(baseType, genArguments.MoveToImmutable());
+	}
 
-		static MetaType ReadClass(Signature sig)
-		{
-			return sig.Context.GetType(sig.ReadTypeDefOrRefOrSpecEncoded());
-		}
+	static MetaType ReadFunctionPTR(Signature sig)
+	{
+		ReadMethodSig(sig, allowSentinel: true, isTopLevel: false);
+		return MetaKnownType.IntPtr;
+	}
 
-		static MetaPointerType ReadPointer(Signature sig)
-		{
-			SkipCMODList(sig);
-			var baseType = ReadTypeCore(sig);
-			return new MetaPointerType(baseType);
-		}
+	static MetaVarType ReadVar(bool method, Signature sig)
+	{
+		var genIndex = sig.ReadCompressedUInt();
+		return new MetaVarType(method, genIndex);
+	}
 
-		static MetaGenType ReadGenericInst(Signature sig)
+	static MetaVariable ReadParameter(Signature sig, int? parameterIndex)
+	{
+		SkipCMODList(sig);
+		var byRef = false;
+		MetaTypeBase type;
+
+		var elementType = (CorElementType)sig.PeekByte();
+
+		if (elementType == CorElementType.ELEMENT_TYPE_TYPEDBYREF)
 		{
 			sig.ReadByte();
-			var baseType = ReadClass(sig);
-			var genArgCount = sig.ReadCompressedUInt();
-			var genArguments = ImmutableArray.CreateBuilder<MetaTypeBase>(genArgCount);
-			genArguments.Count = genArgCount;
-
-			for (var i = 0; i < genArgCount; i++)
-			{
-				genArguments[i] = ReadTypeCore(sig);
-			}
-
-			return new MetaGenType(baseType, genArguments.MoveToImmutable());
+			type = MetaKnownType.TypedReference;
 		}
-
-		static MetaType ReadFunctionPTR(Signature sig)
+		else
 		{
-			ReadMethodSig(sig, allowSentinel: true, isTopLevel: false);
-			return MetaKnownType.IntPtr;
-		}
-
-		static MetaVarType ReadVar(bool method, Signature sig)
-		{
-			var genIndex = sig.ReadCompressedUInt();
-			return new MetaVarType(method, genIndex);
-		}
-
-		static MetaVariable ReadParameter(Signature sig, int? parameterIndex)
-		{
-			SkipCMODList(sig);
-			var byRef = false;
-			MetaTypeBase type;
-
-			var elementType = (CorElementType)sig.PeekByte();
-
-			if (elementType == CorElementType.ELEMENT_TYPE_TYPEDBYREF)
+			if (elementType == CorElementType.ELEMENT_TYPE_BYREF)
 			{
 				sig.ReadByte();
-				type = MetaKnownType.TypedReference;
+
+				// Skip over any custom modifiers between ELEMENT_TYPE_BYREF and the parameter
+				// type. The specification does not actually permit custom modifiers here, but
+				// Microsofts C++/CLI compiler has a tendency to add them anyway and we don't
+				// want to crash due to code that "seems" correct.
+				SkipCMODList(sig);
+				byRef = true;
 			}
-			else
+
+			type = ReadTypeCore(sig);
+		}
+
+		var name = parameterIndex.HasValue ? sig.Context.GetParamName(parameterIndex.Value) : null;
+		return new MetaVariable(type, name, byRef, false);
+	}
+
+	static MetaVariable ReadLocal(Signature sig, int localIndex)
+	{
+		var value = sig.PeekByte();
+		MetaTypeBase type;
+		var pinned = false;
+		var isByRef = false;
+
+		if (value == (byte)CorElementType.ELEMENT_TYPE_TYPEDBYREF)
+		{
+			sig.ReadByte();
+			type = MetaKnownType.TypedReference;
+		}
+		else
+		{
+			while (true)
 			{
-				if (elementType == CorElementType.ELEMENT_TYPE_BYREF)
+				if (value == (byte)CorElementType.ELEMENT_TYPE_PINNED)
 				{
 					sig.ReadByte();
-
-					// Skip over any custom modifiers between ELEMENT_TYPE_BYREF and the parameter
-					// type. The specification does not actually permit custom modifiers here, but
-					// Microsofts C++/CLI compiler has a tendency to add them anyway and we don't
-					// want to crash due to code that "seems" correct.
-					SkipCMODList(sig);
-					byRef = true;
+					pinned = true;
 				}
-
-				type = ReadTypeCore(sig);
-			}
-
-			var name = parameterIndex.HasValue ? sig.Context.GetParamName(parameterIndex.Value) : null;
-			return new MetaVariable(type, name, byRef, false);
-		}
-
-		static MetaVariable ReadLocal(Signature sig, int localIndex)
-		{
-			var value = sig.PeekByte();
-			MetaTypeBase type;
-			var pinned = false;
-			var isByRef = false;
-
-			if (value == (byte)CorElementType.ELEMENT_TYPE_TYPEDBYREF)
-			{
-				sig.ReadByte();
-				type = MetaKnownType.TypedReference;
-			}
-			else
-			{
-				while (true)
+				else if (value == (byte)CorElementType.ELEMENT_TYPE_CMOD_OPT || value == (byte)CorElementType.ELEMENT_TYPE_CMOD_REQD)
 				{
-					if (value == (byte)CorElementType.ELEMENT_TYPE_PINNED)
-					{
-						sig.ReadByte();
-						pinned = true;
-					}
-					else if (value == (byte)CorElementType.ELEMENT_TYPE_CMOD_OPT || value == (byte)CorElementType.ELEMENT_TYPE_CMOD_REQD)
-					{
-						sig.ReadByte();
-						sig.ReadCompressedUInt();
-					}
-					else if (value == (byte)CorElementType.ELEMENT_TYPE_BYREF)
-					{
-						sig.ReadByte();
-						isByRef = true;
-					}
-					else
-					{
-						break;
-					}
-
-					value = sig.PeekByte();
+					sig.ReadByte();
+					sig.ReadCompressedUInt();
+				}
+				else if (value == (byte)CorElementType.ELEMENT_TYPE_BYREF)
+				{
+					sig.ReadByte();
+					isByRef = true;
+				}
+				else
+				{
+					break;
 				}
 
-				type = ReadTypeCore(sig);
+				value = sig.PeekByte();
 			}
 
-			var name = sig.Context.GetLocalName(localIndex);
-			return new MetaVariable(type, name, isByRef, pinned);
+			type = ReadTypeCore(sig);
 		}
 
-		static void SkipCMODList(Signature sig)
+		var name = sig.Context.GetLocalName(localIndex);
+		return new MetaVariable(type, name, isByRef, pinned);
+	}
+
+	static void SkipCMODList(Signature sig)
+	{
+		var elementType = (CorElementType)sig.PeekByte();
+
+		while (elementType == CorElementType.ELEMENT_TYPE_CMOD_OPT || elementType == CorElementType.ELEMENT_TYPE_CMOD_REQD)
 		{
-			var elementType = (CorElementType)sig.PeekByte();
-
-			while (elementType == CorElementType.ELEMENT_TYPE_CMOD_OPT || elementType == CorElementType.ELEMENT_TYPE_CMOD_REQD)
-			{
-				sig.ReadByte();
-				sig.ReadCompressedUInt();
-				elementType = (CorElementType)sig.PeekByte();
-			}
+			sig.ReadByte();
+			sig.ReadCompressedUInt();
+			elementType = (CorElementType)sig.PeekByte();
 		}
+	}
 
-		const int FIELD_SIG = 0x06;
-		const int LOCAL_SIG = 0x07;
+	const int FIELD_SIG = 0x06;
+	const int LOCAL_SIG = 0x07;
 
-		sealed class Signature : BlobReader
+	sealed class Signature : BlobReader
+	{
+		public Signature(ISignatureContext context, IntPtr buffer, int length)
+			: base(buffer, length)
 		{
-			public Signature(ISignatureContext context, IntPtr buffer, int length)
-				: base(buffer, length)
-			{
-				Context = context;
-			}
-
-			public ISignatureContext Context { get; }
+			Context = context;
 		}
+
+		public ISignatureContext Context { get; }
 	}
 }

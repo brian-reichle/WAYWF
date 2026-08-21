@@ -1,9 +1,8 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-namespace WAYWF.Agent.Data
+namespace WAYWF.Agent.Data;
+
+public interface IRuntimeFrameVisitor
 {
-	public interface IRuntimeFrameVisitor
-	{
-		void Visit(RuntimeILFrame frame);
-		void Visit(RuntimeInternalFrame frame);
-	}
+	void Visit(RuntimeILFrame frame);
+	void Visit(RuntimeInternalFrame frame);
 }

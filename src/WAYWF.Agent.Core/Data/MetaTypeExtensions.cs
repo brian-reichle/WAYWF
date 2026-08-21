@@ -4,195 +4,194 @@ using System.Collections.Immutable;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class MetaTypeExtensions
 {
-	static class MetaTypeExtensions
+	public static bool TryGetValue(this MetaTypeBase type, ICorDebugValue value, out object result)
 	{
-		public static bool TryGetValue(this MetaTypeBase type, ICorDebugValue value, out object result)
+		var tmp = type.Apply(Visitor.Instance, new Context(value, []));
+
+		if (tmp == UnknownValue)
 		{
-			var tmp = type.Apply(Visitor.Instance, new Context(value, []));
+			result = null;
+			return false;
+		}
+
+		result = tmp;
+		return true;
+	}
+
+	static readonly object UnknownValue = new object();
+
+	sealed class Visitor : IMetaTypeVisitor<Context, object>
+	{
+		public static Visitor Instance { get; } = new Visitor();
+
+		public object VisitArray(MetaArrayType metaType, Context context)
+		{
+			if (context.Value is ICorDebugArrayValue arr)
+			{
+				var rank = arr.GetRank();
+				var dims = new int[rank];
+				arr.GetDimensions(rank, dims);
+
+				var formatter = new MetaFormatter();
+				formatter.Write(metaType, dims);
+
+				return formatter.ToString();
+			}
+
+			return UnknownValue;
+		}
+
+		public object VisitEnum(MetaEnumType metaType, Context context)
+		{
+			var tmp = metaType.UnderlyingType.Apply(this, context);
 
 			if (tmp == UnknownValue)
 			{
-				result = null;
-				return false;
-			}
-
-			result = tmp;
-			return true;
-		}
-
-		static readonly object UnknownValue = new object();
-
-		sealed class Visitor : IMetaTypeVisitor<Context, object>
-		{
-			public static Visitor Instance { get; } = new Visitor();
-
-			public object VisitArray(MetaArrayType metaType, Context context)
-			{
-				if (context.Value is ICorDebugArrayValue arr)
-				{
-					var rank = arr.GetRank();
-					var dims = new int[rank];
-					arr.GetDimensions(rank, dims);
-
-					var formatter = new MetaFormatter();
-					formatter.Write(metaType, dims);
-
-					return formatter.ToString();
-				}
-
 				return UnknownValue;
 			}
 
-			public object VisitEnum(MetaEnumType metaType, Context context)
+			return metaType.Format(ULongFromObject(tmp));
+		}
+
+		public object VisitGCHandle(MetaGCHandleType metaType, Context context)
+		{
+			var objValue = (ICorDebugObjectValue)context.Value;
+			var handleObj = objValue.GetFieldValue(metaType.HandleField);
+
+			if (handleObj == null)
 			{
-				var tmp = metaType.UnderlyingType.Apply(this, context);
-
-				if (tmp == UnknownValue)
-				{
-					return UnknownValue;
-				}
-
-				return metaType.Format(ULongFromObject(tmp));
+				return UnknownValue;
 			}
 
-			public object VisitGCHandle(MetaGCHandleType metaType, Context context)
+			return ValueExtensions.GetValue<IntPtr>((ICorDebugGenericValue)handleObj).ToString();
+		}
+
+		public object VisitGen(MetaGenType metaType, Context context)
+			=> metaType.BaseType.Apply(this, new Context(context.Value, metaType.TypeArgs));
+
+		public object VisitKnownType(MetaKnownType metaType, Context context)
+		{
+			var value = context.Value;
+
+			return metaType.Code switch
 			{
-				var objValue = (ICorDebugObjectValue)context.Value;
-				var handleObj = objValue.GetFieldValue(metaType.HandleField);
+				MetaKnownTypeCode.String => GetStringValue(value),
+				MetaKnownTypeCode.Boolean => GetGenericValue<bool>(value),
+				MetaKnownTypeCode.Char => GetGenericValue<char>(value),
+				MetaKnownTypeCode.SByte => GetGenericValue<sbyte>(value),
+				MetaKnownTypeCode.Int16 => GetGenericValue<short>(value),
+				MetaKnownTypeCode.Int32 => GetGenericValue<int>(value),
+				MetaKnownTypeCode.Int64 => GetGenericValue<long>(value),
+				MetaKnownTypeCode.IntPtr => GetGenericValue<IntPtr>(value),
+				MetaKnownTypeCode.Byte => GetGenericValue<byte>(value),
+				MetaKnownTypeCode.UInt16 => GetGenericValue<ushort>(value),
+				MetaKnownTypeCode.UInt32 => GetGenericValue<uint>(value),
+				MetaKnownTypeCode.UInt64 => GetGenericValue<ulong>(value),
+				MetaKnownTypeCode.UIntPtr => GetGenericValue<UIntPtr>(value),
+				MetaKnownTypeCode.Single => GetGenericValue<float>(value),
+				MetaKnownTypeCode.Double => GetGenericValue<double>(value),
+				MetaKnownTypeCode.Decimal => GetGenericValue<decimal>(value),
+				_ => UnknownValue,
+			};
+		}
 
-				if (handleObj == null)
-				{
-					return UnknownValue;
-				}
+		public object VisitNullable(MetaNullableType metaType, Context context)
+		{
+			var typeArgs = context.TypeArgs;
 
-				return ValueExtensions.GetValue<IntPtr>((ICorDebugGenericValue)handleObj).ToString();
+			if (typeArgs.Length != 1)
+			{
+				throw new InvalidMetaDataException("Nullable should have exactly 1 type arg");
 			}
 
-			public object VisitGen(MetaGenType metaType, Context context)
-				=> metaType.BaseType.Apply(this, new Context(context.Value, metaType.TypeArgs));
+			var innerType = typeArgs[0];
+			var objValue = (ICorDebugObjectValue)context.Value;
+			var hasValueValue = objValue.GetFieldValue(metaType.HasValueToken);
 
-			public object VisitKnownType(MetaKnownType metaType, Context context)
+			if (!ValueExtensions.GetValue<bool>((ICorDebugGenericValue)hasValueValue))
 			{
-				var value = context.Value;
+				return UnknownValue;
+			}
 
-				return metaType.Code switch
+			var valueValue = objValue.GetFieldValue(metaType.ValueToken);
+
+			if (valueValue == null)
+			{
+				return UnknownValue;
+			}
+
+			return innerType.Apply(this, new Context(valueValue, []));
+		}
+
+		public object VisitPointer(MetaPointerType metaType, Context context) => UnknownValue;
+		public object VisitSimpleResolved(MetaSimpleResolvedType metaType, Context context) => UnknownValue;
+		public object VisitUnresolved(MetaUnresolvedType metaType, Context context) => UnknownValue;
+		public object VisitVar(MetaVarType metaType, Context context) => UnknownValue;
+
+		static object GetStringValue(ICorDebugValue value)
+		{
+			if (value is ICorDebugStringValue sValue)
+			{
+				return sValue.GetString();
+			}
+
+			return UnknownValue;
+		}
+
+		static object GetGenericValue<T>(ICorDebugValue value)
+			where T : unmanaged
+		{
+			if (value is ICorDebugGenericValue gValue)
+			{
+				return ValueExtensions.GetValue<T>(gValue);
+			}
+
+			return UnknownValue;
+		}
+
+		static ulong ULongFromObject(object obj)
+		{
+			unchecked
+			{
+				return Type.GetTypeCode(obj.GetType()) switch
 				{
-					MetaKnownTypeCode.String => GetStringValue(value),
-					MetaKnownTypeCode.Boolean => GetGenericValue<bool>(value),
-					MetaKnownTypeCode.Char => GetGenericValue<char>(value),
-					MetaKnownTypeCode.SByte => GetGenericValue<sbyte>(value),
-					MetaKnownTypeCode.Int16 => GetGenericValue<short>(value),
-					MetaKnownTypeCode.Int32 => GetGenericValue<int>(value),
-					MetaKnownTypeCode.Int64 => GetGenericValue<long>(value),
-					MetaKnownTypeCode.IntPtr => GetGenericValue<IntPtr>(value),
-					MetaKnownTypeCode.Byte => GetGenericValue<byte>(value),
-					MetaKnownTypeCode.UInt16 => GetGenericValue<ushort>(value),
-					MetaKnownTypeCode.UInt32 => GetGenericValue<uint>(value),
-					MetaKnownTypeCode.UInt64 => GetGenericValue<ulong>(value),
-					MetaKnownTypeCode.UIntPtr => GetGenericValue<UIntPtr>(value),
-					MetaKnownTypeCode.Single => GetGenericValue<float>(value),
-					MetaKnownTypeCode.Double => GetGenericValue<double>(value),
-					MetaKnownTypeCode.Decimal => GetGenericValue<decimal>(value),
-					_ => UnknownValue,
+					TypeCode.Boolean => ((bool)obj) ? 1u : 0u,
+					TypeCode.Char => (char)obj,
+
+					TypeCode.SByte => (byte)(sbyte)obj,
+					TypeCode.Int16 => (ushort)(short)obj,
+					TypeCode.Int32 => (uint)(int)obj,
+					TypeCode.Int64 => (ulong)(long)obj,
+
+					TypeCode.Byte => (byte)obj,
+					TypeCode.UInt16 => (ushort)obj,
+					TypeCode.UInt32 => (uint)obj,
+					TypeCode.UInt64 => (ulong)obj,
+
+					_ => obj switch
+					{
+						IntPtr intPtr => (ulong)intPtr,
+						UIntPtr uIntPtr => (ulong)uIntPtr,
+						_ => throw new ArgumentException("cannot convert " + obj.GetType() + " to ulong"),
+					},
 				};
 			}
-
-			public object VisitNullable(MetaNullableType metaType, Context context)
-			{
-				var typeArgs = context.TypeArgs;
-
-				if (typeArgs.Length != 1)
-				{
-					throw new InvalidMetaDataException("Nullable should have exactly 1 type arg");
-				}
-
-				var innerType = typeArgs[0];
-				var objValue = (ICorDebugObjectValue)context.Value;
-				var hasValueValue = objValue.GetFieldValue(metaType.HasValueToken);
-
-				if (!ValueExtensions.GetValue<bool>((ICorDebugGenericValue)hasValueValue))
-				{
-					return UnknownValue;
-				}
-
-				var valueValue = objValue.GetFieldValue(metaType.ValueToken);
-
-				if (valueValue == null)
-				{
-					return UnknownValue;
-				}
-
-				return innerType.Apply(this, new Context(valueValue, []));
-			}
-
-			public object VisitPointer(MetaPointerType metaType, Context context) => UnknownValue;
-			public object VisitSimpleResolved(MetaSimpleResolvedType metaType, Context context) => UnknownValue;
-			public object VisitUnresolved(MetaUnresolvedType metaType, Context context) => UnknownValue;
-			public object VisitVar(MetaVarType metaType, Context context) => UnknownValue;
-
-			static object GetStringValue(ICorDebugValue value)
-			{
-				if (value is ICorDebugStringValue sValue)
-				{
-					return sValue.GetString();
-				}
-
-				return UnknownValue;
-			}
-
-			static object GetGenericValue<T>(ICorDebugValue value)
-				where T : unmanaged
-			{
-				if (value is ICorDebugGenericValue gValue)
-				{
-					return ValueExtensions.GetValue<T>(gValue);
-				}
-
-				return UnknownValue;
-			}
-
-			static ulong ULongFromObject(object obj)
-			{
-				unchecked
-				{
-					return Type.GetTypeCode(obj.GetType()) switch
-					{
-						TypeCode.Boolean => ((bool)obj) ? 1u : 0u,
-						TypeCode.Char => (char)obj,
-
-						TypeCode.SByte => (byte)(sbyte)obj,
-						TypeCode.Int16 => (ushort)(short)obj,
-						TypeCode.Int32 => (uint)(int)obj,
-						TypeCode.Int64 => (ulong)(long)obj,
-
-						TypeCode.Byte => (byte)obj,
-						TypeCode.UInt16 => (ushort)obj,
-						TypeCode.UInt32 => (uint)obj,
-						TypeCode.UInt64 => (ulong)obj,
-
-						_ => obj switch
-						{
-							IntPtr intPtr => (ulong)intPtr,
-							UIntPtr uIntPtr => (ulong)uIntPtr,
-							_ => throw new ArgumentException("cannot convert " + obj.GetType() + " to ulong"),
-						},
-					};
-				}
-			}
 		}
+	}
 
-		readonly struct Context
+	readonly struct Context
+	{
+		public Context(ICorDebugValue value, ImmutableArray<MetaTypeBase> typeArgs)
 		{
-			public Context(ICorDebugValue value, ImmutableArray<MetaTypeBase> typeArgs)
-			{
-				Value = value;
-				TypeArgs = typeArgs;
-			}
-
-			public ICorDebugValue Value { get; }
-			public ImmutableArray<MetaTypeBase> TypeArgs { get; }
+			Value = value;
+			TypeArgs = typeArgs;
 		}
+
+		public ICorDebugValue Value { get; }
+		public ImmutableArray<MetaTypeBase> TypeArgs { get; }
 	}
 }

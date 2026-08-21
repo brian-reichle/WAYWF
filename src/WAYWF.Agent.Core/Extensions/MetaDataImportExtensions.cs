@@ -7,443 +7,442 @@ using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.MetaDataApi;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class MetaDataImportExtensions
 {
-	static class MetaDataImportExtensions
+	public static unsafe void GetScopeProps(this IMetaDataImport import, out string name, out Guid mvid)
 	{
-		public static unsafe void GetScopeProps(this IMetaDataImport import, out string name, out Guid mvid)
+		int size;
+
+		fixed (Guid* ptr = &mvid)
 		{
-			int size;
-
-			fixed (Guid* ptr = &mvid)
-			{
-				import.GetScopeProps(
-					pchName: &size,
-					pmvid: ptr);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				import.GetScopeProps(
-					szName: buffer,
-					cchName: size,
-					pchName: &size);
-
-				name = new string(buffer, 0, size - 1);
-			}
+			import.GetScopeProps(
+				pchName: &size,
+				pmvid: ptr);
 		}
 
-		public static unsafe void GetTypeDefProps(this IMetaDataImport import, MetaDataToken td, out string name, out MetaDataToken declaringType, out MetaDataToken baseType)
+		if (size <= 1)
 		{
-			int size;
-			TypeAttributes flags;
-
-			fixed (MetaDataToken* ptr = &baseType)
-			{
-				import.GetTypeDefProps(
-					td,
-					pchTypeDef: &size,
-					pdwTypeDefFlags: &flags,
-					ptkExtends: ptr);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				import.GetTypeDefProps(
-					td,
-					szTypeDef: buffer,
-					cchTypeDef: size,
-					pchTypeDef: &size);
-
-				name = new string(buffer, 0, size - 1);
-			}
-
-			if (flags.IsNestedType())
-			{
-				import.GetNestedClassProps(td, out declaringType);
-			}
-			else
-			{
-				declaringType = MetaDataToken.Nil;
-			}
+			name = string.Empty;
 		}
-
-		public static unsafe void GetMethodProps(this IMetaDataImport import, MetaDataToken mb, out MetaDataToken cl, out string name, out IntPtr sigPtr, out int sigLen, out int rva)
+		else
 		{
-			int size;
-
-			fixed (MetaDataToken* clPtr = &cl)
-			fixed (IntPtr* sigPtrPtr = &sigPtr)
-			fixed (int* sigLenPtr = &sigLen)
-			fixed (int* rvaPtr = &rva)
-			{
-				import.GetMethodProps(
-					mb,
-					pClass: clPtr,
-					pchMethod: &size,
-					ppvSigBlob: sigPtrPtr,
-					pcbSigBlob: sigLenPtr,
-					pulCodeRVA: rvaPtr);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				import.GetMethodProps(
-					mb,
-					szMethod: buffer,
-					cchMethod: size,
-					pchMethod: &size);
-
-				name = new string(buffer, 0, size - 1);
-			}
-		}
-
-		public static unsafe void GetTypeRefProps(this IMetaDataImport import, MetaDataToken tr, out MetaDataToken scope, out string className)
-		{
-			int size;
-
-			fixed (MetaDataToken* scopePtr = &scope)
-			{
-				import.GetTypeRefProps(
-					tr,
-					ptkResolutionScope: scopePtr,
-					pchName: &size);
-			}
-
-			if (size <= 1)
-			{
-				className = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				import.GetTypeRefProps(
-					tr,
-					szName: buffer,
-					cchName: size,
-					pchName: &size);
-
-				className = new string(buffer, 0, size - 1);
-			}
-		}
-
-		public static unsafe bool EnumFields(this IMetaDataImport import, ref IntPtr phEnum, MetaDataToken cl, out MetaDataToken field)
-		{
-			MetaDataToken tmp;
-			var result = import.EnumFields(ref phEnum, cl, &tmp, 1) == 1;
-			field = tmp;
-			return result;
-		}
-
-		public static unsafe MetaDataToken[] GetFields(this IMetaDataImport import, MetaDataToken td)
-		{
-			var hEnum = IntPtr.Zero;
-
-			RuntimeHelpers.PrepareConstrainedRegions();
-			try
-			{
-				import.EnumFields(ref hEnum, td, null, 0);
-
-				var count = import.CountEnum(hEnum);
-
-				if (count == 0)
-				{
-					return [];
-				}
-
-				var result = new MetaDataToken[count];
-
-				fixed (MetaDataToken* ptr = &result[0])
-				{
-					count = import.EnumFields(ref hEnum, td, ptr, count);
-				}
-
-				if (count != result.Length)
-				{
-					Array.Resize(ref result, count);
-				}
-
-				return result;
-			}
-			finally
-			{
-				import.CloseEnum(hEnum);
-			}
-		}
-
-		public static unsafe void GetFieldProps(this IMetaDataImport import, MetaDataToken mb, out string name, out FieldAttributes att, out CorElementType type, out IntPtr valuePtr, out int valueLen)
-		{
-			int size;
-			IntPtr sigPtr;
-			int sigLen;
-
-			fixed (FieldAttributes* ptr = &att)
-			fixed (IntPtr* valuePtrPtr = &valuePtr)
-			fixed (int* valueLenPtr = &valueLen)
-			{
-				import.GetFieldProps(
-					mb,
-					pchField: &size,
-					pdwAttr: ptr,
-					ppvSigBlob: &sigPtr,
-					pcbSigBlob: &sigLen,
-					ppValue: valuePtrPtr,
-					pcchValue: valueLenPtr);
-			}
-
-			DistilFieldType(sigPtr, sigLen, out type, out _);
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				import.GetFieldProps(
-					mb,
-					szField: buffer,
-					cchField: size);
-
-				name = new string(buffer, 0, size - 1);
-			}
-		}
-
-		public static unsafe void GetFieldProps(this IMetaDataImport import, MetaDataToken mb, out string name, out IntPtr sigPtr, out int sigLen)
-		{
-			int size;
-
-			fixed (IntPtr* sigPtrPtr = &sigPtr)
-			fixed (int* sigLenPtr = &sigLen)
-			{
-				import.GetFieldProps(
-					mb,
-					pchField: &size,
-					ppvSigBlob: sigPtrPtr,
-					pcbSigBlob: sigLenPtr);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				import.GetFieldProps(
-					mb,
-					szField: buffer,
-					cchField: size);
-
-				name = new string(buffer, 0, size - 1);
-			}
-		}
-
-		public static unsafe void GetFieldProps(this IMetaDataImport import, MetaDataToken fieldToken, out MetaDataToken classToken, out string name)
-		{
-			int size;
-
-			fixed (MetaDataToken* classTokenPtr = &classToken)
-			{
-				import.GetFieldProps(fieldToken, pClass: classTokenPtr, pchField: &size);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-
-			var buffer = stackalloc char[size];
-			import.GetFieldProps(fieldToken, szField: buffer, cchField: size);
-			name = new string(buffer, 0, size - 1);
-		}
-
-		public static unsafe void GetFieldTypeInfo(this IMetaDataImport import, MetaDataToken mb, out CorElementType type, out MetaDataToken token)
-		{
-			IntPtr sigPtr;
-			int sigLen;
-
-			import.GetFieldProps(
-				mb,
-				ppvSigBlob: &sigPtr,
-				pcbSigBlob: &sigLen);
-
-			DistilFieldType(sigPtr, sigLen, out type, out token);
-		}
-
-		public static unsafe void GetMemberRefProps(this IMetaDataImport import, MetaDataToken mr, out MetaDataToken classToken, out string name)
-		{
-			int size;
-
-			fixed (MetaDataToken* classTokenPtr = &classToken)
-			{
-				import.GetMemberRefProps(mr, ptk: classTokenPtr, pchMember: &size);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-				return;
-			}
-
-			var buffer = stackalloc char[size];
-			import.GetMemberRefProps(mr, szMember: buffer, cchMember: size);
-			name = new string(buffer, 0, size - 1);
-		}
-
-		public static unsafe string GetParamName(this IMetaDataImport import, MetaDataToken tk)
-		{
-			int size;
-
-			import.GetParamProps(
-				tk,
-				pchName: &size);
-
-			if (size <= 1)
-			{
-				return string.Empty;
-			}
-
 			var buffer = stackalloc char[size];
 
-			import.GetParamProps(
-				tk,
+			import.GetScopeProps(
 				szName: buffer,
 				cchName: size,
 				pchName: &size);
 
-			return new string(buffer, 0, size - 1);
+			name = new string(buffer, 0, size - 1);
+		}
+	}
+
+	public static unsafe void GetTypeDefProps(this IMetaDataImport import, MetaDataToken td, out string name, out MetaDataToken declaringType, out MetaDataToken baseType)
+	{
+		int size;
+		TypeAttributes flags;
+
+		fixed (MetaDataToken* ptr = &baseType)
+		{
+			import.GetTypeDefProps(
+				td,
+				pchTypeDef: &size,
+				pdwTypeDefFlags: &flags,
+				ptkExtends: ptr);
 		}
 
-		public static unsafe MetaDataToken GetCustomAttributeType(this IMetaDataImport import, MetaDataToken cv)
+		if (size <= 1)
 		{
-			MetaDataToken constructorToken;
-			MetaDataToken typeToken;
+			name = string.Empty;
+		}
+		else
+		{
+			var buffer = stackalloc char[size];
 
-			import.GetCustomAttributeProps(
-				cv,
-				ptkType: &constructorToken);
+			import.GetTypeDefProps(
+				td,
+				szTypeDef: buffer,
+				cchTypeDef: size,
+				pchTypeDef: &size);
 
-			if (constructorToken.TokenType == TokenType.MethodDef)
-			{
-				import.GetMethodProps(
-					constructorToken,
-					pClass: &typeToken);
-			}
-			else if (constructorToken.TokenType == TokenType.MemberRef)
-			{
-				import.GetMemberRefProps(
-					constructorToken,
-					ptk: &typeToken);
-			}
-			else
-			{
-				typeToken = MetaDataToken.Nil;
-			}
-
-			return typeToken;
+			name = new string(buffer, 0, size - 1);
 		}
 
-		public static string GetParamName(this IMetaDataImport import, MetaDataToken methodToken, int index)
+		if (flags.IsNestedType())
 		{
-			var hr = import.GetParamForMethodIndex(methodToken, index, out var paramToken);
+			import.GetNestedClassProps(td, out declaringType);
+		}
+		else
+		{
+			declaringType = MetaDataToken.Nil;
+		}
+	}
 
-			if (hr == HResults.CLDB_E_RECORD_NOTFOUND)
-			{
-				return string.Empty;
-			}
-			else if (hr < 0)
-			{
-				throw Marshal.GetExceptionForHR(hr);
-			}
+	public static unsafe void GetMethodProps(this IMetaDataImport import, MetaDataToken mb, out MetaDataToken cl, out string name, out IntPtr sigPtr, out int sigLen, out int rva)
+	{
+		int size;
 
-			return import.GetParamName(paramToken);
+		fixed (MetaDataToken* clPtr = &cl)
+		fixed (IntPtr* sigPtrPtr = &sigPtr)
+		fixed (int* sigLenPtr = &sigLen)
+		fixed (int* rvaPtr = &rva)
+		{
+			import.GetMethodProps(
+				mb,
+				pClass: clPtr,
+				pchMethod: &size,
+				ppvSigBlob: sigPtrPtr,
+				pcbSigBlob: sigLenPtr,
+				pulCodeRVA: rvaPtr);
 		}
 
-		public static unsafe int GetTypeArgCount(this IMetaDataImport import, MetaDataToken tk)
+		if (size <= 1)
 		{
-			var import2 = (IMetaDataImport2)import;
-			var hEnum = IntPtr.Zero;
+			name = string.Empty;
+		}
+		else
+		{
+			var buffer = stackalloc char[size];
 
-			RuntimeHelpers.PrepareConstrainedRegions();
-			try
-			{
-				if (!import2.EnumGenericParams(ref hEnum, tk, out var paramToken))
-				{
-					return 0;
-				}
+			import.GetMethodProps(
+				mb,
+				szMethod: buffer,
+				cchMethod: size,
+				pchMethod: &size);
 
-				var result = import2.CountEnum(hEnum);
-				return result;
-			}
-			finally
-			{
-				if (hEnum != IntPtr.Zero)
-				{
-					import2.CloseEnum(hEnum);
-				}
-			}
+			name = new string(buffer, 0, size - 1);
+		}
+	}
+
+	public static unsafe void GetTypeRefProps(this IMetaDataImport import, MetaDataToken tr, out MetaDataToken scope, out string className)
+	{
+		int size;
+
+		fixed (MetaDataToken* scopePtr = &scope)
+		{
+			import.GetTypeRefProps(
+				tr,
+				ptkResolutionScope: scopePtr,
+				pchName: &size);
 		}
 
-		static unsafe void DistilFieldType(IntPtr sigPtr, int sigLen, out CorElementType elementType, out MetaDataToken token)
+		if (size <= 1)
 		{
-			const byte FIELD = 0x06;
+			className = string.Empty;
+		}
+		else
+		{
+			var buffer = stackalloc char[size];
 
-			if (sigLen <= 0)
+			import.GetTypeRefProps(
+				tr,
+				szName: buffer,
+				cchName: size,
+				pchName: &size);
+
+			className = new string(buffer, 0, size - 1);
+		}
+	}
+
+	public static unsafe bool EnumFields(this IMetaDataImport import, ref IntPtr phEnum, MetaDataToken cl, out MetaDataToken field)
+	{
+		MetaDataToken tmp;
+		var result = import.EnumFields(ref phEnum, cl, &tmp, 1) == 1;
+		field = tmp;
+		return result;
+	}
+
+	public static unsafe MetaDataToken[] GetFields(this IMetaDataImport import, MetaDataToken td)
+	{
+		var hEnum = IntPtr.Zero;
+
+		RuntimeHelpers.PrepareConstrainedRegions();
+		try
+		{
+			import.EnumFields(ref hEnum, td, null, 0);
+
+			var count = import.CountEnum(hEnum);
+
+			if (count == 0)
 			{
-				throw new InvalidSignatureException();
+				return [];
 			}
 
-			var reader = new BlobReader(sigPtr, sigLen);
-			if (reader.ReadByte() != FIELD)
+			var result = new MetaDataToken[count];
+
+			fixed (MetaDataToken* ptr = &result[0])
 			{
-				throw new InvalidSignatureException();
+				count = import.EnumFields(ref hEnum, td, ptr, count);
 			}
 
-			var type = (CorElementType)reader.ReadByte();
-
-			while (type == CorElementType.ELEMENT_TYPE_CMOD_OPT || type == CorElementType.ELEMENT_TYPE_CMOD_REQD)
+			if (count != result.Length)
 			{
-				reader.ReadCompressedUInt();
-				type = (CorElementType)reader.ReadByte();
+				Array.Resize(ref result, count);
 			}
 
-			if (type == CorElementType.ELEMENT_TYPE_GENERICINST)
+			return result;
+		}
+		finally
+		{
+			import.CloseEnum(hEnum);
+		}
+	}
+
+	public static unsafe void GetFieldProps(this IMetaDataImport import, MetaDataToken mb, out string name, out FieldAttributes att, out CorElementType type, out IntPtr valuePtr, out int valueLen)
+	{
+		int size;
+		IntPtr sigPtr;
+		int sigLen;
+
+		fixed (FieldAttributes* ptr = &att)
+		fixed (IntPtr* valuePtrPtr = &valuePtr)
+		fixed (int* valueLenPtr = &valueLen)
+		{
+			import.GetFieldProps(
+				mb,
+				pchField: &size,
+				pdwAttr: ptr,
+				ppvSigBlob: &sigPtr,
+				pcbSigBlob: &sigLen,
+				ppValue: valuePtrPtr,
+				pcchValue: valueLenPtr);
+		}
+
+		DistilFieldType(sigPtr, sigLen, out type, out _);
+
+		if (size <= 1)
+		{
+			name = string.Empty;
+		}
+		else
+		{
+			var buffer = stackalloc char[size];
+
+			import.GetFieldProps(
+				mb,
+				szField: buffer,
+				cchField: size);
+
+			name = new string(buffer, 0, size - 1);
+		}
+	}
+
+	public static unsafe void GetFieldProps(this IMetaDataImport import, MetaDataToken mb, out string name, out IntPtr sigPtr, out int sigLen)
+	{
+		int size;
+
+		fixed (IntPtr* sigPtrPtr = &sigPtr)
+		fixed (int* sigLenPtr = &sigLen)
+		{
+			import.GetFieldProps(
+				mb,
+				pchField: &size,
+				ppvSigBlob: sigPtrPtr,
+				pcbSigBlob: sigLenPtr);
+		}
+
+		if (size <= 1)
+		{
+			name = string.Empty;
+		}
+		else
+		{
+			var buffer = stackalloc char[size];
+
+			import.GetFieldProps(
+				mb,
+				szField: buffer,
+				cchField: size);
+
+			name = new string(buffer, 0, size - 1);
+		}
+	}
+
+	public static unsafe void GetFieldProps(this IMetaDataImport import, MetaDataToken fieldToken, out MetaDataToken classToken, out string name)
+	{
+		int size;
+
+		fixed (MetaDataToken* classTokenPtr = &classToken)
+		{
+			import.GetFieldProps(fieldToken, pClass: classTokenPtr, pchField: &size);
+		}
+
+		if (size <= 1)
+		{
+			name = string.Empty;
+		}
+
+		var buffer = stackalloc char[size];
+		import.GetFieldProps(fieldToken, szField: buffer, cchField: size);
+		name = new string(buffer, 0, size - 1);
+	}
+
+	public static unsafe void GetFieldTypeInfo(this IMetaDataImport import, MetaDataToken mb, out CorElementType type, out MetaDataToken token)
+	{
+		IntPtr sigPtr;
+		int sigLen;
+
+		import.GetFieldProps(
+			mb,
+			ppvSigBlob: &sigPtr,
+			pcbSigBlob: &sigLen);
+
+		DistilFieldType(sigPtr, sigLen, out type, out token);
+	}
+
+	public static unsafe void GetMemberRefProps(this IMetaDataImport import, MetaDataToken mr, out MetaDataToken classToken, out string name)
+	{
+		int size;
+
+		fixed (MetaDataToken* classTokenPtr = &classToken)
+		{
+			import.GetMemberRefProps(mr, ptk: classTokenPtr, pchMember: &size);
+		}
+
+		if (size <= 1)
+		{
+			name = string.Empty;
+			return;
+		}
+
+		var buffer = stackalloc char[size];
+		import.GetMemberRefProps(mr, szMember: buffer, cchMember: size);
+		name = new string(buffer, 0, size - 1);
+	}
+
+	public static unsafe string GetParamName(this IMetaDataImport import, MetaDataToken tk)
+	{
+		int size;
+
+		import.GetParamProps(
+			tk,
+			pchName: &size);
+
+		if (size <= 1)
+		{
+			return string.Empty;
+		}
+
+		var buffer = stackalloc char[size];
+
+		import.GetParamProps(
+			tk,
+			szName: buffer,
+			cchName: size,
+			pchName: &size);
+
+		return new string(buffer, 0, size - 1);
+	}
+
+	public static unsafe MetaDataToken GetCustomAttributeType(this IMetaDataImport import, MetaDataToken cv)
+	{
+		MetaDataToken constructorToken;
+		MetaDataToken typeToken;
+
+		import.GetCustomAttributeProps(
+			cv,
+			ptkType: &constructorToken);
+
+		if (constructorToken.TokenType == TokenType.MethodDef)
+		{
+			import.GetMethodProps(
+				constructorToken,
+				pClass: &typeToken);
+		}
+		else if (constructorToken.TokenType == TokenType.MemberRef)
+		{
+			import.GetMemberRefProps(
+				constructorToken,
+				ptk: &typeToken);
+		}
+		else
+		{
+			typeToken = MetaDataToken.Nil;
+		}
+
+		return typeToken;
+	}
+
+	public static string GetParamName(this IMetaDataImport import, MetaDataToken methodToken, int index)
+	{
+		var hr = import.GetParamForMethodIndex(methodToken, index, out var paramToken);
+
+		if (hr == HResults.CLDB_E_RECORD_NOTFOUND)
+		{
+			return string.Empty;
+		}
+		else if (hr < 0)
+		{
+			throw Marshal.GetExceptionForHR(hr);
+		}
+
+		return import.GetParamName(paramToken);
+	}
+
+	public static unsafe int GetTypeArgCount(this IMetaDataImport import, MetaDataToken tk)
+	{
+		var import2 = (IMetaDataImport2)import;
+		var hEnum = IntPtr.Zero;
+
+		RuntimeHelpers.PrepareConstrainedRegions();
+		try
+		{
+			if (!import2.EnumGenericParams(ref hEnum, tk, out var paramToken))
 			{
-				type = (CorElementType)reader.ReadByte();
+				return 0;
 			}
 
-			if (type == CorElementType.ELEMENT_TYPE_CLASS || type == CorElementType.ELEMENT_TYPE_VALUETYPE)
+			var result = import2.CountEnum(hEnum);
+			return result;
+		}
+		finally
+		{
+			if (hEnum != IntPtr.Zero)
 			{
-				elementType = type;
-				token = reader.ReadTypeDefOrRefOrSpecEncoded();
+				import2.CloseEnum(hEnum);
 			}
-			else
-			{
-				elementType = type;
-				token = MetaDataToken.Nil;
-			}
+		}
+	}
+
+	static unsafe void DistilFieldType(IntPtr sigPtr, int sigLen, out CorElementType elementType, out MetaDataToken token)
+	{
+		const byte FIELD = 0x06;
+
+		if (sigLen <= 0)
+		{
+			throw new InvalidSignatureException();
+		}
+
+		var reader = new BlobReader(sigPtr, sigLen);
+		if (reader.ReadByte() != FIELD)
+		{
+			throw new InvalidSignatureException();
+		}
+
+		var type = (CorElementType)reader.ReadByte();
+
+		while (type == CorElementType.ELEMENT_TYPE_CMOD_OPT || type == CorElementType.ELEMENT_TYPE_CMOD_REQD)
+		{
+			reader.ReadCompressedUInt();
+			type = (CorElementType)reader.ReadByte();
+		}
+
+		if (type == CorElementType.ELEMENT_TYPE_GENERICINST)
+		{
+			type = (CorElementType)reader.ReadByte();
+		}
+
+		if (type == CorElementType.ELEMENT_TYPE_CLASS || type == CorElementType.ELEMENT_TYPE_VALUETYPE)
+		{
+			elementType = type;
+			token = reader.ReadTypeDefOrRefOrSpecEncoded();
+		}
+		else
+		{
+			elementType = type;
+			token = MetaDataToken.Nil;
 		}
 	}
 }

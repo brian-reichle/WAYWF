@@ -7,197 +7,196 @@ using System.Windows.Input;
 using WAYWF.Api;
 using WAYWF.UI.Win32;
 
-namespace WAYWF.UI
+namespace WAYWF.UI;
+
+[TemplatePart(Name = "PART_Popup", Type = typeof(Popup))]
+sealed class ProcessSelector : Control
 {
-	[TemplatePart(Name = "PART_Popup", Type = typeof(Popup))]
-	sealed class ProcessSelector : Control
+	static readonly DependencyPropertyKey IsDraggingPropertyKey = DependencyProperty.RegisterReadOnly(
+		nameof(IsDragging),
+		typeof(bool),
+		typeof(ProcessSelector),
+		new FrameworkPropertyMetadata(false));
+
+	public static readonly DependencyProperty IsDraggingProperty = IsDraggingPropertyKey.DependencyProperty;
+
+	static readonly DependencyPropertyKey CurrentProcessPropertyKey = DependencyProperty.RegisterReadOnly(
+		nameof(CurrentProcess),
+		typeof(ProcessData),
+		typeof(ProcessSelector),
+		new FrameworkPropertyMetadata());
+
+	public static readonly DependencyProperty CurrentProcessProperty = CurrentProcessPropertyKey.DependencyProperty;
+
+	public static readonly RoutedEvent ProcessSelectedEvent = EventManager.RegisterRoutedEvent(
+		nameof(ProcessSelected),
+		RoutingStrategy.Bubble,
+		typeof(EventHandler<ProcessSelectedEventArgs>),
+		typeof(ProcessSelector));
+
+	static ProcessSelector()
 	{
-		static readonly DependencyPropertyKey IsDraggingPropertyKey = DependencyProperty.RegisterReadOnly(
-			nameof(IsDragging),
-			typeof(bool),
-			typeof(ProcessSelector),
-			new FrameworkPropertyMetadata(false));
+		DefaultStyleKeyProperty.OverrideMetadata(typeof(ProcessSelector), new FrameworkPropertyMetadata(typeof(ProcessSelector)));
+	}
 
-		public static readonly DependencyProperty IsDraggingProperty = IsDraggingPropertyKey.DependencyProperty;
+	public bool IsDragging
+	{
+		get => (bool)GetValue(IsDraggingProperty);
+		private set => SetValue(IsDraggingPropertyKey, value);
+	}
 
-		static readonly DependencyPropertyKey CurrentProcessPropertyKey = DependencyProperty.RegisterReadOnly(
-			nameof(CurrentProcess),
-			typeof(ProcessData),
-			typeof(ProcessSelector),
-			new FrameworkPropertyMetadata());
+	public ProcessData CurrentProcess
+	{
+		get => (ProcessData)GetValue(CurrentProcessProperty);
+		private set => SetValue(CurrentProcessPropertyKey, value);
+	}
 
-		public static readonly DependencyProperty CurrentProcessProperty = CurrentProcessPropertyKey.DependencyProperty;
+	public event EventHandler<ProcessSelectedEventArgs> ProcessSelected
+	{
+		add => AddHandler(ProcessSelectedEvent, value);
+		remove => RemoveHandler(ProcessSelectedEvent, value);
+	}
 
-		public static readonly RoutedEvent ProcessSelectedEvent = EventManager.RegisterRoutedEvent(
-			nameof(ProcessSelected),
-			RoutingStrategy.Bubble,
-			typeof(EventHandler<ProcessSelectedEventArgs>),
-			typeof(ProcessSelector));
+	public override void OnApplyTemplate()
+	{
+		base.OnApplyTemplate();
 
-		static ProcessSelector()
+		_popup = (Popup)GetTemplateChild("PART_Popup");
+		_popup?.Placement = PlacementMode.Relative;
+	}
+
+	protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+	{
+		if (e.MouseDevice.Capture(this))
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(ProcessSelector), new FrameworkPropertyMetadata(typeof(ProcessSelector)));
+			_start = e.GetPosition(this);
+
+			e.Handled = true;
+			return;
 		}
 
-		public bool IsDragging
-		{
-			get => (bool)GetValue(IsDraggingProperty);
-			private set => SetValue(IsDraggingPropertyKey, value);
-		}
+		base.OnMouseLeftButtonDown(e);
+	}
 
-		public ProcessData CurrentProcess
+	protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+	{
+		if (IsMouseCaptured)
 		{
-			get => (ProcessData)GetValue(CurrentProcessProperty);
-			private set => SetValue(CurrentProcessPropertyKey, value);
-		}
+			e.Handled = true;
+			var tmp = CurrentProcess;
+			ReleaseMouseCapture();
 
-		public event EventHandler<ProcessSelectedEventArgs> ProcessSelected
-		{
-			add => AddHandler(ProcessSelectedEvent, value);
-			remove => RemoveHandler(ProcessSelectedEvent, value);
-		}
-
-		public override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-
-			_popup = (Popup)GetTemplateChild("PART_Popup");
-			_popup?.Placement = PlacementMode.Relative;
-		}
-
-		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-		{
-			if (e.MouseDevice.Capture(this))
+			if (tmp != null)
 			{
-				_start = e.GetPosition(this);
-
-				e.Handled = true;
-				return;
+				OnProcessSelected(tmp);
 			}
 
-			base.OnMouseLeftButtonDown(e);
+			return;
 		}
 
-		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-		{
-			if (IsMouseCaptured)
-			{
-				e.Handled = true;
-				var tmp = CurrentProcess;
-				ReleaseMouseCapture();
+		base.OnMouseLeftButtonUp(e);
+	}
 
-				if (tmp != null)
+	protected override void OnMouseMove(MouseEventArgs e)
+	{
+		var current = e.GetPosition(this);
+
+		if (e.LeftButton == MouseButtonState.Pressed && IsMouseCaptured)
+		{
+			e.Handled = true;
+
+			if (!IsDragging)
+			{
+				var vector = current - _start;
+
+				if (Math.Abs(vector.X) > SystemParameters.MinimumHorizontalDragDistance ||
+					Math.Abs(vector.Y) > SystemParameters.MinimumVerticalDragDistance)
 				{
-					OnProcessSelected(tmp);
+					CurrentProcess = null;
+					IsDragging = true;
+					UpdatePopupPlacement(current);
 				}
-
-				return;
 			}
-
-			base.OnMouseLeftButtonUp(e);
-		}
-
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			var current = e.GetPosition(this);
-
-			if (e.LeftButton == MouseButtonState.Pressed && IsMouseCaptured)
+			else
 			{
-				e.Handled = true;
+				UpdatePopupPlacement(current);
 
-				if (!IsDragging)
+				var pointOnScreen = PointToScreen(current);
+				var pid = SafeWin32.GetProcessIDAtPoint((int)pointOnScreen.X, (int)pointOnScreen.Y);
+
+				if (!pid.HasValue)
 				{
-					var vector = current - _start;
-
-					if (Math.Abs(vector.X) > SystemParameters.MinimumHorizontalDragDistance ||
-						Math.Abs(vector.Y) > SystemParameters.MinimumVerticalDragDistance)
-					{
-						CurrentProcess = null;
-						IsDragging = true;
-						UpdatePopupPlacement(current);
-					}
+					CurrentProcess = null;
 				}
 				else
 				{
-					UpdatePopupPlacement(current);
+					var data = CurrentProcess;
 
-					var pointOnScreen = PointToScreen(current);
-					var pid = SafeWin32.GetProcessIDAtPoint((int)pointOnScreen.X, (int)pointOnScreen.Y);
-
-					if (!pid.HasValue)
+					if (data == null || data.ProcessID != pid.Value)
 					{
-						CurrentProcess = null;
-					}
-					else
-					{
-						var data = CurrentProcess;
-
-						if (data == null || data.ProcessID != pid.Value)
-						{
-							CurrentProcess = ProcessData.FromPID(pid.Value);
-						}
+						CurrentProcess = ProcessData.FromPID(pid.Value);
 					}
 				}
-
-				return;
 			}
 
-			base.OnMouseMove(e);
+			return;
 		}
 
-		protected override void OnGotMouseCapture(MouseEventArgs e)
-		{
-			InputManager.Current.PreProcessInput += PreProcessDraggingInput;
-			base.OnGotMouseCapture(e);
-		}
-
-		protected override void OnLostMouseCapture(MouseEventArgs e)
-		{
-			InputManager.Current.PreProcessInput -= PreProcessDraggingInput;
-			CurrentProcess = null;
-			IsDragging = false;
-
-			base.OnLostMouseCapture(e);
-		}
-
-		void UpdatePopupPlacement(Point current)
-		{
-			const int PopupDeltaX = 16;
-			const int PopupDeltaY = 16;
-
-			_popup.HorizontalOffset = current.X + PopupDeltaX;
-			_popup.VerticalOffset = current.Y + PopupDeltaY;
-		}
-
-		void PreProcessDraggingInput(object sender, PreProcessInputEventArgs e)
-		{
-			var args = e.StagingItem.Input;
-
-			if (args.RoutedEvent == PreviewKeyDownEvent)
-			{
-				var keyArgs = (KeyEventArgs)args;
-
-				if (keyArgs.Key == Key.Escape && IsMouseCaptured)
-				{
-					ReleaseMouseCapture();
-				}
-
-				args.Handled = true;
-				e.Cancel();
-			}
-			else if (args.RoutedEvent == PreviewKeyUpEvent || args.RoutedEvent == PreviewTextInputEvent)
-			{
-				args.Handled = true;
-				e.Cancel();
-			}
-		}
-
-		void OnProcessSelected(ProcessData process)
-		{
-			RaiseEvent(new ProcessSelectedEventArgs(ProcessSelectedEvent, this, process));
-		}
-
-		Point _start;
-		Popup _popup;
+		base.OnMouseMove(e);
 	}
+
+	protected override void OnGotMouseCapture(MouseEventArgs e)
+	{
+		InputManager.Current.PreProcessInput += PreProcessDraggingInput;
+		base.OnGotMouseCapture(e);
+	}
+
+	protected override void OnLostMouseCapture(MouseEventArgs e)
+	{
+		InputManager.Current.PreProcessInput -= PreProcessDraggingInput;
+		CurrentProcess = null;
+		IsDragging = false;
+
+		base.OnLostMouseCapture(e);
+	}
+
+	void UpdatePopupPlacement(Point current)
+	{
+		const int PopupDeltaX = 16;
+		const int PopupDeltaY = 16;
+
+		_popup.HorizontalOffset = current.X + PopupDeltaX;
+		_popup.VerticalOffset = current.Y + PopupDeltaY;
+	}
+
+	void PreProcessDraggingInput(object sender, PreProcessInputEventArgs e)
+	{
+		var args = e.StagingItem.Input;
+
+		if (args.RoutedEvent == PreviewKeyDownEvent)
+		{
+			var keyArgs = (KeyEventArgs)args;
+
+			if (keyArgs.Key == Key.Escape && IsMouseCaptured)
+			{
+				ReleaseMouseCapture();
+			}
+
+			args.Handled = true;
+			e.Cancel();
+		}
+		else if (args.RoutedEvent == PreviewKeyUpEvent || args.RoutedEvent == PreviewTextInputEvent)
+		{
+			args.Handled = true;
+			e.Cancel();
+		}
+	}
+
+	void OnProcessSelected(ProcessData process)
+	{
+		RaiseEvent(new ProcessSelectedEventArgs(ProcessSelectedEvent, this, process));
+	}
+
+	Point _start;
+	Popup _popup;
 }

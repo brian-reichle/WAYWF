@@ -2,28 +2,27 @@
 using System;
 using System.Diagnostics;
 
-namespace WAYWF.Agent.Data
-{
-	[DebuggerDisplay("Module-{ModuleID}: {Name,nq}")]
-	public sealed class MetaModule
-	{
-		public MetaModule(MetaAssembly assembly, Identity moduleId, string path, string name, bool isInMemory, bool isDynamic, Guid mvid)
-		{
-			Assembly = assembly;
-			ModuleID = moduleId;
-			Path = path;
-			Name = name;
-			IsInMemory = isInMemory;
-			IsDynamic = isDynamic;
-			MVID = mvid;
-		}
+namespace WAYWF.Agent.Data;
 
-		public MetaAssembly Assembly { get; }
-		public Identity ModuleID { get; }
-		public string Path { get; }
-		public string Name { get; }
-		public bool IsInMemory { get; }
-		public bool IsDynamic { get; }
-		public Guid MVID { get; }
+[DebuggerDisplay("Module-{ModuleID}: {Name,nq}")]
+public sealed class MetaModule
+{
+	public MetaModule(MetaAssembly assembly, Identity moduleId, string path, string name, bool isInMemory, bool isDynamic, Guid mvid)
+	{
+		Assembly = assembly;
+		ModuleID = moduleId;
+		Path = path;
+		Name = name;
+		IsInMemory = isInMemory;
+		IsDynamic = isDynamic;
+		MVID = mvid;
 	}
+
+	public MetaAssembly Assembly { get; }
+	public Identity ModuleID { get; }
+	public string Path { get; }
+	public string Name { get; }
+	public bool IsInMemory { get; }
+	public bool IsDynamic { get; }
+	public Guid MVID { get; }
 }

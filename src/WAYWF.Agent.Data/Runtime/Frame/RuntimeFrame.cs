@@ -1,12 +1,11 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-namespace WAYWF.Agent.Data
-{
-	public abstract class RuntimeFrame
-	{
-		protected RuntimeFrame()
-		{
-		}
+namespace WAYWF.Agent.Data;
 
-		public abstract void Apply(IRuntimeFrameVisitor visitor);
+public abstract class RuntimeFrame
+{
+	protected RuntimeFrame()
+	{
 	}
+
+	public abstract void Apply(IRuntimeFrameVisitor visitor);
 }

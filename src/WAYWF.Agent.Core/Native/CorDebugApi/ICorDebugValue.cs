@@ -3,32 +3,31 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.CorDebugApi
+namespace WAYWF.Agent.Core.CorDebugApi;
+
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("CC7BCAF7-8A68-11D2-983C-0000F808342D")]
+interface ICorDebugValue
 {
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("CC7BCAF7-8A68-11D2-983C-0000F808342D")]
-	interface ICorDebugValue
-	{
-		// HRESULT GetType(
-		//     [out] CorElementType   *pType
-		// );
-		CorElementType GetType();
+	// HRESULT GetType(
+	//     [out] CorElementType   *pType
+	// );
+	CorElementType GetType();
 
-		// HRESULT GetSize(
-		//     [out] ULONG32   *pSize
-		// );
-		int GetSize();
+	// HRESULT GetSize(
+	//     [out] ULONG32   *pSize
+	// );
+	int GetSize();
 
-		// HRESULT GetAddress(
-		//     [out] CORDB_ADDRESS   *pAddress
-		// );
-		CORDB_ADDRESS GetAddress();
+	// HRESULT GetAddress(
+	//     [out] CORDB_ADDRESS   *pAddress
+	// );
+	CORDB_ADDRESS GetAddress();
 
-		// HRESULT CreateBreakpoint(
-		//     [out] ICorDebugValueBreakpoint **ppBreakpoint
-		// );
-		void CreateBreakpoint_();
-	}
+	// HRESULT CreateBreakpoint(
+	//     [out] ICorDebugValueBreakpoint **ppBreakpoint
+	// );
+	void CreateBreakpoint_();
 }

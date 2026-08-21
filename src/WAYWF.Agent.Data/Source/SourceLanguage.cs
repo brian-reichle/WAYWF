@@ -1,19 +1,18 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-namespace WAYWF.Agent.Data
+namespace WAYWF.Agent.Data;
+
+public enum SourceLanguage
 {
-	public enum SourceLanguage
-	{
-		Unknown,
-		C,
-		CPlusPlus,
-		CSharp,
-		Basic,
-		Java,
-		Cobol,
-		Pascal,
-		ILAssembly,
-		JScript,
-		SMC,
-		MCPlusPlus,
-	}
+	Unknown,
+	C,
+	CPlusPlus,
+	CSharp,
+	Basic,
+	Java,
+	Cobol,
+	Pascal,
+	ILAssembly,
+	JScript,
+	SMC,
+	MCPlusPlus,
 }

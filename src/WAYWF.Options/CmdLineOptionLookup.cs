@@ -4,30 +4,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace WAYWF.Options
+namespace WAYWF.Options;
+
+sealed class CmdLineOptionLookup : IEnumerable<CmdLineOption>
 {
-	sealed class CmdLineOptionLookup : IEnumerable<CmdLineOption>
+	public CmdLineOptionLookup()
 	{
-		public CmdLineOptionLookup()
-		{
-			_lookup = [];
-		}
-
-		public void Add(string name, bool takesArg, Action<CmdLineOptions, string> action)
-		{
-			_lookup.Add(name, new CmdLineOption(name, takesArg, action));
-		}
-
-		public bool TryGetValue(string name, out CmdLineOption option)
-		{
-			return _lookup.TryGetValue(name, out option);
-		}
-
-		public IEnumerator<CmdLineOption> GetEnumerator() => _lookup.Values.GetEnumerator();
-
-		[DebuggerStepThrough]
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		readonly Dictionary<string, CmdLineOption> _lookup;
+		_lookup = [];
 	}
+
+	public void Add(string name, bool takesArg, Action<CmdLineOptions, string> action)
+	{
+		_lookup.Add(name, new CmdLineOption(name, takesArg, action));
+	}
+
+	public bool TryGetValue(string name, out CmdLineOption option)
+	{
+		return _lookup.TryGetValue(name, out option);
+	}
+
+	public IEnumerator<CmdLineOption> GetEnumerator() => _lookup.Values.GetEnumerator();
+
+	[DebuggerStepThrough]
+	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+	readonly Dictionary<string, CmdLineOption> _lookup;
 }

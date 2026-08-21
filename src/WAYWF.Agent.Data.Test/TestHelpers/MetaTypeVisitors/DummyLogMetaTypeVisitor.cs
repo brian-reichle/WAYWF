@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace WAYWF.Agent.Data.Test
+namespace WAYWF.Agent.Data.Test;
+
+sealed class DummyLogMetaTypeVisitor : DummyBaseMetaTypeVisitor
 {
-	sealed class DummyLogMetaTypeVisitor : DummyBaseMetaTypeVisitor
+	public List<Record> Records { get; } = [];
+
+	protected override void Visit(MethodBase method, MetaTypeBase type)
 	{
-		public List<Record> Records { get; } = [];
+		Records.Add(new Record(method, type));
+	}
 
-		protected override void Visit(MethodBase method, MetaTypeBase type)
+	public sealed class Record
+	{
+		public Record(MethodBase method, MetaTypeBase type)
 		{
-			Records.Add(new Record(method, type));
+			Method = method;
+			Type = type;
 		}
 
-		public sealed class Record
-		{
-			public Record(MethodBase method, MetaTypeBase type)
-			{
-				Method = method;
-				Type = type;
-			}
-
-			public MethodBase Method { get; }
-			public MetaTypeBase Type { get; }
-		}
+		public MethodBase Method { get; }
+		public MetaTypeBase Type { get; }
 	}
 }

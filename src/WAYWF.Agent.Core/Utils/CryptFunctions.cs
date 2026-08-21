@@ -4,96 +4,95 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using WAYWF.Agent.Core.Win32;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class CryptFunctions
 {
-	static class CryptFunctions
+	const int PROV_RSA_FULL = 1;
+	const int CALG_SHA1 = 0x00008004;
+	const int HP_HASHVAL = 0x02;
+	const int CRYPT_VERIFYCONTEXT = unchecked((int)0xF0000000);
+
+	public static long GetPublicKeyToken(IntPtr publicKey, int publicKeySize)
 	{
-		const int PROV_RSA_FULL = 1;
-		const int CALG_SHA1 = 0x00008004;
-		const int HP_HASHVAL = 0x02;
-		const int CRYPT_VERIFYCONTEXT = unchecked((int)0xF0000000);
+		using var context = AquireContext();
+		using var hash = CreateHash(context);
+		CryptHashData(hash, publicKey, publicKeySize);
 
-		public static long GetPublicKeyToken(IntPtr publicKey, int publicKeySize)
+		using var buffer = GetHash(hash);
+		return buffer.Read<long>(buffer.ByteLength - sizeof(long));
+	}
+
+	static CryptContextHandle AquireContext()
+	{
+		if (!NativeMethods.CryptAcquireContext(
+			out var hCryptProv,
+			null,
+			null,
+			PROV_RSA_FULL,
+			CRYPT_VERIFYCONTEXT))
 		{
-			using var context = AquireContext();
-			using var hash = CreateHash(context);
-			CryptHashData(hash, publicKey, publicKeySize);
-
-			using var buffer = GetHash(hash);
-			return buffer.Read<long>(buffer.ByteLength - sizeof(long));
+			throw new Win32Exception(Marshal.GetLastWin32Error());
 		}
 
-		static CryptContextHandle AquireContext()
-		{
-			if (!NativeMethods.CryptAcquireContext(
-				out var hCryptProv,
-				null,
-				null,
-				PROV_RSA_FULL,
-				CRYPT_VERIFYCONTEXT))
-			{
-				throw new Win32Exception(Marshal.GetLastWin32Error());
-			}
+		return hCryptProv;
+	}
 
-			return hCryptProv;
+	static CryptHashHandle CreateHash(CryptContextHandle hCryptProv)
+	{
+		if (!NativeMethods.CryptCreateHash(
+			hCryptProv,
+			CALG_SHA1,
+			IntPtr.Zero,
+			0,
+			out var hHash))
+		{
+			throw new Win32Exception(Marshal.GetLastWin32Error());
 		}
 
-		static CryptHashHandle CreateHash(CryptContextHandle hCryptProv)
-		{
-			if (!NativeMethods.CryptCreateHash(
-				hCryptProv,
-				CALG_SHA1,
-				IntPtr.Zero,
-				0,
-				out var hHash))
-			{
-				throw new Win32Exception(Marshal.GetLastWin32Error());
-			}
+		return hHash;
+	}
 
-			return hHash;
+	static void CryptHashData(CryptHashHandle hHash, IntPtr publicKey, int publicKeySize)
+	{
+		if (!NativeMethods.CryptHashData(hHash, publicKey, publicKeySize))
+		{
+			throw new Win32Exception(Marshal.GetLastWin32Error());
+		}
+	}
+
+	static UnmanagedBuffer GetHash(CryptHashHandle hHash)
+	{
+		var hashSize = 0;
+
+		if (!NativeMethods.CryptGetHashParam(
+			hHash,
+			HP_HASHVAL,
+			IntPtr.Zero,
+			ref hashSize))
+		{
+			throw new Win32Exception(Marshal.GetLastWin32Error());
 		}
 
-		static void CryptHashData(CryptHashHandle hHash, IntPtr publicKey, int publicKeySize)
-		{
-			if (!NativeMethods.CryptHashData(hHash, publicKey, publicKeySize))
-			{
-				throw new Win32Exception(Marshal.GetLastWin32Error());
-			}
-		}
+		var buffer = new UnmanagedBuffer(hashSize);
 
-		static UnmanagedBuffer GetHash(CryptHashHandle hHash)
+		try
 		{
-			var hashSize = 0;
-
 			if (!NativeMethods.CryptGetHashParam(
 				hHash,
 				HP_HASHVAL,
-				IntPtr.Zero,
+				buffer.DangerousGetHandle(),
 				ref hashSize))
 			{
 				throw new Win32Exception(Marshal.GetLastWin32Error());
 			}
-
-			var buffer = new UnmanagedBuffer(hashSize);
-
-			try
-			{
-				if (!NativeMethods.CryptGetHashParam(
-					hHash,
-					HP_HASHVAL,
-					buffer.DangerousGetHandle(),
-					ref hashSize))
-				{
-					throw new Win32Exception(Marshal.GetLastWin32Error());
-				}
-			}
-			catch
-			{
-				buffer.Close();
-				throw;
-			}
-
-			return buffer;
 		}
+		catch
+		{
+			buffer.Close();
+			throw;
+		}
+
+		return buffer;
 	}
 }

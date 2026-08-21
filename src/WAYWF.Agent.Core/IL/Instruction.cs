@@ -2,18 +2,17 @@
 using System.Diagnostics;
 using System.Reflection.Emit;
 
-namespace WAYWF.Agent.Core.IL
-{
-	[DebuggerDisplay("{OpCode}")]
-	class Instruction
-	{
-		public Instruction(int offset, OpCode opCode)
-		{
-			Offset = offset;
-			OpCode = opCode;
-		}
+namespace WAYWF.Agent.Core.IL;
 
-		public int Offset { get; }
-		public OpCode OpCode { get; }
+[DebuggerDisplay("{OpCode}")]
+class Instruction
+{
+	public Instruction(int offset, OpCode opCode)
+	{
+		Offset = offset;
+		OpCode = opCode;
 	}
+
+	public int Offset { get; }
+	public OpCode OpCode { get; }
 }

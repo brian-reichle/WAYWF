@@ -3,100 +3,99 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.CorDebugApi
+namespace WAYWF.Agent.Core.CorDebugApi;
+
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("938C6D66-7FB6-4F69-B389-425B8987329B")]
+interface ICorDebugThread
 {
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("938C6D66-7FB6-4F69-B389-425B8987329B")]
-	interface ICorDebugThread
-	{
-		// HRESULT GetProcess(
-		//     [out] ICorDebugProcess **ppProcess
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugProcess GetProcess();
+	// HRESULT GetProcess(
+	//     [out] ICorDebugProcess **ppProcess
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugProcess GetProcess();
 
-		// HRESULT GetID(
-		//     [out] DWORD *pdwThreadId
-		// );
-		int GetID();
+	// HRESULT GetID(
+	//     [out] DWORD *pdwThreadId
+	// );
+	int GetID();
 
-		// HRESULT GetHandle(
-		//     [out] HTHREAD *phThreadHandle
-		// );
-		void GetHandle_();
+	// HRESULT GetHandle(
+	//     [out] HTHREAD *phThreadHandle
+	// );
+	void GetHandle_();
 
-		// HRESULT GetAppDomain(
-		//     [out] ICorDebugAppDomain **ppAppDomain
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugAppDomain GetAppDomain();
+	// HRESULT GetAppDomain(
+	//     [out] ICorDebugAppDomain **ppAppDomain
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugAppDomain GetAppDomain();
 
-		// HRESULT SetDebugState(
-		//     [in] CorDebugThreadState state
-		// );
-		void SetDebugState(
-			CorDebugThreadState state);
+	// HRESULT SetDebugState(
+	//     [in] CorDebugThreadState state
+	// );
+	void SetDebugState(
+		CorDebugThreadState state);
 
-		// HRESULT GetDebugState(
-		//     [out] CorDebugThreadState *pState
-		// );
-		CorDebugThreadState GetDebugState();
+	// HRESULT GetDebugState(
+	//     [out] CorDebugThreadState *pState
+	// );
+	CorDebugThreadState GetDebugState();
 
-		// HRESULT GetUserState(
-		//     [out] CorDebugUserState *pState
-		// );
-		CorDebugUserState GetUserState();
+	// HRESULT GetUserState(
+	//     [out] CorDebugUserState *pState
+	// );
+	CorDebugUserState GetUserState();
 
-		// HRESULT GetCurrentException(
-		//     [out] ICorDebugValue **ppExceptionObject
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugValue GetCurrentException();
+	// HRESULT GetCurrentException(
+	//     [out] ICorDebugValue **ppExceptionObject
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugValue GetCurrentException();
 
-		// HRESULT ClearCurrentException();
-		void ClearCurrentException();
+	// HRESULT ClearCurrentException();
+	void ClearCurrentException();
 
-		// HRESULT CreateStepper(
-		//     [out] ICorDebugStepper **ppStepper
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugStepper CreateStepper();
+	// HRESULT CreateStepper(
+	//     [out] ICorDebugStepper **ppStepper
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugStepper CreateStepper();
 
-		// HRESULT EnumerateChains(
-		//     [out] ICorDebugChainEnum **ppChains
-		// );
-		[PreserveSig]
-		int EnumerateChains(
-			[MarshalAs(UnmanagedType.Interface)] out ICorDebugChainEnum ppChains);
+	// HRESULT EnumerateChains(
+	//     [out] ICorDebugChainEnum **ppChains
+	// );
+	[PreserveSig]
+	int EnumerateChains(
+		[MarshalAs(UnmanagedType.Interface)] out ICorDebugChainEnum ppChains);
 
-		// HRESULT GetActiveChain(
-		//     [out] ICorDebugChain **ppChain
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugChain GetActiveChain();
+	// HRESULT GetActiveChain(
+	//     [out] ICorDebugChain **ppChain
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugChain GetActiveChain();
 
-		// HRESULT GetActiveFrame(
-		//     [out] ICorDebugFrame **ppFrame
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugFrame GetActiveFrame();
+	// HRESULT GetActiveFrame(
+	//     [out] ICorDebugFrame **ppFrame
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugFrame GetActiveFrame();
 
-		// HRESULT GetRegisterSet(
-		//     [out] ICorDebugRegisterSet **ppRegisters
-		// );
-		void GetRegisterSet_();
+	// HRESULT GetRegisterSet(
+	//     [out] ICorDebugRegisterSet **ppRegisters
+	// );
+	void GetRegisterSet_();
 
-		// HRESULT CreateEval(
-		//     [out] ICorDebugEval **ppEval
-		// );
-		void CreateEval_();
+	// HRESULT CreateEval(
+	//     [out] ICorDebugEval **ppEval
+	// );
+	void CreateEval_();
 
-		// HRESULT GetObject(
-		//     [out] ICorDebugValue **ppObject
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugValue GetObject();
-	}
+	// HRESULT GetObject(
+	//     [out] ICorDebugValue **ppObject
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugValue GetObject();
 }

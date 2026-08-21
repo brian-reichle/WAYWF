@@ -2,49 +2,48 @@
 using System;
 using System.Collections.Immutable;
 
-namespace WAYWF.Agent.Data
+namespace WAYWF.Agent.Data;
+
+public sealed class PendingStateMachineTask : IMetaGenericContext
 {
-	public sealed class PendingStateMachineTask : IMetaGenericContext
+	public PendingStateMachineTask(
+		StateMachineDescriptor descriptor,
+		ImmutableArray<MetaTypeBase> typeArgs,
+		RuntimeSimpleValue stateValue,
+		RuntimeValue thisValue,
+		RuntimeValue taskValue,
+		ImmutableArray<RuntimeValue> parameterValues,
+		ImmutableArray<RuntimeValue> localValues,
+		SourceAsyncState state)
 	{
-		public PendingStateMachineTask(
-			StateMachineDescriptor descriptor,
-			ImmutableArray<MetaTypeBase> typeArgs,
-			RuntimeSimpleValue stateValue,
-			RuntimeValue thisValue,
-			RuntimeValue taskValue,
-			ImmutableArray<RuntimeValue> parameterValues,
-			ImmutableArray<RuntimeValue> localValues,
-			SourceAsyncState state)
+		if (descriptor == null)
 		{
-			if (descriptor == null)
-			{
-				throw new ArgumentNullException(nameof(descriptor));
-			}
-
-			if (typeArgs == null)
-			{
-				throw new ArgumentNullException(nameof(typeArgs));
-			}
-
-			Descriptor = descriptor;
-			TypeArgs = typeArgs;
-			StateValue = stateValue;
-			ThisValue = thisValue;
-			TaskValue = taskValue;
-			ParameterValues = parameterValues;
-			LocalValues = localValues;
-			State = state;
+			throw new ArgumentNullException(nameof(descriptor));
 		}
 
-		public StateMachineDescriptor Descriptor { get; }
-		public ImmutableArray<MetaTypeBase> TypeArgs { get; }
-		public RuntimeSimpleValue StateValue { get; }
-		public RuntimeValue ThisValue { get; }
-		public RuntimeValue TaskValue { get; }
-		public ImmutableArray<RuntimeValue> ParameterValues { get; }
-		public ImmutableArray<RuntimeValue> LocalValues { get; }
-		public SourceAsyncState State { get; }
+		if (typeArgs == null)
+		{
+			throw new ArgumentNullException(nameof(typeArgs));
+		}
 
-		int IMetaGenericContext.StartOfMethodArgs => Descriptor.AsyncMethod.DeclaringType.TypeArgs;
+		Descriptor = descriptor;
+		TypeArgs = typeArgs;
+		StateValue = stateValue;
+		ThisValue = thisValue;
+		TaskValue = taskValue;
+		ParameterValues = parameterValues;
+		LocalValues = localValues;
+		State = state;
 	}
+
+	public StateMachineDescriptor Descriptor { get; }
+	public ImmutableArray<MetaTypeBase> TypeArgs { get; }
+	public RuntimeSimpleValue StateValue { get; }
+	public RuntimeValue ThisValue { get; }
+	public RuntimeValue TaskValue { get; }
+	public ImmutableArray<RuntimeValue> ParameterValues { get; }
+	public ImmutableArray<RuntimeValue> LocalValues { get; }
+	public SourceAsyncState State { get; }
+
+	int IMetaGenericContext.StartOfMethodArgs => Descriptor.AsyncMethod.DeclaringType.TypeArgs;
 }

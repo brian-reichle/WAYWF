@@ -3,28 +3,27 @@ using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Agent.Core.Win32
+namespace WAYWF.Agent.Core.Win32;
+
+sealed class UnmanagedBuffer : SafeBuffer
 {
-	sealed class UnmanagedBuffer : SafeBuffer
+	public UnmanagedBuffer(int size)
+		: base(true)
 	{
-		public UnmanagedBuffer(int size)
-			: base(true)
+		if (size < 0)
 		{
-			if (size < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
-
-			SetHandle(Marshal.AllocCoTaskMem(size));
-			Initialize(unchecked((ulong)size));
+			throw new ArgumentOutOfRangeException(nameof(size));
 		}
 
-		[PrePrepareMethod]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-		protected override bool ReleaseHandle()
-		{
-			Marshal.FreeCoTaskMem(handle);
-			return true;
-		}
+		SetHandle(Marshal.AllocCoTaskMem(size));
+		Initialize(unchecked((ulong)size));
+	}
+
+	[PrePrepareMethod]
+	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+	protected override bool ReleaseHandle()
+	{
+		Marshal.FreeCoTaskMem(handle);
+		return true;
 	}
 }

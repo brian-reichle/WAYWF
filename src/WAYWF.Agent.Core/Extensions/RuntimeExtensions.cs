@@ -4,51 +4,50 @@ using System.Runtime.InteropServices;
 using WAYWF.Agent.Core.CLRHostApi;
 using WAYWF.Agent.Core.CorDebugApi;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class RuntimeExtensions
 {
-	static class RuntimeExtensions
+	public static unsafe string GetVersionString(this ICLRRuntimeInfo runtime)
 	{
-		public static unsafe string GetVersionString(this ICLRRuntimeInfo runtime)
+		var size = 0;
+		var hr = runtime.GetVersionString(null, ref size);
+
+		if (hr < 0 && hr != HResults.E_BUFFER_TOO_SMALL)
 		{
-			var size = 0;
-			var hr = runtime.GetVersionString(null, ref size);
-
-			if (hr < 0 && hr != HResults.E_BUFFER_TOO_SMALL)
-			{
-				Marshal.ThrowExceptionForHR(hr);
-			}
-			else if (size == 0)
-			{
-				return null;
-			}
-
-			var buffer = stackalloc char[size];
-
-			hr = runtime.GetVersionString(buffer, ref size);
-
-			if (hr < 0)
-			{
-				Marshal.ThrowExceptionForHR(hr);
-			}
-
-			return new string(buffer, 0, size);
+			Marshal.ThrowExceptionForHR(hr);
+		}
+		else if (size == 0)
+		{
+			return null;
 		}
 
-		public static bool IsSupportedVersion(this ICLRRuntimeInfo runtime)
+		var buffer = stackalloc char[size];
+
+		hr = runtime.GetVersionString(buffer, ref size);
+
+		if (hr < 0)
 		{
-			var version = runtime.GetVersionString();
-			return VersionsMatch(version, "v4.0") || VersionsMatch(version, "v2.0");
+			Marshal.ThrowExceptionForHR(hr);
 		}
 
-		public static ICorDebug GetCorDebug(this ICLRRuntimeInfo runtime)
-		{
-			return (ICorDebug)runtime.GetInterface(CLSID.CLSID_CLRDebuggingLegacy, typeof(ICorDebug).GUID);
-		}
+		return new string(buffer, 0, size);
+	}
 
-		static bool VersionsMatch(string actual, string expected)
-		{
-			return actual.StartsWith(expected, StringComparison.Ordinal) &&
-				(actual.Length == expected.Length || actual[expected.Length] == '.');
-		}
+	public static bool IsSupportedVersion(this ICLRRuntimeInfo runtime)
+	{
+		var version = runtime.GetVersionString();
+		return VersionsMatch(version, "v4.0") || VersionsMatch(version, "v2.0");
+	}
+
+	public static ICorDebug GetCorDebug(this ICLRRuntimeInfo runtime)
+	{
+		return (ICorDebug)runtime.GetInterface(CLSID.CLSID_CLRDebuggingLegacy, typeof(ICorDebug).GUID);
+	}
+
+	static bool VersionsMatch(string actual, string expected)
+	{
+		return actual.StartsWith(expected, StringComparison.Ordinal) &&
+			(actual.Length == expected.Length || actual[expected.Length] == '.');
 	}
 }

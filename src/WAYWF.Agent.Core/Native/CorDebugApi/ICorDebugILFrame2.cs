@@ -3,24 +3,23 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.CorDebugApi
-{
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("5D88A994-6C30-479B-890F-BCEF88B129A5")]
-	interface ICorDebugILFrame2
-	{
-		// HRESULT RemapFunction(
-		//     [in] ULONG32      newILOffset
-		// );
-		void RemapFunction(
-			int newILOffset);
+namespace WAYWF.Agent.Core.CorDebugApi;
 
-		// HRESULT EnumerateTypeParameters(
-		//     [out] ICorDebugTypeEnum    **ppTyParEnum
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugTypeEnum EnumerateTypeParameters();
-	}
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("5D88A994-6C30-479B-890F-BCEF88B129A5")]
+interface ICorDebugILFrame2
+{
+	// HRESULT RemapFunction(
+	//     [in] ULONG32      newILOffset
+	// );
+	void RemapFunction(
+		int newILOffset);
+
+	// HRESULT EnumerateTypeParameters(
+	//     [out] ICorDebugTypeEnum    **ppTyParEnum
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugTypeEnum EnumerateTypeParameters();
 }

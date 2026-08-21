@@ -1,35 +1,34 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System.Windows.Input;
 
-namespace WAYWF.UI
+namespace WAYWF.UI;
+
+sealed class WheelGesture : MouseGesture
 {
-	sealed class WheelGesture : MouseGesture
+	public static readonly WheelGesture Up = new WheelGesture(true);
+	public static readonly WheelGesture Down = new WheelGesture(false);
+
+	WheelGesture(bool up)
 	{
-		public static readonly WheelGesture Up = new WheelGesture(true);
-		public static readonly WheelGesture Down = new WheelGesture(false);
-
-		WheelGesture(bool up)
-		{
-			_matchUp = up;
-		}
-
-		public override bool Matches(object targetElement, InputEventArgs inputEventArgs)
-		{
-			if (inputEventArgs is MouseWheelEventArgs args)
-			{
-				if (_matchUp)
-				{
-					return args.Delta > 0;
-				}
-				else
-				{
-					return args.Delta < 0;
-				}
-			}
-
-			return false;
-		}
-
-		readonly bool _matchUp;
+		_matchUp = up;
 	}
+
+	public override bool Matches(object targetElement, InputEventArgs inputEventArgs)
+	{
+		if (inputEventArgs is MouseWheelEventArgs args)
+		{
+			if (_matchUp)
+			{
+				return args.Delta > 0;
+			}
+			else
+			{
+				return args.Delta < 0;
+			}
+		}
+
+		return false;
+	}
+
+	readonly bool _matchUp;
 }

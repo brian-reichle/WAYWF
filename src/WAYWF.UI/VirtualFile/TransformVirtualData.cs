@@ -3,58 +3,57 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace WAYWF.UI.VirtualFile
+namespace WAYWF.UI.VirtualFile;
+
+sealed class TransformVirtualData : VirtualFileBase
 {
-	sealed class TransformVirtualData : VirtualFileBase
+	public static readonly TransformVirtualData Instance = new TransformVirtualData();
+
+	TransformVirtualData()
+		: base(HtmlTranslator.TransformFilename)
 	{
-		public static readonly TransformVirtualData Instance = new TransformVirtualData();
+	}
 
-		TransformVirtualData()
-			: base(HtmlTranslator.TransformFilename)
+	public override string Extension => ".xslt";
+
+	public override byte[] GenerateContent()
+	{
+		var directory = AppDomain.CurrentDomain.BaseDirectory;
+		var filename = Path.Combine(directory, HtmlTranslator.TransformFilename);
+
+		try
+		{
+			using var stream = File.Open(filename, FileMode.Open);
+			return GetBytes(stream);
+		}
+		catch (FileNotFoundException)
 		{
 		}
 
-		public override string Extension => ".xslt";
-
-		public override byte[] GenerateContent()
+		using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WAYWF.UI.Resources.waywf.xslt"))
 		{
-			var directory = AppDomain.CurrentDomain.BaseDirectory;
-			var filename = Path.Combine(directory, HtmlTranslator.TransformFilename);
+			return GetBytes(stream);
+		}
+	}
 
-			try
+	static byte[] GetBytes(Stream stream)
+	{
+		var result = new byte[stream.Length];
+		var start = 0;
+
+		while (start < result.Length)
+		{
+			var read = stream.Read(result, start, result.Length - start);
+
+			if (read == 0)
 			{
-				using var stream = File.Open(filename, FileMode.Open);
-				return GetBytes(stream);
-			}
-			catch (FileNotFoundException)
-			{
+				Array.Resize(ref result, start);
+				break;
 			}
 
-			using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WAYWF.UI.Resources.waywf.xslt"))
-			{
-				return GetBytes(stream);
-			}
+			start += read;
 		}
 
-		static byte[] GetBytes(Stream stream)
-		{
-			var result = new byte[stream.Length];
-			var start = 0;
-
-			while (start < result.Length)
-			{
-				var read = stream.Read(result, start, result.Length - start);
-
-				if (read == 0)
-				{
-					Array.Resize(ref result, start);
-					break;
-				}
-
-				start += read;
-			}
-
-			return result;
-		}
+		return result;
 	}
 }

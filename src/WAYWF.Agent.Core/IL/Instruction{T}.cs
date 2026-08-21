@@ -2,17 +2,16 @@
 using System.Diagnostics;
 using System.Reflection.Emit;
 
-namespace WAYWF.Agent.Core.IL
-{
-	[DebuggerDisplay("{OpCode} {Value}")]
-	class Instruction<T> : Instruction
-	{
-		public Instruction(int offset, OpCode opCode, T value)
-			: base(offset, opCode)
-		{
-			Value = value;
-		}
+namespace WAYWF.Agent.Core.IL;
 
-		public T Value { get; }
+[DebuggerDisplay("{OpCode} {Value}")]
+class Instruction<T> : Instruction
+{
+	public Instruction(int offset, OpCode opCode, T value)
+		: base(offset, opCode)
+	{
+		Value = value;
 	}
+
+	public T Value { get; }
 }

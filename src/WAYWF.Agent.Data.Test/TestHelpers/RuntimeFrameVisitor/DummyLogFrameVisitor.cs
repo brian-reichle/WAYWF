@@ -2,27 +2,26 @@
 using System;
 using System.Collections.Generic;
 
-namespace WAYWF.Agent.Data.Test
+namespace WAYWF.Agent.Data.Test;
+
+sealed class DummyLogFrameVisitor : DummyBaseFrameVisitor
 {
-	sealed class DummyLogFrameVisitor : DummyBaseFrameVisitor
+	public List<Record> Records { get; } = [];
+
+	protected override void Visit(RuntimeFrame frame, Type identifiedType)
 	{
-		public List<Record> Records { get; } = [];
+		Records.Add(new Record(frame, identifiedType));
+	}
 
-		protected override void Visit(RuntimeFrame frame, Type identifiedType)
+	public sealed class Record
+	{
+		public Record(RuntimeFrame frame, Type identifiedType)
 		{
-			Records.Add(new Record(frame, identifiedType));
+			Frame = frame;
+			IdentifiedType = identifiedType;
 		}
 
-		public sealed class Record
-		{
-			public Record(RuntimeFrame frame, Type identifiedType)
-			{
-				Frame = frame;
-				IdentifiedType = identifiedType;
-			}
-
-			public RuntimeFrame Frame { get; }
-			public Type IdentifiedType { get; }
-		}
+		public RuntimeFrame Frame { get; }
+		public Type IdentifiedType { get; }
 	}
 }

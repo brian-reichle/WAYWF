@@ -2,15 +2,14 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Agent.Core.Win32
-{
-	[StructLayout(LayoutKind.Sequential)]
-	struct SID_AND_ATTRIBUTES
-	{
-		// PSID  Sid;
-		public IntPtr Sid;
+namespace WAYWF.Agent.Core.Win32;
 
-		// DWORD Attributes;
-		public int Attributes;
-	}
+[StructLayout(LayoutKind.Sequential)]
+struct SID_AND_ATTRIBUTES
+{
+	// PSID  Sid;
+	public IntPtr Sid;
+
+	// DWORD Attributes;
+	public int Attributes;
 }

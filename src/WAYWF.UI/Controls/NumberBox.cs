@@ -3,59 +3,58 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace WAYWF.UI
+namespace WAYWF.UI;
+
+class NumberBox : TextBox
 {
-	class NumberBox : TextBox
+	public NumberBox()
 	{
-		public NumberBox()
+		DataObject.AddPastingHandler(this, OnPasting);
+		InputScope = new InputScope()
 		{
-			DataObject.AddPastingHandler(this, OnPasting);
-			InputScope = new InputScope()
+			Names =
 			{
-				Names =
+				new InputScopeName()
 				{
-					new InputScopeName()
-					{
-						NameValue = InputScopeNameValue.Number,
-					},
+					NameValue = InputScopeNameValue.Number,
 				},
-			};
-		}
+			},
+		};
+	}
 
-		protected override void OnTextInput(TextCompositionEventArgs e)
+	protected override void OnTextInput(TextCompositionEventArgs e)
+	{
+		if (!IsNumeric(e.Text))
 		{
-			if (!IsNumeric(e.Text))
-			{
-				e.Handled = true;
-			}
-
-			base.OnTextInput(e);
+			e.Handled = true;
 		}
 
-		void OnPasting(object sender, DataObjectPastingEventArgs e)
+		base.OnTextInput(e);
+	}
+
+	void OnPasting(object sender, DataObjectPastingEventArgs e)
+	{
+		if (!e.CommandCancelled &&
+			e.DataObject.GetDataPresent(DataFormats.Text) &&
+			e.DataObject.GetData(DataFormats.Text) is string text &&
+			IsNumeric(text))
 		{
-			if (!e.CommandCancelled &&
-				e.DataObject.GetDataPresent(DataFormats.Text) &&
-				e.DataObject.GetData(DataFormats.Text) is string text &&
-				IsNumeric(text))
-			{
-				return;
-			}
-
-			e.CancelCommand();
+			return;
 		}
 
-		static bool IsNumeric(string text)
+		e.CancelCommand();
+	}
+
+	static bool IsNumeric(string text)
+	{
+		for (var i = 0; i < text.Length; i++)
 		{
-			for (var i = 0; i < text.Length; i++)
+			if (!char.IsDigit(text[i]))
 			{
-				if (!char.IsDigit(text[i]))
-				{
-					return false;
-				}
+				return false;
 			}
-
-			return true;
 		}
+
+		return true;
 	}
 }

@@ -3,44 +3,43 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.CorDebugApi
+namespace WAYWF.Agent.Core.CorDebugApi;
+
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("CC7BCAF8-8A68-11d2-983C-0000F808342D")]
+interface ICorDebugGenericValue : ICorDebugValue
 {
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("CC7BCAF8-8A68-11d2-983C-0000F808342D")]
-	interface ICorDebugGenericValue : ICorDebugValue
-	{
-		// HRESULT GetType(
-		//     [out] CorElementType   *pType
-		// );
-		new CorElementType GetType();
+	// HRESULT GetType(
+	//     [out] CorElementType   *pType
+	// );
+	new CorElementType GetType();
 
-		// HRESULT GetSize(
-		//     [out] ULONG32   *pSize
-		// );
-		new int GetSize();
+	// HRESULT GetSize(
+	//     [out] ULONG32   *pSize
+	// );
+	new int GetSize();
 
-		// HRESULT GetAddress(
-		//     [out] CORDB_ADDRESS   *pAddress
-		// );
-		new CORDB_ADDRESS GetAddress();
+	// HRESULT GetAddress(
+	//     [out] CORDB_ADDRESS   *pAddress
+	// );
+	new CORDB_ADDRESS GetAddress();
 
-		// HRESULT CreateBreakpoint(
-		//     [out] ICorDebugValueBreakpoint **ppBreakpoint
-		// );
-		new void CreateBreakpoint_();
+	// HRESULT CreateBreakpoint(
+	//     [out] ICorDebugValueBreakpoint **ppBreakpoint
+	// );
+	new void CreateBreakpoint_();
 
-		// HRESULT GetValue(
-		//     [out] void *pTo
-		// );
-		void GetValue(
-			IntPtr pTo);
+	// HRESULT GetValue(
+	//     [out] void *pTo
+	// );
+	void GetValue(
+		IntPtr pTo);
 
-		// HRESULT SetValue(
-		//     [in] void *pFrom
-		// );
-		void SetValue(
-			IntPtr pFrom);
-	}
+	// HRESULT SetValue(
+	//     [in] void *pFrom
+	// );
+	void SetValue(
+		IntPtr pFrom);
 }

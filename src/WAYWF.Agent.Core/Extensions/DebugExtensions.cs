@@ -3,29 +3,28 @@ using System.Runtime.InteropServices;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Core.Win32;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class DebugExtensions
 {
-	static class DebugExtensions
+	public static ICorDebugProcess DebugActiveProcess(this ICorDebug debug, ProcessHandle handle)
 	{
-		public static ICorDebugProcess DebugActiveProcess(this ICorDebug debug, ProcessHandle handle)
+		var hr = debug.DebugActiveProcess(handle.Pid, win32Attach: false, out var process);
+
+		if (hr == HResults.CORDBG_E_DEBUGGER_ALREADY_ATTACHED)
 		{
-			var hr = debug.DebugActiveProcess(handle.Pid, win32Attach: false, out var process);
-
-			if (hr == HResults.CORDBG_E_DEBUGGER_ALREADY_ATTACHED)
-			{
-				throw new AttachException(ErrorCodes.AlreadyAttached);
-			}
-			else if (hr >= 0)
-			{
-				return process;
-			}
-
-			if (hr == HResults.E_ACCESSDENIED && !handle.IsAlive())
-			{
-				throw AttachException.ProcessTerminatedBeforeAttaching(handle.Pid);
-			}
-
-			throw Marshal.GetExceptionForHR(hr);
+			throw new AttachException(ErrorCodes.AlreadyAttached);
 		}
+		else if (hr >= 0)
+		{
+			return process;
+		}
+
+		if (hr == HResults.E_ACCESSDENIED && !handle.IsAlive())
+		{
+			throw AttachException.ProcessTerminatedBeforeAttaching(handle.Pid);
+		}
+
+		throw Marshal.GetExceptionForHR(hr);
 	}
 }

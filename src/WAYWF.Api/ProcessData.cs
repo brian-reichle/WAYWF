@@ -4,58 +4,57 @@ using System.ComponentModel;
 using System.IO;
 using WAYWF.Api.Win32;
 
-namespace WAYWF.Api
+namespace WAYWF.Api;
+
+public sealed class ProcessData : INotifyPropertyChanged
 {
-	public sealed class ProcessData : INotifyPropertyChanged
+	public static ProcessData FromPID(int pid)
 	{
-		public static ProcessData FromPID(int pid)
+		try
 		{
-			try
-			{
-				using var process = SafeWin32.GetProcessById(pid);
-				var is32Bit = !Environment.Is64BitOperatingSystem || process.IsWow64Process();
-				var imageName = process.QueryFullProcessImageName();
-				var processName = Path.GetFileNameWithoutExtension(imageName);
-				return new ProcessData(pid, processName, is32Bit);
-			}
-			catch (Win32Exception ex) when (IsErrorCodeIgnoreable(ex))
-			{
-				return null;
-			}
-			catch (ArgumentException)
-			{
-				return null;
-			}
+			using var process = SafeWin32.GetProcessById(pid);
+			var is32Bit = !Environment.Is64BitOperatingSystem || process.IsWow64Process();
+			var imageName = process.QueryFullProcessImageName();
+			var processName = Path.GetFileNameWithoutExtension(imageName);
+			return new ProcessData(pid, processName, is32Bit);
+		}
+		catch (Win32Exception ex) when (IsErrorCodeIgnoreable(ex))
+		{
+			return null;
+		}
+		catch (ArgumentException)
+		{
+			return null;
+		}
+	}
+
+	ProcessData(int processID, string processName, bool is32Bit)
+	{
+		ProcessID = processID;
+		ProcessName = processName;
+		Is32Bit = is32Bit;
+	}
+
+	public int ProcessID { get; }
+	public string ProcessName { get; }
+	public bool Is32Bit { get; }
+
+	static bool IsErrorCodeIgnoreable(Win32Exception ex)
+	{
+		switch (ex.NativeErrorCode)
+		{
+			case Win32ErrorCodes.ERROR_ACCESS_DENIED:
+			case Win32ErrorCodes.ERROR_GEN_FAILURE:
+			case Win32ErrorCodes.ERROR_INVALID_PARAMETER:
+				return true;
 		}
 
-		ProcessData(int processID, string processName, bool is32Bit)
-		{
-			ProcessID = processID;
-			ProcessName = processName;
-			Is32Bit = is32Bit;
-		}
+		return false;
+	}
 
-		public int ProcessID { get; }
-		public string ProcessName { get; }
-		public bool Is32Bit { get; }
-
-		static bool IsErrorCodeIgnoreable(Win32Exception ex)
-		{
-			switch (ex.NativeErrorCode)
-			{
-				case Win32ErrorCodes.ERROR_ACCESS_DENIED:
-				case Win32ErrorCodes.ERROR_GEN_FAILURE:
-				case Win32ErrorCodes.ERROR_INVALID_PARAMETER:
-					return true;
-			}
-
-			return false;
-		}
-
-		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
-		{
-			add { }
-			remove { }
-		}
+	event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+	{
+		add { }
+		remove { }
 	}
 }

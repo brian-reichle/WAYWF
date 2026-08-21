@@ -2,20 +2,19 @@
 using System.Windows;
 using System.Windows.Input;
 
-namespace WAYWF.UI
-{
-	public partial class HelpWindow : Window
-	{
-		public HelpWindow()
-		{
-			InitializeComponent();
-			DataContext = new HelpData();
-			CloseButton.Focus();
-		}
+namespace WAYWF.UI;
 
-		void OnCloseExecuted(object sender, ExecutedRoutedEventArgs e)
-		{
-			Close();
-		}
+public partial class HelpWindow : Window
+{
+	public HelpWindow()
+	{
+		InitializeComponent();
+		DataContext = new HelpData();
+		CloseButton.Focus();
+	}
+
+	void OnCloseExecuted(object sender, ExecutedRoutedEventArgs e)
+	{
+		Close();
 	}
 }

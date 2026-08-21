@@ -10,891 +10,890 @@ using System.Text;
 using System.Xml;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+sealed class StateFormatter : IRuntimeFrameVisitor
 {
-	sealed class StateFormatter : IRuntimeFrameVisitor
+	const string TrueString = "true";
+	const string FalseString = "false";
+
+	StateFormatter(XmlWriter writer)
 	{
-		const string TrueString = "true";
-		const string FalseString = "false";
+		_writer = writer;
+		_formatter = new MetaFormatter();
+		_localValueFormatter = new LocalValueWriter(this);
+		_globalValueFormatter = new GlobalValueWriter(this);
+	}
 
-		StateFormatter(XmlWriter writer)
+	public static void Format(XmlWriter writer, RuntimeProcess process)
+	{
+		var formatter = new StateFormatter(writer);
+		formatter._writer.WriteProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"waywf.xslt\"");
+		formatter.WriteCapture(process);
+	}
+
+	void WriteCapture(RuntimeProcess process)
+	{
+		_writer.WriteStartElement("waywf", "waywf-capture");
+		_writer.WriteAttributeString("version", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+		_writer.WriteAttributeString("timestamp", process.DateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+		_writer.WriteAttributeString("timezone", process.DateTime.ToString("zzz", CultureInfo.InvariantCulture));
+
+		var options = process.Options;
+
+		if (options.WaitSeconds > 0)
 		{
-			_writer = writer;
-			_formatter = new MetaFormatter();
-			_localValueFormatter = new LocalValueWriter(this);
-			_globalValueFormatter = new GlobalValueWriter(this);
+			_writer.WriteAttributeString("wait", options.WaitSeconds.ToString(CultureInfo.InvariantCulture));
 		}
 
-		public static void Format(XmlWriter writer, RuntimeProcess process)
+		if (options.WalkHeap)
 		{
-			var formatter = new StateFormatter(writer);
-			formatter._writer.WriteProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"waywf.xslt\"");
-			formatter.WriteCapture(process);
+			_writer.WriteAttributeString("walkheap", TrueString);
 		}
 
-		void WriteCapture(RuntimeProcess process)
+		WriteEnvironment();
+		WriteProcess(process);
+		_writer.WriteEndElement();
+	}
+
+	void WriteEnvironment()
+	{
+		_writer.WriteStartElement("os");
+		_writer.WriteAttributeString("platform", Environment.OSVersion.Platform.ToString());
+		_writer.WriteAttributeString("version", Environment.OSVersion.Version.ToString());
+		_writer.WriteAttributeString("servicePack", Environment.OSVersion.ServicePack);
+		_writer.WriteAttributeString("is64bit", BoolString(Environment.Is64BitOperatingSystem));
+		_writer.WriteEndElement();
+
+		_writer.WriteStartElement("login");
+		_writer.WriteAttributeString("user", Environment.UserName);
+		_writer.WriteAttributeString("domain", Environment.UserDomainName);
+		_writer.WriteAttributeString("machine", Environment.MachineName);
+		_writer.WriteEndElement();
+	}
+
+	void WriteProcess(RuntimeProcess process)
+	{
+		_writer.WriteStartElement("process");
+		_writer.WriteAttributeString("pid", process.Native.ProcessID.ToString(CultureInfo.InvariantCulture));
+		_writer.WriteAttributeString("is64bit", BoolString(Environment.Is64BitProcess)); // bitness of debuggee must match bitness of debugger.
+
+		if (process.ClrVersion != null)
 		{
-			_writer.WriteStartElement("waywf", "waywf-capture");
-			_writer.WriteAttributeString("version", Assembly.GetExecutingAssembly().GetName().Version.ToString());
-			_writer.WriteAttributeString("timestamp", process.DateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
-			_writer.WriteAttributeString("timezone", process.DateTime.ToString("zzz", CultureInfo.InvariantCulture));
+			_writer.WriteAttributeString("clrVersion", process.ClrVersion.ToString());
+		}
 
-			var options = process.Options;
+		if (process.Native.ImageName != null)
+		{
+			_writer.WriteAttributeString("imagePath", process.Native.ImageName);
+		}
 
-			if (options.WaitSeconds > 0)
+		WriteUser(process.Native.User);
+
+		foreach (var appDomain in process.AppDomains)
+		{
+			WriteAppDomain(appDomain);
+		}
+
+		WriteDocumentList(process.Documents);
+
+		foreach (var value in process.ReferenceValues)
+		{
+			value.Apply(_globalValueFormatter);
+		}
+
+		foreach (var thread in process.Threads)
+		{
+			WriteThread(thread);
+		}
+
+		WritePendingTasks(process, process.PendingTasks);
+
+		foreach (var window in process.Native.Windows)
+		{
+			WriteWindow(window);
+		}
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteUser(RuntimeUser user)
+	{
+		_writer.WriteStartElement("user");
+		_writer.WriteAttributeString("user", user.User);
+		_writer.WriteAttributeString("domain", user.Domain);
+		_writer.WriteEndElement();
+	}
+
+	void WriteAppDomain(RuntimeAppDomain domain)
+	{
+		_writer.WriteStartElement("appDomain");
+		_writer.WriteAttributeString("id", domain.AppDomainID.ToString(CultureInfo.InvariantCulture));
+		_writer.WriteAttributeString("name", domain.Name);
+
+		foreach (var group in domain.Modules.GroupBy(x => x.Assembly).OrderBy(x => x.Key.Name))
+		{
+			WriteAssembly(group.Key, group);
+		}
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteAssembly(MetaAssembly assembly, IEnumerable<MetaModule> modules)
+	{
+		_writer.WriteStartElement("assembly");
+		_writer.WriteAttributeString("name", assembly.Name);
+
+		if (assembly.Version != null)
+		{
+			_writer.WriteAttributeString("version", assembly.Version.ToString());
+		}
+
+		if (!string.IsNullOrEmpty(assembly.Locale))
+		{
+			_writer.WriteAttributeString("locale", assembly.Locale);
+		}
+
+		if (assembly.PublicKeyToken.HasValue)
+		{
+			_writer.WriteAttributeString("publicKeyToken", assembly.PublicKeyToken.Value.ToString("X16", CultureInfo.InvariantCulture));
+		}
+
+		foreach (var module in modules)
+		{
+			WriteModule(module);
+		}
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteModule(MetaModule module)
+	{
+		_writer.WriteStartElement("module");
+		_writer.WriteAttributeString("moduleId", module.ModuleID.ToString());
+		_writer.WriteAttributeString("name", module.Name);
+		_writer.WriteAttributeString("path", module.Path);
+		_writer.WriteAttributeString("mvid", module.MVID.ToString());
+
+		if (module.IsInMemory)
+		{
+			_writer.WriteAttributeString("isInMemory", TrueString);
+		}
+
+		if (module.IsDynamic)
+		{
+			_writer.WriteAttributeString("isDynamic", TrueString);
+		}
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteThread(RuntimeThread thread)
+	{
+		_writer.WriteStartElement("thread");
+		_writer.WriteAttributeString("tid", thread.ThreadID.ToString(CultureInfo.InvariantCulture));
+		_writer.WriteAttributeString("state", FormatFlags(thread.UserState));
+
+		foreach (var bobj in thread.BlockingObject)
+		{
+			WriteBlockingObject(bobj);
+		}
+
+		foreach (var chain in thread.Chains)
+		{
+			WriteChain(chain);
+		}
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteChain(RuntimeFrameChain chain)
+	{
+		_writer.WriteStartElement("chain");
+		_writer.WriteAttributeString("reason", FormatFlags(chain.Reason));
+
+		foreach (var frame in chain.Frames)
+		{
+			frame.Apply(this);
+		}
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteBlockingObject(RuntimeBlockingObject obj)
+	{
+		_writer.WriteStartElement("blockingObject");
+		_writer.WriteAttributeString("reason", obj.BlockingReason.ToString());
+
+		if (obj.OwnerId > 0)
+		{
+			_writer.WriteAttributeString("ownerThread", obj.OwnerId.ToString(CultureInfo.InvariantCulture));
+		}
+
+		if (obj.Timeout > 0)
+		{
+			_writer.WriteAttributeString("timeout", obj.Timeout.ToString(CultureInfo.InvariantCulture));
+		}
+
+		obj.Value.Apply(_localValueFormatter);
+		_writer.WriteEndElement();
+	}
+
+	void WriteVariable(string elementName, IMetaGenericContext context, MetaVariable variable, RuntimeValue value, string nameOverride)
+	{
+		WriteVariable(elementName, context, variable.Type, variable.IsByRef, variable.Pinned, value, nameOverride ?? variable.Name);
+	}
+
+	void WriteVariable(string elementName, IMetaGenericContext context, MetaTypeBase type, RuntimeValue value, string name)
+	{
+		WriteVariable(elementName, context, type, isByRef: false, pinned: false, value, name);
+	}
+
+	void WriteVariable(string elementName, IMetaGenericContext context, MetaTypeBase type, bool isByRef, bool pinned, RuntimeValue value, string name)
+	{
+		_writer.WriteStartElement(elementName);
+		_writer.WriteAttributeString("type", Format(type, context));
+
+		if (isByRef)
+		{
+			_writer.WriteAttributeString("byRef", TrueString);
+		}
+
+		if (pinned)
+		{
+			_writer.WriteAttributeString("pinned", TrueString);
+		}
+
+		if (!string.IsNullOrEmpty(name))
+		{
+			_writer.WriteAttributeString("name", name);
+		}
+
+		value?.Apply(_localValueFormatter);
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteDocumentList(IList<SourceDocument> documents)
+	{
+		if (documents.Count == 0)
+		{
+			return;
+		}
+
+		var path = documents[0].Path;
+		var matchLength = path.Length;
+
+		for (var i = 1; i < documents.Count; i++)
+		{
+			var nextPath = documents[i].Path;
+
+			if (matchLength > nextPath.Length)
 			{
-				_writer.WriteAttributeString("wait", options.WaitSeconds.ToString(CultureInfo.InvariantCulture));
+				matchLength = nextPath.Length;
 			}
 
-			if (options.WalkHeap)
+			matchLength = GetMatchLength(path, nextPath, matchLength);
+		}
+
+		while (matchLength > 0)
+		{
+			var c = path[matchLength - 1];
+
+			if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
 			{
-				_writer.WriteAttributeString("walkheap", TrueString);
+				break;
 			}
 
-			WriteEnvironment();
-			WriteProcess(process);
+			matchLength--;
+		}
+
+		path = path.Substring(0, matchLength);
+
+		_writer.WriteStartElement("source");
+		_writer.WriteAttributeString("path", path);
+
+		foreach (var document in documents.OrderBy(x => x.Path))
+		{
+			WriteDocument(document, matchLength);
+		}
+
+		_writer.WriteEndElement();
+	}
+
+	void WriteDocument(SourceDocument document, int commonPrefixLength)
+	{
+		_writer.WriteStartElement("document");
+		_writer.WriteAttributeString("documentId", document.ID.ToString());
+		_writer.WriteAttributeString("language", document.Language.ToString());
+
+		if (document.DocumentType != SourceDocumentType.Text)
+		{
+			_writer.WriteAttributeString("documentType", document.DocumentType.ToString());
+		}
+
+		_writer.WriteString(document.Path.Substring(commonPrefixLength));
+		_writer.WriteEndElement();
+	}
+
+	void WriteSourceRef(SourceRef source)
+	{
+		_writer.WriteStartElement("source");
+		_writer.WriteAttributeString("documentId", source.Document.ID.ToString());
+		_writer.WriteAttributeString("line", source.FromLine.ToString(CultureInfo.InvariantCulture));
+		_writer.WriteEndElement();
+	}
+
+	void WritePendingTasks(RuntimeProcess process, IEnumerable<PendingStateMachineTask> pendingTasks)
+	{
+		using var enumerator = pendingTasks.GetEnumerator();
+		if (enumerator.MoveNext())
+		{
+			_writer.WriteStartElement("pendingTasks");
+
+			do
+			{
+				WritePendingTask(process, enumerator.Current);
+			}
+			while (enumerator.MoveNext());
+
+			_writer.WriteEndElement();
+		}
+	}
+
+	void WritePendingTask(RuntimeProcess process, PendingStateMachineTask pendingTask)
+	{
+		var function = pendingTask.Descriptor.AsyncMethod;
+		_writer.WriteStartElement("pendingSMTask");
+		_writer.WriteAttributeString("moduleId", GetModuleIdString(process, function.Module));
+		_writer.WriteAttributeString("token", function.Token.ToString());
+
+		if (function.DeclaringType != null)
+		{
+			_writer.WriteAttributeString("typeDisplayText", Format(function.DeclaringType, pendingTask));
+		}
+
+		_writer.WriteAttributeString("methodDisplayText", Format(function, pendingTask));
+
+		if (pendingTask.StateValue != null && pendingTask.StateValue.Value != null)
+		{
+			_writer.WriteAttributeString("state", pendingTask.StateValue.Value.ToString());
+		}
+
+		var state = pendingTask.State;
+
+		if (state != null)
+		{
+			_writer.WriteAttributeString("ilOffset", state.YieldOffset.ToString(CultureInfo.InvariantCulture));
+
+			if (state.YieldSource != null)
+			{
+				WriteSourceRef(state.YieldSource);
+			}
+		}
+
+		var signature = function.Signature;
+		WriteVariable("result", pendingTask, signature.ResultParam, null, null);
+
+		if (signature.CallingConventions.HasImplicitThis())
+		{
+			_writer.WriteStartElement("this");
+
+			pendingTask.ThisValue?.Apply(_localValueFormatter);
+
 			_writer.WriteEndElement();
 		}
 
-		void WriteEnvironment()
+		if (pendingTask.Descriptor.TaskFieldSequence != null)
 		{
-			_writer.WriteStartElement("os");
-			_writer.WriteAttributeString("platform", Environment.OSVersion.Platform.ToString());
-			_writer.WriteAttributeString("version", Environment.OSVersion.Version.ToString());
-			_writer.WriteAttributeString("servicePack", Environment.OSVersion.ServicePack);
-			_writer.WriteAttributeString("is64bit", BoolString(Environment.Is64BitOperatingSystem));
-			_writer.WriteEndElement();
+			_writer.WriteStartElement("task");
 
-			_writer.WriteStartElement("login");
-			_writer.WriteAttributeString("user", Environment.UserName);
-			_writer.WriteAttributeString("domain", Environment.UserDomainName);
-			_writer.WriteAttributeString("machine", Environment.MachineName);
-			_writer.WriteEndElement();
-		}
-
-		void WriteProcess(RuntimeProcess process)
-		{
-			_writer.WriteStartElement("process");
-			_writer.WriteAttributeString("pid", process.Native.ProcessID.ToString(CultureInfo.InvariantCulture));
-			_writer.WriteAttributeString("is64bit", BoolString(Environment.Is64BitProcess)); // bitness of debuggee must match bitness of debugger.
-
-			if (process.ClrVersion != null)
-			{
-				_writer.WriteAttributeString("clrVersion", process.ClrVersion.ToString());
-			}
-
-			if (process.Native.ImageName != null)
-			{
-				_writer.WriteAttributeString("imagePath", process.Native.ImageName);
-			}
-
-			WriteUser(process.Native.User);
-
-			foreach (var appDomain in process.AppDomains)
-			{
-				WriteAppDomain(appDomain);
-			}
-
-			WriteDocumentList(process.Documents);
-
-			foreach (var value in process.ReferenceValues)
-			{
-				value.Apply(_globalValueFormatter);
-			}
-
-			foreach (var thread in process.Threads)
-			{
-				WriteThread(thread);
-			}
-
-			WritePendingTasks(process, process.PendingTasks);
-
-			foreach (var window in process.Native.Windows)
-			{
-				WriteWindow(window);
-			}
+			pendingTask.TaskValue?.Apply(_localValueFormatter);
 
 			_writer.WriteEndElement();
 		}
 
-		void WriteUser(RuntimeUser user)
+		var parameters = signature.Parameters;
+
+		for (var i = 0; i < parameters.Length; i++)
 		{
-			_writer.WriteStartElement("user");
-			_writer.WriteAttributeString("user", user.User);
-			_writer.WriteAttributeString("domain", user.Domain);
-			_writer.WriteEndElement();
+			WriteVariable("param", pendingTask, parameters[i], pendingTask.ParameterValues[i], null);
 		}
 
-		void WriteAppDomain(RuntimeAppDomain domain)
+		var locals = pendingTask.Descriptor.LocalFields;
+		var context = new SMContext(pendingTask);
+
+		for (var i = 0; i < locals.Length; i++)
 		{
-			_writer.WriteStartElement("appDomain");
-			_writer.WriteAttributeString("id", domain.AppDomainID.ToString(CultureInfo.InvariantCulture));
-			_writer.WriteAttributeString("name", domain.Name);
-
-			foreach (var group in domain.Modules.GroupBy(x => x.Assembly).OrderBy(x => x.Key.Name))
-			{
-				WriteAssembly(group.Key, group);
-			}
-
-			_writer.WriteEndElement();
+			WriteVariable("local", context, locals[i].Type, pendingTask.LocalValues[i], locals[i].Name);
 		}
 
-		void WriteAssembly(MetaAssembly assembly, IEnumerable<MetaModule> modules)
+		_writer.WriteEndElement();
+	}
+
+	static string GetModuleIdString(RuntimeProcess process, MetaModule referenceModule)
+	{
+		var matchingModules =
+			from domain in process.AppDomains
+			from module in domain.Modules
+			where module.MVID == referenceModule.MVID
+				&& module.Path == referenceModule.Path
+			select module.ModuleID.ID.ToString(CultureInfo.InvariantCulture);
+
+		return string.Join(" ", matchingModules);
+	}
+
+	void WriteILAttributes(RuntimeILMapping ilMapping, int ilOffset)
+	{
+		string mappingText;
+
+		switch (ilMapping)
 		{
-			_writer.WriteStartElement("assembly");
-			_writer.WriteAttributeString("name", assembly.Name);
+			case RuntimeILMapping.Epilog:
+				mappingText = "Epilog";
+				break;
 
-			if (assembly.Version != null)
-			{
-				_writer.WriteAttributeString("version", assembly.Version.ToString());
-			}
+			case RuntimeILMapping.Prolog:
+				mappingText = "Prolog";
+				break;
 
-			if (!string.IsNullOrEmpty(assembly.Locale))
-			{
-				_writer.WriteAttributeString("locale", assembly.Locale);
-			}
+			case RuntimeILMapping.Approximate:
+				mappingText = "Approx";
+				break;
 
-			if (assembly.PublicKeyToken.HasValue)
-			{
-				_writer.WriteAttributeString("publicKeyToken", assembly.PublicKeyToken.Value.ToString("X16", CultureInfo.InvariantCulture));
-			}
+			case RuntimeILMapping.Exact:
+				mappingText = null;
+				break;
 
-			foreach (var module in modules)
-			{
-				WriteModule(module);
-			}
-
-			_writer.WriteEndElement();
-		}
-
-		void WriteModule(MetaModule module)
-		{
-			_writer.WriteStartElement("module");
-			_writer.WriteAttributeString("moduleId", module.ModuleID.ToString());
-			_writer.WriteAttributeString("name", module.Name);
-			_writer.WriteAttributeString("path", module.Path);
-			_writer.WriteAttributeString("mvid", module.MVID.ToString());
-
-			if (module.IsInMemory)
-			{
-				_writer.WriteAttributeString("isInMemory", TrueString);
-			}
-
-			if (module.IsDynamic)
-			{
-				_writer.WriteAttributeString("isDynamic", TrueString);
-			}
-
-			_writer.WriteEndElement();
-		}
-
-		void WriteThread(RuntimeThread thread)
-		{
-			_writer.WriteStartElement("thread");
-			_writer.WriteAttributeString("tid", thread.ThreadID.ToString(CultureInfo.InvariantCulture));
-			_writer.WriteAttributeString("state", FormatFlags(thread.UserState));
-
-			foreach (var bobj in thread.BlockingObject)
-			{
-				WriteBlockingObject(bobj);
-			}
-
-			foreach (var chain in thread.Chains)
-			{
-				WriteChain(chain);
-			}
-
-			_writer.WriteEndElement();
-		}
-
-		void WriteChain(RuntimeFrameChain chain)
-		{
-			_writer.WriteStartElement("chain");
-			_writer.WriteAttributeString("reason", FormatFlags(chain.Reason));
-
-			foreach (var frame in chain.Frames)
-			{
-				frame.Apply(this);
-			}
-
-			_writer.WriteEndElement();
-		}
-
-		void WriteBlockingObject(RuntimeBlockingObject obj)
-		{
-			_writer.WriteStartElement("blockingObject");
-			_writer.WriteAttributeString("reason", obj.BlockingReason.ToString());
-
-			if (obj.OwnerId > 0)
-			{
-				_writer.WriteAttributeString("ownerThread", obj.OwnerId.ToString(CultureInfo.InvariantCulture));
-			}
-
-			if (obj.Timeout > 0)
-			{
-				_writer.WriteAttributeString("timeout", obj.Timeout.ToString(CultureInfo.InvariantCulture));
-			}
-
-			obj.Value.Apply(_localValueFormatter);
-			_writer.WriteEndElement();
-		}
-
-		void WriteVariable(string elementName, IMetaGenericContext context, MetaVariable variable, RuntimeValue value, string nameOverride)
-		{
-			WriteVariable(elementName, context, variable.Type, variable.IsByRef, variable.Pinned, value, nameOverride ?? variable.Name);
-		}
-
-		void WriteVariable(string elementName, IMetaGenericContext context, MetaTypeBase type, RuntimeValue value, string name)
-		{
-			WriteVariable(elementName, context, type, isByRef: false, pinned: false, value, name);
-		}
-
-		void WriteVariable(string elementName, IMetaGenericContext context, MetaTypeBase type, bool isByRef, bool pinned, RuntimeValue value, string name)
-		{
-			_writer.WriteStartElement(elementName);
-			_writer.WriteAttributeString("type", Format(type, context));
-
-			if (isByRef)
-			{
-				_writer.WriteAttributeString("byRef", TrueString);
-			}
-
-			if (pinned)
-			{
-				_writer.WriteAttributeString("pinned", TrueString);
-			}
-
-			if (!string.IsNullOrEmpty(name))
-			{
-				_writer.WriteAttributeString("name", name);
-			}
-
-			value?.Apply(_localValueFormatter);
-
-			_writer.WriteEndElement();
-		}
-
-		void WriteDocumentList(IList<SourceDocument> documents)
-		{
-			if (documents.Count == 0)
-			{
+			default:
 				return;
-			}
+		}
 
-			var path = documents[0].Path;
-			var matchLength = path.Length;
+		_writer.WriteAttributeString("ilOffset", ilOffset.ToString(CultureInfo.InvariantCulture));
 
-			for (var i = 1; i < documents.Count; i++)
-			{
-				var nextPath = documents[i].Path;
+		if (mappingText != null)
+		{
+			_writer.WriteAttributeString("ilMapping", mappingText);
+		}
+	}
 
-				if (matchLength > nextPath.Length)
-				{
-					matchLength = nextPath.Length;
-				}
+	void WriteWindow(RuntimeWindow window)
+	{
+		_writer.WriteStartElement("window");
+		_writer.WriteAttributeString("hwnd", window.Handle.ToString());
+		_writer.WriteAttributeString("ownerThread", window.ThreadID.ToString(CultureInfo.InvariantCulture));
 
-				matchLength = GetMatchLength(path, nextPath, matchLength);
-			}
+		if (window.Owner != IntPtr.Zero)
+		{
+			_writer.WriteAttributeString("ownerHwnd", window.Owner.ToString());
+		}
 
-			while (matchLength > 0)
-			{
-				var c = path[matchLength - 1];
+		if (!string.IsNullOrEmpty(window.ClassName))
+		{
+			_writer.WriteAttributeString("className", window.ClassName);
+		}
 
-				if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
-				{
-					break;
-				}
+		if (window.IsVisible)
+		{
+			_writer.WriteAttributeString("visible", TrueString);
+		}
 
-				matchLength--;
-			}
+		if (!window.IsEnabled)
+		{
+			_writer.WriteAttributeString("enabled", FalseString);
+		}
 
-			path = path.Substring(0, matchLength);
+		if (!string.IsNullOrEmpty(window.Caption))
+		{
+			_writer.WriteString(window.Caption);
+		}
 
-			_writer.WriteStartElement("source");
-			_writer.WriteAttributeString("path", path);
+		_writer.WriteEndElement();
+	}
 
-			foreach (var document in documents.OrderBy(x => x.Path))
-			{
-				WriteDocument(document, matchLength);
-			}
+	void IRuntimeFrameVisitor.Visit(RuntimeILFrame frame)
+	{
+		var function = frame.Method;
+
+		_writer.WriteStartElement("frame");
+		_writer.WriteAttributeString("moduleId", function.Module.ModuleID.ToString());
+		_writer.WriteAttributeString("token", function.Token.ToString());
+
+		if (function.DeclaringType != null)
+		{
+			_writer.WriteAttributeString("typeDisplayText", Format(function.DeclaringType, frame));
+		}
+
+		_writer.WriteAttributeString("methodDisplayText", Format(function, frame));
+
+		if (frame.Duration.HasValue)
+		{
+			_writer.WriteAttributeString("duration", Math.Round(frame.Duration.Value, 4).ToString(CultureInfo.InvariantCulture));
+		}
+
+		WriteILAttributes(frame.ILMapping, frame.ILOffset);
+
+		if (frame.Source != null)
+		{
+			WriteSourceRef(frame.Source);
+		}
+
+		var signature = function.Signature;
+		WriteVariable("result", frame, signature.ResultParam, null, null);
+
+		if (signature.CallingConventions.HasImplicitThis())
+		{
+			_writer.WriteStartElement("this");
+			frame.This?.Apply(_localValueFormatter);
 
 			_writer.WriteEndElement();
 		}
 
-		void WriteDocument(SourceDocument document, int commonPrefixLength)
+		var parameters = signature.Parameters;
+		var arguments = frame.Arguments;
+
+		for (var i = 0; i < parameters.Length; i++)
 		{
-			_writer.WriteStartElement("document");
-			_writer.WriteAttributeString("documentId", document.ID.ToString());
-			_writer.WriteAttributeString("language", document.Language.ToString());
-
-			if (document.DocumentType != SourceDocumentType.Text)
-			{
-				_writer.WriteAttributeString("documentType", document.DocumentType.ToString());
-			}
-
-			_writer.WriteString(document.Path.Substring(commonPrefixLength));
-			_writer.WriteEndElement();
+			WriteVariable("param", frame, parameters[i], arguments[i], null);
 		}
 
-		void WriteSourceRef(SourceRef source)
-		{
-			_writer.WriteStartElement("source");
-			_writer.WriteAttributeString("documentId", source.Document.ID.ToString());
-			_writer.WriteAttributeString("line", source.FromLine.ToString(CultureInfo.InvariantCulture));
-			_writer.WriteEndElement();
-		}
+		var locals = frame.Locals;
 
-		void WritePendingTasks(RuntimeProcess process, IEnumerable<PendingStateMachineTask> pendingTasks)
+		if (locals.Length > 0)
 		{
-			using var enumerator = pendingTasks.GetEnumerator();
-			if (enumerator.MoveNext())
+			var localDefs = frame.Method.Locals;
+			var names = frame.LocalNames;
+
+			for (var i = 0; i < frame.Locals.Length; i++)
 			{
-				_writer.WriteStartElement("pendingTasks");
-
-				do
-				{
-					WritePendingTask(process, enumerator.Current);
-				}
-				while (enumerator.MoveNext());
-
-				_writer.WriteEndElement();
+				WriteVariable("local", frame, localDefs[i], locals[i], names.Length > i ? names[i] : null);
 			}
 		}
 
-		void WritePendingTask(RuntimeProcess process, PendingStateMachineTask pendingTask)
+		_writer.WriteEndElement();
+	}
+
+	void IRuntimeFrameVisitor.Visit(RuntimeInternalFrame frame)
+	{
+		_writer.WriteElementString("internalFrame", frame.InternalFrameType.ToString());
+	}
+
+	string Format(MetaMethod method, IMetaGenericContext context)
+	{
+		_formatter.Clear();
+		SetupFormatter(context);
+		_formatter.Write(method);
+		return _formatter.ToString();
+	}
+
+	string Format(MetaTypeBase type, IMetaGenericContext context)
+	{
+		_formatter.Clear();
+		SetupFormatter(context);
+		_formatter.Write(type);
+		return _formatter.ToString();
+	}
+
+	string Format(MetaResolvedType type, IMetaGenericContext context)
+	{
+		_formatter.Clear();
+		SetupFormatter(null);
+		_formatter.Write(type, context.TypeArgs);
+		return _formatter.ToString();
+	}
+
+	static int GetMatchLength(string str1, string str2, int count)
+	{
+		for (var i = 0; i < count; i++)
 		{
-			var function = pendingTask.Descriptor.AsyncMethod;
-			_writer.WriteStartElement("pendingSMTask");
-			_writer.WriteAttributeString("moduleId", GetModuleIdString(process, function.Module));
-			_writer.WriteAttributeString("token", function.Token.ToString());
-
-			if (function.DeclaringType != null)
+			if (str1[i] != str2[i])
 			{
-				_writer.WriteAttributeString("typeDisplayText", Format(function.DeclaringType, pendingTask));
-			}
-
-			_writer.WriteAttributeString("methodDisplayText", Format(function, pendingTask));
-
-			if (pendingTask.StateValue != null && pendingTask.StateValue.Value != null)
-			{
-				_writer.WriteAttributeString("state", pendingTask.StateValue.Value.ToString());
-			}
-
-			var state = pendingTask.State;
-
-			if (state != null)
-			{
-				_writer.WriteAttributeString("ilOffset", state.YieldOffset.ToString(CultureInfo.InvariantCulture));
-
-				if (state.YieldSource != null)
-				{
-					WriteSourceRef(state.YieldSource);
-				}
-			}
-
-			var signature = function.Signature;
-			WriteVariable("result", pendingTask, signature.ResultParam, null, null);
-
-			if (signature.CallingConventions.HasImplicitThis())
-			{
-				_writer.WriteStartElement("this");
-
-				pendingTask.ThisValue?.Apply(_localValueFormatter);
-
-				_writer.WriteEndElement();
-			}
-
-			if (pendingTask.Descriptor.TaskFieldSequence != null)
-			{
-				_writer.WriteStartElement("task");
-
-				pendingTask.TaskValue?.Apply(_localValueFormatter);
-
-				_writer.WriteEndElement();
-			}
-
-			var parameters = signature.Parameters;
-
-			for (var i = 0; i < parameters.Length; i++)
-			{
-				WriteVariable("param", pendingTask, parameters[i], pendingTask.ParameterValues[i], null);
-			}
-
-			var locals = pendingTask.Descriptor.LocalFields;
-			var context = new SMContext(pendingTask);
-
-			for (var i = 0; i < locals.Length; i++)
-			{
-				WriteVariable("local", context, locals[i].Type, pendingTask.LocalValues[i], locals[i].Name);
-			}
-
-			_writer.WriteEndElement();
-		}
-
-		static string GetModuleIdString(RuntimeProcess process, MetaModule referenceModule)
-		{
-			var matchingModules =
-				from domain in process.AppDomains
-				from module in domain.Modules
-				where module.MVID == referenceModule.MVID
-					&& module.Path == referenceModule.Path
-				select module.ModuleID.ID.ToString(CultureInfo.InvariantCulture);
-
-			return string.Join(" ", matchingModules);
-		}
-
-		void WriteILAttributes(RuntimeILMapping ilMapping, int ilOffset)
-		{
-			string mappingText;
-
-			switch (ilMapping)
-			{
-				case RuntimeILMapping.Epilog:
-					mappingText = "Epilog";
-					break;
-
-				case RuntimeILMapping.Prolog:
-					mappingText = "Prolog";
-					break;
-
-				case RuntimeILMapping.Approximate:
-					mappingText = "Approx";
-					break;
-
-				case RuntimeILMapping.Exact:
-					mappingText = null;
-					break;
-
-				default:
-					return;
-			}
-
-			_writer.WriteAttributeString("ilOffset", ilOffset.ToString(CultureInfo.InvariantCulture));
-
-			if (mappingText != null)
-			{
-				_writer.WriteAttributeString("ilMapping", mappingText);
+				return i;
 			}
 		}
 
-		void WriteWindow(RuntimeWindow window)
+		return count;
+	}
+
+	void SetupFormatter(IMetaGenericContext context)
+	{
+		if (context != null)
 		{
-			_writer.WriteStartElement("window");
-			_writer.WriteAttributeString("hwnd", window.Handle.ToString());
-			_writer.WriteAttributeString("ownerThread", window.ThreadID.ToString(CultureInfo.InvariantCulture));
-
-			if (window.Owner != IntPtr.Zero)
-			{
-				_writer.WriteAttributeString("ownerHwnd", window.Owner.ToString());
-			}
-
-			if (!string.IsNullOrEmpty(window.ClassName))
-			{
-				_writer.WriteAttributeString("className", window.ClassName);
-			}
-
-			if (window.IsVisible)
-			{
-				_writer.WriteAttributeString("visible", TrueString);
-			}
-
-			if (!window.IsEnabled)
-			{
-				_writer.WriteAttributeString("enabled", FalseString);
-			}
-
-			if (!string.IsNullOrEmpty(window.Caption))
-			{
-				_writer.WriteString(window.Caption);
-			}
-
-			_writer.WriteEndElement();
+			_formatter.TypeArgs = context.TypeArgs;
+			_formatter.MethodArgsStart = context.StartOfMethodArgs;
 		}
-
-		void IRuntimeFrameVisitor.Visit(RuntimeILFrame frame)
+		else
 		{
-			var function = frame.Method;
-
-			_writer.WriteStartElement("frame");
-			_writer.WriteAttributeString("moduleId", function.Module.ModuleID.ToString());
-			_writer.WriteAttributeString("token", function.Token.ToString());
-
-			if (function.DeclaringType != null)
-			{
-				_writer.WriteAttributeString("typeDisplayText", Format(function.DeclaringType, frame));
-			}
-
-			_writer.WriteAttributeString("methodDisplayText", Format(function, frame));
-
-			if (frame.Duration.HasValue)
-			{
-				_writer.WriteAttributeString("duration", Math.Round(frame.Duration.Value, 4).ToString(CultureInfo.InvariantCulture));
-			}
-
-			WriteILAttributes(frame.ILMapping, frame.ILOffset);
-
-			if (frame.Source != null)
-			{
-				WriteSourceRef(frame.Source);
-			}
-
-			var signature = function.Signature;
-			WriteVariable("result", frame, signature.ResultParam, null, null);
-
-			if (signature.CallingConventions.HasImplicitThis())
-			{
-				_writer.WriteStartElement("this");
-				frame.This?.Apply(_localValueFormatter);
-
-				_writer.WriteEndElement();
-			}
-
-			var parameters = signature.Parameters;
-			var arguments = frame.Arguments;
-
-			for (var i = 0; i < parameters.Length; i++)
-			{
-				WriteVariable("param", frame, parameters[i], arguments[i], null);
-			}
-
-			var locals = frame.Locals;
-
-			if (locals.Length > 0)
-			{
-				var localDefs = frame.Method.Locals;
-				var names = frame.LocalNames;
-
-				for (var i = 0; i < frame.Locals.Length; i++)
-				{
-					WriteVariable("local", frame, localDefs[i], locals[i], names.Length > i ? names[i] : null);
-				}
-			}
-
-			_writer.WriteEndElement();
+			_formatter.TypeArgs = [];
+			_formatter.MethodArgsStart = 0;
 		}
+	}
 
-		void IRuntimeFrameVisitor.Visit(RuntimeInternalFrame frame)
+	static string FormatFlags<T>(T value)
+		where T : IConvertible
+	{
+		var tmp = value.ToInt32(null);
+		var flagsType = typeof(T);
+		var builder = new StringBuilder();
+		var remaining = 0;
+
+		while (tmp != 0)
 		{
-			_writer.WriteElementString("internalFrame", frame.InternalFrameType.ToString());
-		}
+			var next = tmp & ~(tmp - 1);
+			tmp -= next;
 
-		string Format(MetaMethod method, IMetaGenericContext context)
-		{
-			_formatter.Clear();
-			SetupFormatter(context);
-			_formatter.Write(method);
-			return _formatter.ToString();
-		}
-
-		string Format(MetaTypeBase type, IMetaGenericContext context)
-		{
-			_formatter.Clear();
-			SetupFormatter(context);
-			_formatter.Write(type);
-			return _formatter.ToString();
-		}
-
-		string Format(MetaResolvedType type, IMetaGenericContext context)
-		{
-			_formatter.Clear();
-			SetupFormatter(null);
-			_formatter.Write(type, context.TypeArgs);
-			return _formatter.ToString();
-		}
-
-		static int GetMatchLength(string str1, string str2, int count)
-		{
-			for (var i = 0; i < count; i++)
-			{
-				if (str1[i] != str2[i])
-				{
-					return i;
-				}
-			}
-
-			return count;
-		}
-
-		void SetupFormatter(IMetaGenericContext context)
-		{
-			if (context != null)
-			{
-				_formatter.TypeArgs = context.TypeArgs;
-				_formatter.MethodArgsStart = context.StartOfMethodArgs;
-			}
-			else
-			{
-				_formatter.TypeArgs = [];
-				_formatter.MethodArgsStart = 0;
-			}
-		}
-
-		static string FormatFlags<T>(T value)
-			where T : IConvertible
-		{
-			var tmp = value.ToInt32(null);
-			var flagsType = typeof(T);
-			var builder = new StringBuilder();
-			var remaining = 0;
-
-			while (tmp != 0)
-			{
-				var next = tmp & ~(tmp - 1);
-				tmp -= next;
-
-				if (Enum.IsDefined(flagsType, next))
-				{
-					if (builder.Length > 0)
-					{
-						builder.Append(' ');
-					}
-
-					builder.Append(Enum.GetName(flagsType, next));
-				}
-				else
-				{
-					remaining |= next;
-				}
-			}
-
-			if (remaining > 0)
+			if (Enum.IsDefined(flagsType, next))
 			{
 				if (builder.Length > 0)
 				{
 					builder.Append(' ');
 				}
 
-				builder.Append(remaining);
+				builder.Append(Enum.GetName(flagsType, next));
+			}
+			else
+			{
+				remaining |= next;
+			}
+		}
+
+		if (remaining > 0)
+		{
+			if (builder.Length > 0)
+			{
+				builder.Append(' ');
 			}
 
-			return builder.ToString();
+			builder.Append(remaining);
 		}
 
-		static string BoolString(bool value)
-		{
-			return value ? TrueString : FalseString;
-		}
+		return builder.ToString();
+	}
 
-		static bool RequiresCDATA(string value)
+	static string BoolString(bool value)
+	{
+		return value ? TrueString : FalseString;
+	}
+
+	static bool RequiresCDATA(string value)
+	{
+		for (var i = 0; i < value.Length; i++)
 		{
-			for (var i = 0; i < value.Length; i++)
+			switch (value[i])
 			{
-				switch (value[i])
+				case '\t':
+				case '\n':
+				case '\r':
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	static bool IsStringXmlSafe(string value)
+	{
+		for (var i = 0; i < value.Length; i++)
+		{
+			var c = value[i];
+
+			switch (c)
+			{
+				case '\0':
+				case '\uFFFE':
+				case '\uFFFF':
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	readonly XmlWriter _writer;
+	readonly MetaFormatter _formatter;
+	readonly IRuntimeValueVisitor _localValueFormatter;
+	readonly IRuntimeValueVisitor _globalValueFormatter;
+
+	sealed class SMContext : IMetaGenericContext
+	{
+		/*
+		 * The state machine for a generic async method combines both sets of type arguments into a single set,
+		 * this means we need to re-map method type arguments into type type arguments when formatting types
+		 * that were taken directly from the state machine.
+		 */
+		public SMContext(PendingStateMachineTask task)
+		{
+			_task = task;
+		}
+
+		// Pretend that all type arguments are type type arguments.
+		public int StartOfMethodArgs => _task.TypeArgs.Length;
+		public ImmutableArray<MetaTypeBase> TypeArgs => _task.TypeArgs;
+
+		readonly PendingStateMachineTask _task;
+	}
+
+	sealed class LocalValueWriter : ValueWriter
+	{
+		public LocalValueWriter(StateFormatter formatter)
+			: base(formatter)
+		{
+		}
+
+		public override void Visit(RuntimeNullValue value)
+		{
+			Writer.WriteStartElement("null");
+			Writer.WriteEndElement();
+		}
+
+		public override void Visit(RuntimeSimpleValue value)
+		{
+			if (MakeGlobal(value))
+			{
+				WriteRef(value.ID);
+			}
+			else
+			{
+				base.Visit(value);
+			}
+		}
+
+		public override void Visit(RuntimeRcwValue value)
+		{
+			if (MakeGlobal(value))
+			{
+				WriteRef(value.ID);
+			}
+			else
+			{
+				base.Visit(value);
+			}
+		}
+
+		public override void Visit(RuntimePointerValue value)
+		{
+			Writer.WriteStartElement("pointerValue");
+			Writer.WriteAttributeString("type", Formatter.Format(value.Type, null));
+			Writer.WriteAttributeString("address", value.Address.ToString());
+			value.Value?.Apply(this);
+			Writer.WriteEndElement();
+		}
+
+		void WriteRef(Identity id)
+		{
+			Writer.WriteStartElement("valueRef");
+			Writer.WriteAttributeString("objectId", id.ToString());
+			Writer.WriteEndElement();
+		}
+	}
+
+	sealed class GlobalValueWriter : ValueWriter
+	{
+		public GlobalValueWriter(StateFormatter formatter)
+			: base(formatter)
+		{
+		}
+
+		public override void Visit(RuntimeSimpleValue value)
+		{
+			if (MakeGlobal(value))
+			{
+				base.Visit(value);
+			}
+		}
+
+		public override void Visit(RuntimeRcwValue value)
+		{
+			if (MakeGlobal(value))
+			{
+				base.Visit(value);
+			}
+		}
+	}
+
+	abstract class ValueWriter : IRuntimeValueVisitor
+	{
+		public ValueWriter(StateFormatter formatter)
+		{
+			Formatter = formatter;
+			Writer = formatter._writer;
+		}
+
+		public virtual void Visit(RuntimeNullValue value)
+		{
+		}
+
+		public virtual void Visit(RuntimeSimpleValue value)
+		{
+			Writer.WriteStartElement("value");
+
+			WriteStandardAttributes(value);
+
+			if (value.Value != null)
+			{
+				var text = value.Value.ToString();
+
+				if (!IsStringXmlSafe(text))
 				{
-					case '\t':
-					case '\n':
-					case '\r':
-						return true;
+					Writer.WriteAttributeString("suppressed", TrueString);
 				}
-			}
-
-			return false;
-		}
-
-		static bool IsStringXmlSafe(string value)
-		{
-			for (var i = 0; i < value.Length; i++)
-			{
-				var c = value[i];
-
-				switch (c)
+				else if (RequiresCDATA(text))
 				{
-					case '\0':
-					case '\uFFFE':
-					case '\uFFFF':
-						return false;
-				}
-			}
-
-			return true;
-		}
-
-		readonly XmlWriter _writer;
-		readonly MetaFormatter _formatter;
-		readonly IRuntimeValueVisitor _localValueFormatter;
-		readonly IRuntimeValueVisitor _globalValueFormatter;
-
-		sealed class SMContext : IMetaGenericContext
-		{
-			/*
-			 * The state machine for a generic async method combines both sets of type arguments into a single set,
-			 * this means we need to re-map method type arguments into type type arguments when formatting types
-			 * that were taken directly from the state machine.
-			 */
-			public SMContext(PendingStateMachineTask task)
-			{
-				_task = task;
-			}
-
-			// Pretend that all type arguments are type type arguments.
-			public int StartOfMethodArgs => _task.TypeArgs.Length;
-			public ImmutableArray<MetaTypeBase> TypeArgs => _task.TypeArgs;
-
-			readonly PendingStateMachineTask _task;
-		}
-
-		sealed class LocalValueWriter : ValueWriter
-		{
-			public LocalValueWriter(StateFormatter formatter)
-				: base(formatter)
-			{
-			}
-
-			public override void Visit(RuntimeNullValue value)
-			{
-				Writer.WriteStartElement("null");
-				Writer.WriteEndElement();
-			}
-
-			public override void Visit(RuntimeSimpleValue value)
-			{
-				if (MakeGlobal(value))
-				{
-					WriteRef(value.ID);
+					Writer.WriteCData(text);
 				}
 				else
 				{
-					base.Visit(value);
+					Writer.WriteString(text);
 				}
 			}
 
-			public override void Visit(RuntimeRcwValue value)
-			{
-				if (MakeGlobal(value))
-				{
-					WriteRef(value.ID);
-				}
-				else
-				{
-					base.Visit(value);
-				}
-			}
-
-			public override void Visit(RuntimePointerValue value)
-			{
-				Writer.WriteStartElement("pointerValue");
-				Writer.WriteAttributeString("type", Formatter.Format(value.Type, null));
-				Writer.WriteAttributeString("address", value.Address.ToString());
-				value.Value?.Apply(this);
-				Writer.WriteEndElement();
-			}
-
-			void WriteRef(Identity id)
-			{
-				Writer.WriteStartElement("valueRef");
-				Writer.WriteAttributeString("objectId", id.ToString());
-				Writer.WriteEndElement();
-			}
+			Writer.WriteEndElement();
 		}
 
-		sealed class GlobalValueWriter : ValueWriter
+		public virtual void Visit(RuntimeRcwValue value)
 		{
-			public GlobalValueWriter(StateFormatter formatter)
-				: base(formatter)
+			Writer.WriteStartElement("rcwValue");
+
+			WriteStandardAttributes(value);
+
+			foreach (var type in value.InterfaceTypes)
 			{
+				Writer.WriteStartElement("managed");
+				Writer.WriteAttributeString("type", Formatter.Format(type, null));
+				Writer.WriteEndElement();
 			}
 
-			public override void Visit(RuntimeSimpleValue value)
+			foreach (var ptr in value.InterfacePointers)
 			{
-				if (MakeGlobal(value))
-				{
-					base.Visit(value);
-				}
+				Writer.WriteStartElement("native");
+				Writer.WriteAttributeString("ptr", ptr.InterfaceAddress.ToString());
+				Writer.WriteAttributeString("vtbl", ptr.VtblAddress.ToString());
+				Writer.WriteEndElement();
 			}
 
-			public override void Visit(RuntimeRcwValue value)
-			{
-				if (MakeGlobal(value))
-				{
-					base.Visit(value);
-				}
-			}
+			Writer.WriteEndElement();
 		}
 
-		abstract class ValueWriter : IRuntimeValueVisitor
+		public virtual void Visit(RuntimePointerValue value)
 		{
-			public ValueWriter(StateFormatter formatter)
-			{
-				Formatter = formatter;
-				Writer = formatter._writer;
-			}
-
-			public virtual void Visit(RuntimeNullValue value)
-			{
-			}
-
-			public virtual void Visit(RuntimeSimpleValue value)
-			{
-				Writer.WriteStartElement("value");
-
-				WriteStandardAttributes(value);
-
-				if (value.Value != null)
-				{
-					var text = value.Value.ToString();
-
-					if (!IsStringXmlSafe(text))
-					{
-						Writer.WriteAttributeString("suppressed", TrueString);
-					}
-					else if (RequiresCDATA(text))
-					{
-						Writer.WriteCData(text);
-					}
-					else
-					{
-						Writer.WriteString(text);
-					}
-				}
-
-				Writer.WriteEndElement();
-			}
-
-			public virtual void Visit(RuntimeRcwValue value)
-			{
-				Writer.WriteStartElement("rcwValue");
-
-				WriteStandardAttributes(value);
-
-				foreach (var type in value.InterfaceTypes)
-				{
-					Writer.WriteStartElement("managed");
-					Writer.WriteAttributeString("type", Formatter.Format(type, null));
-					Writer.WriteEndElement();
-				}
-
-				foreach (var ptr in value.InterfacePointers)
-				{
-					Writer.WriteStartElement("native");
-					Writer.WriteAttributeString("ptr", ptr.InterfaceAddress.ToString());
-					Writer.WriteAttributeString("vtbl", ptr.VtblAddress.ToString());
-					Writer.WriteEndElement();
-				}
-
-				Writer.WriteEndElement();
-			}
-
-			public virtual void Visit(RuntimePointerValue value)
-			{
-			}
-
-			protected static bool MakeGlobal(RuntimeIdentifiedValue value)
-			{
-				return value.ID != null && value.ReferenceCount > 1;
-			}
-
-			void WriteStandardAttributes(RuntimeIdentifiedValue value)
-			{
-				if (MakeGlobal(value))
-				{
-					Writer.WriteAttributeString("objectId", value.ID.ToString());
-				}
-
-				Writer.WriteAttributeString("type", Formatter.Format(value.Type, null));
-			}
-
-			protected StateFormatter Formatter { get; set; }
-			protected XmlWriter Writer { get; set; }
 		}
+
+		protected static bool MakeGlobal(RuntimeIdentifiedValue value)
+		{
+			return value.ID != null && value.ReferenceCount > 1;
+		}
+
+		void WriteStandardAttributes(RuntimeIdentifiedValue value)
+		{
+			if (MakeGlobal(value))
+			{
+				Writer.WriteAttributeString("objectId", value.ID.ToString());
+			}
+
+			Writer.WriteAttributeString("type", Formatter.Format(value.Type, null));
+		}
+
+		protected StateFormatter Formatter { get; set; }
+		protected XmlWriter Writer { get; set; }
 	}
 }

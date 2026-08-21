@@ -2,16 +2,15 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Api.Win32
-{
-	sealed class ProcessHandle : SafeHandle
-	{
-		public ProcessHandle()
-			: base(IntPtr.Zero, true)
-		{
-		}
+namespace WAYWF.Api.Win32;
 
-		public override bool IsInvalid => handle == IntPtr.Zero || handle == NativeMethods.INVALID_HANDLE;
-		protected override bool ReleaseHandle() => NativeMethods.CloseHandle(handle);
+sealed class ProcessHandle : SafeHandle
+{
+	public ProcessHandle()
+		: base(IntPtr.Zero, true)
+	{
 	}
+
+	public override bool IsInvalid => handle == IntPtr.Zero || handle == NativeMethods.INVALID_HANDLE;
+	protected override bool ReleaseHandle() => NativeMethods.CloseHandle(handle);
 }

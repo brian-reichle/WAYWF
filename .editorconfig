@@ -86,6 +86,7 @@ csharp_style_expression_bodied_operators = false:none
 csharp_style_expression_bodied_properties = false:none
 csharp_style_implicit_object_creation_when_type_is_apparent = false:none
 csharp_style_inlined_variable_declaration = true:suggestion
+csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_prefer_primary_constructors = false:none

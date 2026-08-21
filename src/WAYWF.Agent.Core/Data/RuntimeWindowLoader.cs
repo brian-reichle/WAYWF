@@ -7,133 +7,132 @@ using System.Text;
 using WAYWF.Agent.Core.Win32;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class RuntimeWindowLoader
 {
-	static class RuntimeWindowLoader
+	public static unsafe ImmutableArray<RuntimeWindow> Load(int pid)
 	{
-		public static unsafe ImmutableArray<RuntimeWindow> Load(int pid)
+		var host = new Host(pid);
+		var handle = default(GCHandle);
+
+		RuntimeHelpers.PrepareConstrainedRegions();
+		try
 		{
-			var host = new Host(pid);
-			var handle = default(GCHandle);
+			handle = GCHandle.Alloc(host);
 
-			RuntimeHelpers.PrepareConstrainedRegions();
-			try
+			if (!NativeMethods.EnumWindows(Callback, (IntPtr)handle))
 			{
-				handle = GCHandle.Alloc(host);
-
-				if (!NativeMethods.EnumWindows(Callback, (IntPtr)handle))
-				{
-					throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-				}
+				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
 			}
-			finally
-			{
-				if (handle.IsAllocated)
-				{
-					handle.Free();
-				}
-			}
-
-			return host.Windows.ToImmutable();
 		}
-
-		static bool Callback(IntPtr hwnd, IntPtr lParam)
+		finally
 		{
-			var host = (Host)GCHandle.FromIntPtr(lParam).Target;
-			Add(host, hwnd);
-			return true;
-		}
-
-		static void Add(Host host, IntPtr hwnd)
-		{
-			var threadID = NativeMethods.GetWindowThreadProcessId(hwnd, out var processID);
-
-			if (processID == host.Pid)
+			if (handle.IsAllocated)
 			{
-				var isVisible = NativeMethods.IsWindowVisible(hwnd);
-				var isEnabled = NativeMethods.IsWindowEnabled(hwnd);
-
-				host.Windows.Add(
-					new RuntimeWindow(
-						threadID,
-						hwnd,
-						GetOwner(hwnd),
-						GetWindowText(host.Builder, hwnd),
-						GetWindowClassName(host.Builder, hwnd),
-						isVisible,
-						isEnabled));
+				handle.Free();
 			}
 		}
 
-		static IntPtr GetOwner(IntPtr hwnd)
+		return host.Windows.ToImmutable();
+	}
+
+	static bool Callback(IntPtr hwnd, IntPtr lParam)
+	{
+		var host = (Host)GCHandle.FromIntPtr(lParam).Target;
+		Add(host, hwnd);
+		return true;
+	}
+
+	static void Add(Host host, IntPtr hwnd)
+	{
+		var threadID = NativeMethods.GetWindowThreadProcessId(hwnd, out var processID);
+
+		if (processID == host.Pid)
 		{
-			// Should throw an exception if GetWindow fails with an error code, but it seems to think
-			// that the argument is invalid if it simply doesnt have an owner.
-			return NativeMethods.GetWindow(hwnd, NativeMethods.GW_OWNER);
+			var isVisible = NativeMethods.IsWindowVisible(hwnd);
+			var isEnabled = NativeMethods.IsWindowEnabled(hwnd);
+
+			host.Windows.Add(
+				new RuntimeWindow(
+					threadID,
+					hwnd,
+					GetOwner(hwnd),
+					GetWindowText(host.Builder, hwnd),
+					GetWindowClassName(host.Builder, hwnd),
+					isVisible,
+					isEnabled));
+		}
+	}
+
+	static IntPtr GetOwner(IntPtr hwnd)
+	{
+		// Should throw an exception if GetWindow fails with an error code, but it seems to think
+		// that the argument is invalid if it simply doesnt have an owner.
+		return NativeMethods.GetWindow(hwnd, NativeMethods.GW_OWNER);
+	}
+
+	static string GetWindowText(StringBuilder builder, IntPtr hwnd)
+	{
+		var size = NativeMethods.GetWindowTextLength(hwnd);
+
+		if (size == 0)
+		{
+			return null;
 		}
 
-		static string GetWindowText(StringBuilder builder, IntPtr hwnd)
+		size++;
+		builder.EnsureCapacity(size);
+		var length = NativeMethods.GetWindowText(hwnd, builder, size);
+
+		if (length == 0)
 		{
-			var size = NativeMethods.GetWindowTextLength(hwnd);
+			var hr = Marshal.GetHRForLastWin32Error();
 
-			if (size == 0)
+			if (hr < 0)
 			{
-				return null;
+				throw Marshal.GetExceptionForHR(hr);
 			}
 
-			size++;
-			builder.EnsureCapacity(size);
-			var length = NativeMethods.GetWindowText(hwnd, builder, size);
-
-			if (length == 0)
-			{
-				var hr = Marshal.GetHRForLastWin32Error();
-
-				if (hr < 0)
-				{
-					throw Marshal.GetExceptionForHR(hr);
-				}
-
-				return null;
-			}
-
-			builder.Length = length;
-			return builder.ToString();
+			return null;
 		}
 
-		static string GetWindowClassName(StringBuilder builder, IntPtr hwnd)
+		builder.Length = length;
+		return builder.ToString();
+	}
+
+	static string GetWindowClassName(StringBuilder builder, IntPtr hwnd)
+	{
+		builder.EnsureCapacity(256);
+		var length = NativeMethods.GetClassName(hwnd, builder, builder.Capacity);
+
+		if (length == 0)
 		{
-			builder.EnsureCapacity(256);
-			var length = NativeMethods.GetClassName(hwnd, builder, builder.Capacity);
+			var hr = Marshal.GetHRForLastWin32Error();
 
-			if (length == 0)
+			if (hr < 0)
 			{
-				var hr = Marshal.GetHRForLastWin32Error();
-
-				if (hr < 0)
-				{
-					throw Marshal.GetExceptionForHR(hr);
-				}
-
-				return null;
+				throw Marshal.GetExceptionForHR(hr);
 			}
 
-			builder.Length = length;
-			return builder.ToString();
+			return null;
 		}
 
-		sealed class Host
+		builder.Length = length;
+		return builder.ToString();
+	}
+
+	sealed class Host
+	{
+		public Host(int pid)
 		{
-			public Host(int pid)
-			{
-				Pid = pid;
-				Windows = ImmutableArray.CreateBuilder<RuntimeWindow>();
-				Builder = new StringBuilder();
-			}
-
-			public int Pid { get; }
-			public ImmutableArray<RuntimeWindow>.Builder Windows { get; }
-			public StringBuilder Builder { get; }
+			Pid = pid;
+			Windows = ImmutableArray.CreateBuilder<RuntimeWindow>();
+			Builder = new StringBuilder();
 		}
+
+		public int Pid { get; }
+		public ImmutableArray<RuntimeWindow>.Builder Windows { get; }
+		public StringBuilder Builder { get; }
 	}
 }
