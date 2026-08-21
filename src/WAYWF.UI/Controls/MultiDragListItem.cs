@@ -4,69 +4,68 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace WAYWF.UI
+namespace WAYWF.UI;
+
+class MultiDragListItem : ContentControl
 {
-	class MultiDragListItem : ContentControl
+	public static readonly DependencyProperty IsSelectedProperty = Selector.IsSelectedProperty.AddOwner(typeof(MultiDragListItem));
+
+	static MultiDragListItem()
 	{
-		public static readonly DependencyProperty IsSelectedProperty = Selector.IsSelectedProperty.AddOwner(typeof(MultiDragListItem));
+		DefaultStyleKeyProperty.OverrideMetadata(typeof(MultiDragListItem), new FrameworkPropertyMetadata(typeof(MultiDragListItem)));
+	}
 
-		static MultiDragListItem()
+	public bool IsSelected
+	{
+		get => (bool)GetValue(IsSelectedProperty);
+		set => SetValue(IsSelectedProperty, value);
+	}
+
+	protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+	{
+		if (!e.Handled)
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(MultiDragListItem), new FrameworkPropertyMetadata(typeof(MultiDragListItem)));
+			e.Handled = true;
+			ParentList?.OnMouseLeftButtonDown(this, e);
 		}
 
-		public bool IsSelected
+		base.OnMouseLeftButtonDown(e);
+	}
+
+	protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+	{
+		if (!e.Handled)
 		{
-			get => (bool)GetValue(IsSelectedProperty);
-			set => SetValue(IsSelectedProperty, value);
+			e.Handled = true;
+			ParentList?.OnMouseLeftButtonUp(this);
 		}
 
-		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-		{
-			if (!e.Handled)
-			{
-				e.Handled = true;
-				ParentList?.OnMouseLeftButtonDown(this, e);
-			}
+		base.OnMouseLeftButtonUp(e);
+	}
 
-			base.OnMouseLeftButtonDown(e);
+	protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+	{
+		if (!e.Handled)
+		{
+			ParentList?.OnMouseRightButtonDown(this);
 		}
 
-		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-		{
-			if (!e.Handled)
-			{
-				e.Handled = true;
-				ParentList?.OnMouseLeftButtonUp(this);
-			}
+		base.OnMouseRightButtonDown(e);
+	}
 
-			base.OnMouseLeftButtonUp(e);
+	protected override void OnMouseMove(MouseEventArgs e)
+	{
+		if (!e.Handled)
+		{
+			e.Handled = true;
+			ParentList?.OnMouseMove(this, e);
 		}
 
-		protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
-		{
-			if (!e.Handled)
-			{
-				ParentList?.OnMouseRightButtonDown(this);
-			}
+		base.OnMouseMove(e);
+	}
 
-			base.OnMouseRightButtonDown(e);
-		}
-
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			if (!e.Handled)
-			{
-				e.Handled = true;
-				ParentList?.OnMouseMove(this, e);
-			}
-
-			base.OnMouseMove(e);
-		}
-
-		MultiDragList ParentList
-		{
-			get { return ItemsControl.ItemsControlFromItemContainer(this) as MultiDragList; }
-		}
+	MultiDragList ParentList
+	{
+		get { return ItemsControl.ItemsControlFromItemContainer(this) as MultiDragList; }
 	}
 }

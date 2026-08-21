@@ -2,28 +2,27 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace WAYWF.Options
+namespace WAYWF.Options;
+
+[Serializable]
+sealed class OptionException : Exception
 {
-	[Serializable]
-	sealed class OptionException : Exception
+	public OptionException()
 	{
-		public OptionException()
-		{
-		}
+	}
 
-		public OptionException(string message)
-			: base(message)
-		{
-		}
+	public OptionException(string message)
+		: base(message)
+	{
+	}
 
-		OptionException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+	OptionException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
+	{
+	}
 
-		public OptionException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
+	public OptionException(string message, Exception innerException)
+		: base(message, innerException)
+	{
 	}
 }

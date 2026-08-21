@@ -1,8 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-namespace WAYWF.Agent.Core.Win32
+namespace WAYWF.Agent.Core.Win32;
+
+enum TOKEN_INFORMATION_CLASS
 {
-	enum TOKEN_INFORMATION_CLASS
-	{
-		TokenUser = 1,
-	}
+	TokenUser = 1,
 }

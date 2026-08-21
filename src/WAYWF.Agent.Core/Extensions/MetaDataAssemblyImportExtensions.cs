@@ -3,140 +3,139 @@ using System;
 using WAYWF.Agent.Core.MetaDataApi;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class MetaDataAssemblyImportExtensions
 {
-	static class MetaDataAssemblyImportExtensions
+	public static unsafe bool GetAssemblyProps(this IMetaDataAssemblyImport aImport, out string name, out Version version, out string locale, out long? publicKeyToken)
 	{
-		public static unsafe bool GetAssemblyProps(this IMetaDataAssemblyImport aImport, out string name, out Version version, out string locale, out long? publicKeyToken)
+		int size;
+		var info = default(ASSEMBLYMETADATA);
+
+		var hr = aImport.GetAssemblyFromScope(out var assemblyToken);
+
+		if (hr < 0)
 		{
-			int size;
-			var info = default(ASSEMBLYMETADATA);
+			name = null;
+			version = null;
+			locale = null;
+			publicKeyToken = null;
+			return false;
+		}
 
-			var hr = aImport.GetAssemblyFromScope(out var assemblyToken);
+		IntPtr publicKeyPtr;
+		int publicKeyLen;
 
-			if (hr < 0)
-			{
-				name = null;
-				version = null;
-				locale = null;
-				publicKeyToken = null;
-				return false;
-			}
+		aImport.GetAssemblyProps(
+			assemblyToken,
+			ppbPublicKey: &publicKeyPtr,
+			pcbPublicKey: &publicKeyLen,
+			pchName: &size,
+			pMetaData: &info);
 
-			IntPtr publicKeyPtr;
-			int publicKeyLen;
+		version = new Version(info.usMajorVersion, info.usMinorVersion, info.usBuildNumber, info.usRevisionNumber);
+
+		if (info.szLocale == IntPtr.Zero || info.cbLocale <= 1)
+		{
+			locale = null;
+		}
+		else
+		{
+			locale = new string((char*)info.szLocale, 0, info.cbLocale - 1);
+		}
+
+		if (publicKeyPtr == IntPtr.Zero)
+		{
+			publicKeyToken = null;
+		}
+		else
+		{
+			publicKeyToken = CryptFunctions.GetPublicKeyToken(publicKeyPtr, publicKeyLen);
+		}
+
+		if (size <= 1)
+		{
+			name = string.Empty;
+		}
+		else
+		{
+			var buffer = stackalloc char[size];
 
 			aImport.GetAssemblyProps(
 				assemblyToken,
-				ppbPublicKey: &publicKeyPtr,
-				pcbPublicKey: &publicKeyLen,
-				pchName: &size,
-				pMetaData: &info);
+				szName: buffer,
+				cchName: size,
+				pchName: &size);
 
-			version = new Version(info.usMajorVersion, info.usMinorVersion, info.usBuildNumber, info.usRevisionNumber);
-
-			if (info.szLocale == IntPtr.Zero || info.cbLocale <= 1)
-			{
-				locale = null;
-			}
-			else
-			{
-				locale = new string((char*)info.szLocale, 0, info.cbLocale - 1);
-			}
-
-			if (publicKeyPtr == IntPtr.Zero)
-			{
-				publicKeyToken = null;
-			}
-			else
-			{
-				publicKeyToken = CryptFunctions.GetPublicKeyToken(publicKeyPtr, publicKeyLen);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				aImport.GetAssemblyProps(
-					assemblyToken,
-					szName: buffer,
-					cchName: size,
-					pchName: &size);
-
-				name = new string(buffer, 0, size - 1);
-			}
-
-			return true;
+			name = new string(buffer, 0, size - 1);
 		}
 
-		public static unsafe bool GetAssemblyRefProps(this IMetaDataAssemblyImport aImport, MetaDataToken assemblyRefToken, out string name, out Version version, out string locale, out long? publicKeyToken)
-		{
-			int size;
-			var info = default(ASSEMBLYMETADATA);
+		return true;
+	}
 
-			IntPtr publicKeyPtr;
-			int publicKeyLen;
+	public static unsafe bool GetAssemblyRefProps(this IMetaDataAssemblyImport aImport, MetaDataToken assemblyRefToken, out string name, out Version version, out string locale, out long? publicKeyToken)
+	{
+		int size;
+		var info = default(ASSEMBLYMETADATA);
+
+		IntPtr publicKeyPtr;
+		int publicKeyLen;
+
+		aImport.GetAssemblyRefProps(
+			assemblyRefToken,
+			ppbPublicKeyOrToken: &publicKeyPtr,
+			pcbPublicKeyOrToken: &publicKeyLen,
+			pchName: &size,
+			pMetaData: &info);
+
+		version = new Version(info.usMajorVersion, info.usMinorVersion, info.usBuildNumber, info.usRevisionNumber);
+
+		if (info.szLocale == IntPtr.Zero || info.cbLocale <= 1)
+		{
+			locale = null;
+		}
+		else
+		{
+			locale = new string((char*)info.szLocale, 0, info.cbLocale - 1);
+		}
+
+		if (publicKeyPtr == IntPtr.Zero)
+		{
+			publicKeyToken = null;
+		}
+		else
+		{
+			publicKeyToken = CryptFunctions.GetPublicKeyToken(publicKeyPtr, publicKeyLen);
+		}
+
+		if (size <= 1)
+		{
+			name = string.Empty;
+		}
+		else
+		{
+			var buffer = stackalloc char[size];
 
 			aImport.GetAssemblyRefProps(
 				assemblyRefToken,
-				ppbPublicKeyOrToken: &publicKeyPtr,
-				pcbPublicKeyOrToken: &publicKeyLen,
-				pchName: &size,
-				pMetaData: &info);
+				szName: buffer,
+				cchName: size,
+				pchName: &size);
 
-			version = new Version(info.usMajorVersion, info.usMinorVersion, info.usBuildNumber, info.usRevisionNumber);
-
-			if (info.szLocale == IntPtr.Zero || info.cbLocale <= 1)
-			{
-				locale = null;
-			}
-			else
-			{
-				locale = new string((char*)info.szLocale, 0, info.cbLocale - 1);
-			}
-
-			if (publicKeyPtr == IntPtr.Zero)
-			{
-				publicKeyToken = null;
-			}
-			else
-			{
-				publicKeyToken = CryptFunctions.GetPublicKeyToken(publicKeyPtr, publicKeyLen);
-			}
-
-			if (size <= 1)
-			{
-				name = string.Empty;
-			}
-			else
-			{
-				var buffer = stackalloc char[size];
-
-				aImport.GetAssemblyRefProps(
-					assemblyRefToken,
-					szName: buffer,
-					cchName: size,
-					pchName: &size);
-
-				name = new string(buffer, 0, size - 1);
-			}
-
-			return true;
+			name = new string(buffer, 0, size - 1);
 		}
 
-		public static unsafe MetaDataToken GetExportedTypeImplementation(this IMetaDataAssemblyImport aImport, MetaDataToken mdExportedType)
-		{
-			MetaDataToken implementation;
+		return true;
+	}
 
-			aImport.GetExportedTypeProps(
-				mdExportedType,
-				ptkImplementation: &implementation);
+	public static unsafe MetaDataToken GetExportedTypeImplementation(this IMetaDataAssemblyImport aImport, MetaDataToken mdExportedType)
+	{
+		MetaDataToken implementation;
 
-			return implementation;
-		}
+		aImport.GetExportedTypeProps(
+			mdExportedType,
+			ptkImplementation: &implementation);
+
+		return implementation;
 	}
 }

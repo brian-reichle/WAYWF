@@ -2,29 +2,28 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+[Serializable]
+sealed class InvalidSignatureException : Exception
 {
-	[Serializable]
-	sealed class InvalidSignatureException : Exception
+	public InvalidSignatureException()
+		: base("Unexpected end of signature.")
 	{
-		public InvalidSignatureException()
-			: base("Unexpected end of signature.")
-		{
-		}
+	}
 
-		public InvalidSignatureException(string message)
-			: base(message)
-		{
-		}
+	public InvalidSignatureException(string message)
+		: base(message)
+	{
+	}
 
-		InvalidSignatureException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+	InvalidSignatureException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
+	{
+	}
 
-		public InvalidSignatureException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
+	public InvalidSignatureException(string message, Exception innerException)
+		: base(message, innerException)
+	{
 	}
 }

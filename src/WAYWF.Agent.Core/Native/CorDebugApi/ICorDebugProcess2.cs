@@ -3,58 +3,57 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.CorDebugApi
+namespace WAYWF.Agent.Core.CorDebugApi;
+
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("AD1B3588-0EF0-4744-A496-AA09A9F80371")]
+interface ICorDebugProcess2
 {
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("AD1B3588-0EF0-4744-A496-AA09A9F80371")]
-	interface ICorDebugProcess2
-	{
-		// HRESULT GetThreadForTaskID(
-		//     [in] TASKID taskid,
-		//     [out] ICorDebugThread2 **ppThread
-		// );
-		ICorDebugThread GetThreadForTaskID(
-			long taskid);
+	// HRESULT GetThreadForTaskID(
+	//     [in] TASKID taskid,
+	//     [out] ICorDebugThread2 **ppThread
+	// );
+	ICorDebugThread GetThreadForTaskID(
+		long taskid);
 
-		// HRESULT GetVersion(
-		//     [out] COR_VERSION *version
-		// );
-		void GetVersion(
-			out COR_VERSION version);
+	// HRESULT GetVersion(
+	//     [out] COR_VERSION *version
+	// );
+	void GetVersion(
+		out COR_VERSION version);
 
-		// HRESULT SetUnmanagedBreakpoint(
-		//     [in] CORDB_ADDRESS address,
-		//     [in] ULONG32 bufsize,
-		//     [length_is][size_is][out] BYTE buffer[  ],
-		//     [out]  ULONG32 *bufLen
-		// );
-		int SetUnmanagedBreakpoint(
-			CORDB_ADDRESS address,
-			int bufsize,
-			IntPtr buffer);
+	// HRESULT SetUnmanagedBreakpoint(
+	//     [in] CORDB_ADDRESS address,
+	//     [in] ULONG32 bufsize,
+	//     [length_is][size_is][out] BYTE buffer[  ],
+	//     [out]  ULONG32 *bufLen
+	// );
+	int SetUnmanagedBreakpoint(
+		CORDB_ADDRESS address,
+		int bufsize,
+		IntPtr buffer);
 
-		// HRESULT ClearUnmanagedBreakpoint(
-		//     [in] CORDB_ADDRESS address
-		// );
-		void ClearUnmanagedBreakpoint(
-			CORDB_ADDRESS address);
+	// HRESULT ClearUnmanagedBreakpoint(
+	//     [in] CORDB_ADDRESS address
+	// );
+	void ClearUnmanagedBreakpoint(
+		CORDB_ADDRESS address);
 
-		// HRESULT SetDesiredNGENCompilerFlags(
-		//     [in] DWORD pdwFlags
-		// );
-		void SetDesiredNGENCompilerFlags_();
+	// HRESULT SetDesiredNGENCompilerFlags(
+	//     [in] DWORD pdwFlags
+	// );
+	void SetDesiredNGENCompilerFlags_();
 
-		// HRESULT GetDesiredNGENCompilerFlags(
-		//     [out] DWORD *pdwFlags
-		// );
-		void GetDesiredNGENCompilerFlags_();
+	// HRESULT GetDesiredNGENCompilerFlags(
+	//     [out] DWORD *pdwFlags
+	// );
+	void GetDesiredNGENCompilerFlags_();
 
-		// HRESULT GetReferenceValueFromGCHandle(
-		//     [in] UINT_PTR handle,
-		//     [out] ICorDebugReferenceValue **pOutValue
-		// );
-		void GetReferenceValueFromGCHandle_();
-	}
+	// HRESULT GetReferenceValueFromGCHandle(
+	//     [in] UINT_PTR handle,
+	//     [out] ICorDebugReferenceValue **pOutValue
+	// );
+	void GetReferenceValueFromGCHandle_();
 }

@@ -4,57 +4,56 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 
-namespace WAYWF.Agent.Data
+namespace WAYWF.Agent.Data;
+
+[DebuggerDisplay("ID = {_id}")]
+public sealed class Identity
 {
-	[DebuggerDisplay("ID = {_id}")]
-	public sealed class Identity
+	public static IIdentitySource NewSource() => new IdentitySource();
+
+	Identity(IdentitySource source)
 	{
-		public static IIdentitySource NewSource() => new IdentitySource();
+		_source = source;
+	}
 
-		Identity(IdentitySource source)
+	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+	public int ID
+	{
+		get
 		{
-			_source = source;
-		}
-
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public int ID
-		{
-			get
+			if (_id == 0)
 			{
-				if (_id == 0)
-				{
-					Interlocked.CompareExchange(ref _id, _source.NextID(), 0);
-				}
-
-				return _id;
-			}
-		}
-
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		readonly IdentitySource _source;
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		int _id;
-
-		public override string ToString() => ID.ToString(CultureInfo.InvariantCulture);
-
-		sealed class IdentitySource : IIdentitySource
-		{
-			public Identity New() => new Identity(this);
-
-			public int NextID()
-			{
-				var result = Interlocked.Increment(ref _nextID);
-
-				if (result < 0)
-				{
-					_nextID = int.MaxValue;
-					throw new InvalidOperationException("identity overflow.");
-				}
-
-				return result;
+				Interlocked.CompareExchange(ref _id, _source.NextID(), 0);
 			}
 
-			int _nextID;
+			return _id;
 		}
+	}
+
+	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+	readonly IdentitySource _source;
+	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+	int _id;
+
+	public override string ToString() => ID.ToString(CultureInfo.InvariantCulture);
+
+	sealed class IdentitySource : IIdentitySource
+	{
+		public Identity New() => new Identity(this);
+
+		public int NextID()
+		{
+			var result = Interlocked.Increment(ref _nextID);
+
+			if (result < 0)
+			{
+				_nextID = int.MaxValue;
+				throw new InvalidOperationException("identity overflow.");
+			}
+
+			return result;
+		}
+
+		int _nextID;
 	}
 }

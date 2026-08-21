@@ -2,27 +2,26 @@
 using System;
 using System.Collections.Generic;
 
-namespace WAYWF.Agent.Data.Test
+namespace WAYWF.Agent.Data.Test;
+
+sealed class DummyLogValueVisitor : DummyBaseValueVisitor
 {
-	sealed class DummyLogValueVisitor : DummyBaseValueVisitor
+	public List<Record> Records { get; } = [];
+
+	protected override void Visit(RuntimeValue value, Type identifiedType)
 	{
-		public List<Record> Records { get; } = [];
+		Records.Add(new Record(value, identifiedType));
+	}
 
-		protected override void Visit(RuntimeValue value, Type identifiedType)
+	public sealed class Record
+	{
+		public Record(RuntimeValue value, Type identifiedType)
 		{
-			Records.Add(new Record(value, identifiedType));
+			Value = value;
+			IdentifiedType = identifiedType;
 		}
 
-		public sealed class Record
-		{
-			public Record(RuntimeValue value, Type identifiedType)
-			{
-				Value = value;
-				IdentifiedType = identifiedType;
-			}
-
-			public RuntimeValue Value { get; }
-			public Type IdentifiedType { get; }
-		}
+		public RuntimeValue Value { get; }
+		public Type IdentifiedType { get; }
 	}
 }

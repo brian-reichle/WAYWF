@@ -2,30 +2,29 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Agent.Core.Win32
+namespace WAYWF.Agent.Core.Win32;
+
+[StructLayout(LayoutKind.Sequential)]
+struct MEMORY_BASIC_INFORMATION
 {
-	[StructLayout(LayoutKind.Sequential)]
-	struct MEMORY_BASIC_INFORMATION
-	{
-		// PVOID BaseAddress;
-		public IntPtr BaseAddress;
+	// PVOID BaseAddress;
+	public IntPtr BaseAddress;
 
-		// PVOID AllocationBase;
-		public IntPtr AllocationBase;
+	// PVOID AllocationBase;
+	public IntPtr AllocationBase;
 
-		// DWORD AllocationProtect;
-		public int AllocationProtect;
+	// DWORD AllocationProtect;
+	public int AllocationProtect;
 
-		// SIZE_T RegionSize;
-		public IntPtr RegionSize;
+	// SIZE_T RegionSize;
+	public IntPtr RegionSize;
 
-		// DWORD State;
-		public int State;
+	// DWORD State;
+	public int State;
 
-		// DWORD Protect;
-		public int Protect;
+	// DWORD Protect;
+	public int Protect;
 
-		// DWORD Type;
-		public MEM_FLAGS Type;
-	}
+	// DWORD Type;
+	public MEM_FLAGS Type;
 }

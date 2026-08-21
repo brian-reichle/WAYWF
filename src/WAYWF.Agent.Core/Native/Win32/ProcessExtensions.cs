@@ -3,151 +3,150 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace WAYWF.Agent.Core.Win32
+namespace WAYWF.Agent.Core.Win32;
+
+static class ProcessExtensions
 {
-	static class ProcessExtensions
+	const int MAX_PATH = 0x00000104;
+	const int TOKEN_QUERY = 0x0008;
+
+	public static string QueryFullProcessImageName(this ProcessHandle handle)
 	{
-		const int MAX_PATH = 0x00000104;
-		const int TOKEN_QUERY = 0x0008;
+		var buffer = new char[MAX_PATH];
+		var size = buffer.Length;
 
-		public static string QueryFullProcessImageName(this ProcessHandle handle)
+		if (!NativeMethods.QueryFullProcessImageName(handle, 0, buffer, ref size))
 		{
-			var buffer = new char[MAX_PATH];
-			var size = buffer.Length;
+			var hr = Marshal.GetHRForLastWin32Error();
 
-			if (!NativeMethods.QueryFullProcessImageName(handle, 0, buffer, ref size))
+			if (hr == HResults.ERROR_GEN_FAILURE)
 			{
-				var hr = Marshal.GetHRForLastWin32Error();
-
-				if (hr == HResults.ERROR_GEN_FAILURE)
-				{
-					// Can fail occasionally if the target process crashed.
-					return null;
-				}
-
-				throw Marshal.GetExceptionForHR(hr);
+				// Can fail occasionally if the target process crashed.
+				return null;
 			}
 
-			if (size == 0)
-			{
-				return string.Empty;
-			}
-			else
-			{
-				return new string(buffer, 0, size);
-			}
+			throw Marshal.GetExceptionForHR(hr);
 		}
 
-		public static unsafe void GetUser(this ProcessHandle handle, out string username, out string domainname)
+		if (size == 0)
 		{
-			using var token = handle.OpenProcessToken();
-			using var buffer = token.GetTokenInformation(TOKEN_INFORMATION_CLASS.TokenUser);
-			var user = buffer.Read<TOKEN_USER>(0);
-			LookupAccountSid(user.User.Sid, out username, out domainname);
+			return string.Empty;
 		}
-
-		public static bool IsAlive(this ProcessHandle handle)
+		else
 		{
-			if (!NativeMethods.GetExitCodeProcess(handle, out _))
-			{
-				var error = Marshal.GetLastWin32Error();
-
-				if (error == Win32ErrorCodes.STILL_ACTIVE)
-				{
-					return true;
-				}
-
-				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-			}
-
-			return false;
-		}
-
-		public static string GetModuleBaseName(this ProcessHandle handle, IntPtr baseAddress)
-		{
-			var buffer = new char[261];
-			var size = NativeMethods.GetModuleBaseName(handle, baseAddress, buffer, buffer.Length);
-
-			if (size == 0)
-			{
-				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-			}
-
 			return new string(buffer, 0, size);
 		}
+	}
 
-		static TokenHandle OpenProcessToken(this ProcessHandle handle)
+	public static unsafe void GetUser(this ProcessHandle handle, out string username, out string domainname)
+	{
+		using var token = handle.OpenProcessToken();
+		using var buffer = token.GetTokenInformation(TOKEN_INFORMATION_CLASS.TokenUser);
+		var user = buffer.Read<TOKEN_USER>(0);
+		LookupAccountSid(user.User.Sid, out username, out domainname);
+	}
+
+	public static bool IsAlive(this ProcessHandle handle)
+	{
+		if (!NativeMethods.GetExitCodeProcess(handle, out _))
 		{
-			TokenHandle token;
+			var error = Marshal.GetLastWin32Error();
 
-			try
+			if (error == Win32ErrorCodes.STILL_ACTIVE)
 			{
-				if (!NativeMethods.OpenProcessToken(handle, TOKEN_QUERY, out token))
-				{
-					throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-				}
-			}
-			catch
-			{
-				handle.Dispose();
-				throw;
+				return true;
 			}
 
-			return token;
+			throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
 		}
 
-		static UnmanagedBuffer GetTokenInformation(this TokenHandle token, TOKEN_INFORMATION_CLASS tokenInformationClass)
+		return false;
+	}
+
+	public static string GetModuleBaseName(this ProcessHandle handle, IntPtr baseAddress)
+	{
+		var buffer = new char[261];
+		var size = NativeMethods.GetModuleBaseName(handle, baseAddress, buffer, buffer.Length);
+
+		if (size == 0)
 		{
-			if (!NativeMethods.GetTokenInformation(token, tokenInformationClass, IntPtr.Zero, 0, out var size))
-			{
-				if (Marshal.GetLastWin32Error() != Win32ErrorCodes.ERROR_INSUFFICIENT_BUFFER)
-				{
-					throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-				}
-			}
-
-			var buffer = new UnmanagedBuffer(size);
-
-			try
-			{
-				if (!NativeMethods.GetTokenInformation(token, tokenInformationClass, buffer.DangerousGetHandle(), size, out size))
-				{
-					throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-				}
-			}
-			catch
-			{
-				buffer.Dispose();
-				throw;
-			}
-
-			return buffer;
+			throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
 		}
 
-		static void LookupAccountSid(IntPtr sid, out string username, out string domainname)
-		{
-			var name = new StringBuilder(256);
-			var domain = new StringBuilder(256);
-			var nameLength = name.Capacity;
-			var domainLength = domain.Capacity;
+		return new string(buffer, 0, size);
+	}
 
-			if (!NativeMethods.LookupAccountSid(
-				null,
-				sid,
-				name,
-				ref nameLength,
-				domain,
-				ref domainLength,
-				out _))
+	static TokenHandle OpenProcessToken(this ProcessHandle handle)
+	{
+		TokenHandle token;
+
+		try
+		{
+			if (!NativeMethods.OpenProcessToken(handle, TOKEN_QUERY, out token))
 			{
 				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
 			}
-
-			name.Length = nameLength;
-			domain.Length = domainLength;
-
-			username = name.ToString();
-			domainname = domain.ToString();
 		}
+		catch
+		{
+			handle.Dispose();
+			throw;
+		}
+
+		return token;
+	}
+
+	static UnmanagedBuffer GetTokenInformation(this TokenHandle token, TOKEN_INFORMATION_CLASS tokenInformationClass)
+	{
+		if (!NativeMethods.GetTokenInformation(token, tokenInformationClass, IntPtr.Zero, 0, out var size))
+		{
+			if (Marshal.GetLastWin32Error() != Win32ErrorCodes.ERROR_INSUFFICIENT_BUFFER)
+			{
+				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+			}
+		}
+
+		var buffer = new UnmanagedBuffer(size);
+
+		try
+		{
+			if (!NativeMethods.GetTokenInformation(token, tokenInformationClass, buffer.DangerousGetHandle(), size, out size))
+			{
+				throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+			}
+		}
+		catch
+		{
+			buffer.Dispose();
+			throw;
+		}
+
+		return buffer;
+	}
+
+	static void LookupAccountSid(IntPtr sid, out string username, out string domainname)
+	{
+		var name = new StringBuilder(256);
+		var domain = new StringBuilder(256);
+		var nameLength = name.Capacity;
+		var domainLength = domain.Capacity;
+
+		if (!NativeMethods.LookupAccountSid(
+			null,
+			sid,
+			name,
+			ref nameLength,
+			domain,
+			ref domainLength,
+			out _))
+		{
+			throw Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+		}
+
+		name.Length = nameLength;
+		domain.Length = domainLength;
+
+		username = name.ToString();
+		domainname = domain.ToString();
 	}
 }

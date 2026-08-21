@@ -3,28 +3,27 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.CorDebugApi
+namespace WAYWF.Agent.Core.CorDebugApi;
+
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("1A1F204B-1C66-4637-823F-3EE6C744A69C")]
+interface ICorDebugThread4
 {
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("1A1F204B-1C66-4637-823F-3EE6C744A69C")]
-	interface ICorDebugThread4
-	{
-		// HRESULT HasUnhandledException();
-		[PreserveSig]
-		int HasUnhandledException();
+	// HRESULT HasUnhandledException();
+	[PreserveSig]
+	int HasUnhandledException();
 
-		// HRESULT GetBlockingObjects(
-		//     [out] ICorDebugBlockingObjectEnum **ppBlockingObjectEnum
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugBlockingObjectEnum GetBlockingObjects();
+	// HRESULT GetBlockingObjects(
+	//     [out] ICorDebugBlockingObjectEnum **ppBlockingObjectEnum
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugBlockingObjectEnum GetBlockingObjects();
 
-		// HRESULT GetCurrentCustomDebuggerNotification(
-		//     [out] ICorDebugValue ** ppNotificationObject
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugValue GetCurrentCustomDebuggerNotification();
-	}
+	// HRESULT GetCurrentCustomDebuggerNotification(
+	//     [out] ICorDebugValue ** ppNotificationObject
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugValue GetCurrentCustomDebuggerNotification();
 }

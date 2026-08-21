@@ -3,18 +3,17 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.CorDebugApi
+namespace WAYWF.Agent.Core.CorDebugApi;
+
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("5E0B54E7-D88A-4626-9420-A691E0A78B49")]
+interface ICorDebugValue2
 {
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("5E0B54E7-D88A-4626-9420-A691E0A78B49")]
-	interface ICorDebugValue2
-	{
-		// HRESULT GetExactType(
-		//     [out] ICorDebugType   **ppType
-		// );
-		[return: MarshalAs(UnmanagedType.Interface)]
-		ICorDebugType GetExactType();
-	}
+	// HRESULT GetExactType(
+	//     [out] ICorDebugType   **ppType
+	// );
+	[return: MarshalAs(UnmanagedType.Interface)]
+	ICorDebugType GetExactType();
 }

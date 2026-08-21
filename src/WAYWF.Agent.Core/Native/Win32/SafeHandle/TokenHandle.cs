@@ -3,19 +3,18 @@ using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Agent.Core.Win32
+namespace WAYWF.Agent.Core.Win32;
+
+sealed class TokenHandle : SafeHandle
 {
-	sealed class TokenHandle : SafeHandle
+	public TokenHandle()
+		: base(IntPtr.Zero, true)
 	{
-		public TokenHandle()
-			: base(IntPtr.Zero, true)
-		{
-		}
-
-		public override bool IsInvalid => handle == IntPtr.Zero;
-
-		[PrePrepareMethod]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-		protected override bool ReleaseHandle() => NativeMethods.CloseHandle(handle);
 	}
+
+	public override bool IsInvalid => handle == IntPtr.Zero;
+
+	[PrePrepareMethod]
+	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+	protected override bool ReleaseHandle() => NativeMethods.CloseHandle(handle);
 }

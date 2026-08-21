@@ -3,20 +3,19 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.UI.Win32
+namespace WAYWF.UI.Win32;
+
+partial class NativeMethods
 {
-	partial class NativeMethods
-	{
-		// WINOLEAPI CreateStreamOnHGlobal(
-		//     [In]  HGLOBAL  hGlobal,
-		//     [In]  BOOL     fDeleteOnRelease,
-		//     [Out] LPSTREAM *ppstm
-		// );
-		[DllImport("ole32.dll")]
-		[SuppressUnmanagedCodeSecurity]
-		public static extern int CreateStreamOnHGlobal(
-			IntPtr hGlobal,
-			[MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease,
-			out IntPtr ppstm);
-	}
+	// WINOLEAPI CreateStreamOnHGlobal(
+	//     [In]  HGLOBAL  hGlobal,
+	//     [In]  BOOL     fDeleteOnRelease,
+	//     [Out] LPSTREAM *ppstm
+	// );
+	[DllImport("ole32.dll")]
+	[SuppressUnmanagedCodeSecurity]
+	public static extern int CreateStreamOnHGlobal(
+		IntPtr hGlobal,
+		[MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease,
+		out IntPtr ppstm);
 }

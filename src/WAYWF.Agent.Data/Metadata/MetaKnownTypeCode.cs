@@ -1,34 +1,33 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-namespace WAYWF.Agent.Data
+namespace WAYWF.Agent.Data;
+
+public enum MetaKnownTypeCode
 {
-	public enum MetaKnownTypeCode
-	{
-		Void,
+	Void,
 
-		Boolean,
-		Char,
+	Boolean,
+	Char,
 
-		SByte,
-		Int16,
-		Int32,
-		Int64,
-		IntPtr,
+	SByte,
+	Int16,
+	Int32,
+	Int64,
+	IntPtr,
 
-		Byte,
-		UInt16,
-		UInt32,
-		UInt64,
-		UIntPtr,
+	Byte,
+	UInt16,
+	UInt32,
+	UInt64,
+	UIntPtr,
 
-		Single,
-		Double,
-		Decimal,
+	Single,
+	Double,
+	Decimal,
 
-		Guid,
+	Guid,
 
-		TypedReference,
-		Object,
-		String,
-	}
+	TypedReference,
+	Object,
+	String,
 }

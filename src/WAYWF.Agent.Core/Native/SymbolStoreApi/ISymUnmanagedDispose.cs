@@ -3,15 +3,14 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace WAYWF.Agent.Core.SymbolStoreApi
+namespace WAYWF.Agent.Core.SymbolStoreApi;
+
+[ComImport]
+[SuppressUnmanagedCodeSecurity]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid("969708D2-05E5-4861-A3B0-96E473CDF63F")]
+interface ISymUnmanagedDispose
 {
-	[ComImport]
-	[SuppressUnmanagedCodeSecurity]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("969708D2-05E5-4861-A3B0-96E473CDF63F")]
-	interface ISymUnmanagedDispose
-	{
-		// HRESULT Destroy();
-		void Destroy();
-	}
+	// HRESULT Destroy();
+	void Destroy();
 }

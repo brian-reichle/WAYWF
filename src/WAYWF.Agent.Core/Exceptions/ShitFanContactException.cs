@@ -2,32 +2,31 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+/// <summary>
+/// The shit hit the fan!.
+/// </summary>
+[Serializable]
+sealed class ShitFanContactException : Exception
 {
-	/// <summary>
-	/// The shit hit the fan!.
-	/// </summary>
-	[Serializable]
-	sealed class ShitFanContactException : Exception
+	public ShitFanContactException()
+		: base("what should be an impossible situation somehow occured.")
 	{
-		public ShitFanContactException()
-			: base("what should be an impossible situation somehow occured.")
-		{
-		}
+	}
 
-		public ShitFanContactException(string message)
-			: base(message)
-		{
-		}
+	public ShitFanContactException(string message)
+		: base(message)
+	{
+	}
 
-		ShitFanContactException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+	ShitFanContactException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
+	{
+	}
 
-		public ShitFanContactException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
+	public ShitFanContactException(string message, Exception innerException)
+		: base(message, innerException)
+	{
 	}
 }

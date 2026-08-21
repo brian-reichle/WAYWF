@@ -3,30 +3,29 @@ using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Agent.Data
+namespace WAYWF.Agent.Data;
+
+[StructLayout(LayoutKind.Sequential)]
+public readonly struct MetaDataToken : IEquatable<MetaDataToken>
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public readonly struct MetaDataToken : IEquatable<MetaDataToken>
+	public static readonly MetaDataToken Nil = new MetaDataToken(0);
+	public static readonly MetaDataToken Module = new MetaDataToken(1);
+
+	public MetaDataToken(int tokenId)
 	{
-		public static readonly MetaDataToken Nil = new MetaDataToken(0);
-		public static readonly MetaDataToken Module = new MetaDataToken(1);
-
-		public MetaDataToken(int tokenId)
-		{
-			_tokenId = tokenId;
-		}
-
-		public TokenType TokenType => unchecked((TokenType)(_tokenId & 0xFF000000));
-		public bool IsNil => (_tokenId & 0x00FFFFFF) == 0;
-
-		public override int GetHashCode() => _tokenId.GetHashCode();
-		public override bool Equals(object obj) => obj is MetaDataToken token && this == token;
-		public override string ToString() => _tokenId.ToString("X8", CultureInfo.InvariantCulture);
-		public bool Equals(MetaDataToken other) => this == other;
-
-		public static bool operator ==(MetaDataToken first, MetaDataToken second) => first._tokenId == second._tokenId;
-		public static bool operator !=(MetaDataToken first, MetaDataToken second) => first._tokenId != second._tokenId;
-
-		readonly int _tokenId;
+		_tokenId = tokenId;
 	}
+
+	public TokenType TokenType => unchecked((TokenType)(_tokenId & 0xFF000000));
+	public bool IsNil => (_tokenId & 0x00FFFFFF) == 0;
+
+	public override int GetHashCode() => _tokenId.GetHashCode();
+	public override bool Equals(object obj) => obj is MetaDataToken token && this == token;
+	public override string ToString() => _tokenId.ToString("X8", CultureInfo.InvariantCulture);
+	public bool Equals(MetaDataToken other) => this == other;
+
+	public static bool operator ==(MetaDataToken first, MetaDataToken second) => first._tokenId == second._tokenId;
+	public static bool operator !=(MetaDataToken first, MetaDataToken second) => first._tokenId != second._tokenId;
+
+	readonly int _tokenId;
 }

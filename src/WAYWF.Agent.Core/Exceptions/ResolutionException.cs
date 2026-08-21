@@ -4,39 +4,38 @@ using System.Runtime.Serialization;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+[Serializable]
+sealed class ResolutionException : Exception
 {
-	[Serializable]
-	sealed class ResolutionException : Exception
+	public ResolutionException(MetaDataToken token)
+		: base("Unable to resolve the " + token.TokenType + " token " + token)
 	{
-		public ResolutionException(MetaDataToken token)
-			: base("Unable to resolve the " + token.TokenType + " token " + token)
-		{
-		}
+	}
 
-		public ResolutionException(CorElementType type)
-			: base("Unable to resolve " + type)
-		{
-		}
+	public ResolutionException(CorElementType type)
+		: base("Unable to resolve " + type)
+	{
+	}
 
-		public ResolutionException()
-			: base("Unable to resolve token.")
-		{
-		}
+	public ResolutionException()
+		: base("Unable to resolve token.")
+	{
+	}
 
-		public ResolutionException(string message)
-			: base(message)
-		{
-		}
+	public ResolutionException(string message)
+		: base(message)
+	{
+	}
 
-		ResolutionException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+	ResolutionException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
+	{
+	}
 
-		public ResolutionException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
+	public ResolutionException(string message, Exception innerException)
+		: base(message, innerException)
+	{
 	}
 }

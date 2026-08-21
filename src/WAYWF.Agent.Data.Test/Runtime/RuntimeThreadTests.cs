@@ -2,28 +2,27 @@
 using System.Collections.Immutable;
 using NUnit.Framework;
 
-namespace WAYWF.Agent.Data.Test
+namespace WAYWF.Agent.Data.Test;
+
+[TestFixture]
+public class RuntimeThreadTests
 {
-	[TestFixture]
-	public class RuntimeThreadTests
+	[Test]
+	public void Constructor_SetsProperties()
 	{
-		[Test]
-		public void Constructor_SetsProperties()
+		var threadId = 42;
+		var userState = RuntimeThreadStates.Background;
+		var chains = ImmutableArray<RuntimeFrameChain>.Empty;
+		var blockingObjects = ImmutableArray<RuntimeBlockingObject>.Empty;
+
+		var thread = new RuntimeThread(threadId, userState, chains, blockingObjects);
+
+		using (Assert.EnterMultipleScope())
 		{
-			var threadId = 42;
-			var userState = RuntimeThreadStates.Background;
-			var chains = ImmutableArray<RuntimeFrameChain>.Empty;
-			var blockingObjects = ImmutableArray<RuntimeBlockingObject>.Empty;
-
-			var thread = new RuntimeThread(threadId, userState, chains, blockingObjects);
-
-			using (Assert.EnterMultipleScope())
-			{
-				Assert.That(thread.ThreadID, Is.EqualTo(threadId));
-				Assert.That(thread.UserState, Is.EqualTo(userState));
-				Assert.That(thread.Chains, Is.EqualTo(chains));
-				Assert.That(thread.BlockingObject, Is.EqualTo(blockingObjects));
-			}
+			Assert.That(thread.ThreadID, Is.EqualTo(threadId));
+			Assert.That(thread.UserState, Is.EqualTo(userState));
+			Assert.That(thread.Chains, Is.EqualTo(chains));
+			Assert.That(thread.BlockingObject, Is.EqualTo(blockingObjects));
 		}
 	}
 }

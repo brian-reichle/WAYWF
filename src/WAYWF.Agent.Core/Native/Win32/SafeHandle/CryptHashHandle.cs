@@ -3,19 +3,18 @@ using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Agent.Core.Win32
+namespace WAYWF.Agent.Core.Win32;
+
+sealed class CryptHashHandle : SafeHandle
 {
-	sealed class CryptHashHandle : SafeHandle
+	public CryptHashHandle()
+		: base(IntPtr.Zero, true)
 	{
-		public CryptHashHandle()
-			: base(IntPtr.Zero, true)
-		{
-		}
-
-		public override bool IsInvalid => handle == IntPtr.Zero;
-
-		[PrePrepareMethod]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-		protected override bool ReleaseHandle() => NativeMethods.CryptDestroyHash(handle);
 	}
+
+	public override bool IsInvalid => handle == IntPtr.Zero;
+
+	[PrePrepareMethod]
+	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+	protected override bool ReleaseHandle() => NativeMethods.CryptDestroyHash(handle);
 }

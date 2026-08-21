@@ -3,46 +3,45 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.UI.Win32
+namespace WAYWF.UI.Win32;
+
+sealed class SafeHGlobal : SafeHandle
 {
-	sealed class SafeHGlobal : SafeHandle
+	public SafeHGlobal()
+		: base(IntPtr.Zero, true)
 	{
-		public SafeHGlobal()
-			: base(IntPtr.Zero, true)
+	}
+
+	public override bool IsInvalid => handle == IntPtr.Zero;
+	protected override bool ReleaseHandle() => NativeMethods.GlobalFree(handle) != IntPtr.Zero;
+
+	public void TransferOwnershipTo(out IntPtr hMem)
+	{
+		RuntimeHelpers.PrepareConstrainedRegions();
+		try
 		{
 		}
-
-		public override bool IsInvalid => handle == IntPtr.Zero;
-		protected override bool ReleaseHandle() => NativeMethods.GlobalFree(handle) != IntPtr.Zero;
-
-		public void TransferOwnershipTo(out IntPtr hMem)
+		finally
 		{
-			RuntimeHelpers.PrepareConstrainedRegions();
-			try
-			{
-			}
-			finally
-			{
-				hMem = handle;
-				SetHandleAsInvalid();
-			}
+			hMem = handle;
+			SetHandleAsInvalid();
 		}
+	}
 
-		public void TransferOwnershipAsStreamTo(out IntPtr stream)
+	public void TransferOwnershipAsStreamTo(out IntPtr stream)
+	{
+		RuntimeHelpers.PrepareConstrainedRegions();
+		try
 		{
-			RuntimeHelpers.PrepareConstrainedRegions();
-			try
-			{
-			}
-			finally
-			{
-				var hr = NativeMethods.CreateStreamOnHGlobal(handle, fDeleteOnRelease: true, out stream);
-				SetHandleAsInvalid();
+		}
+		finally
+		{
+			var hr = NativeMethods.CreateStreamOnHGlobal(handle, fDeleteOnRelease: true, out stream);
+			SetHandleAsInvalid();
 
-				if (hr < 0)
-				{
-					Marshal.ThrowExceptionForHR(hr);
-				}
+			if (hr < 0)
+			{
+				Marshal.ThrowExceptionForHR(hr);
 			}
 		}
 	}

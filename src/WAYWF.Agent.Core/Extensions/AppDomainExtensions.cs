@@ -2,41 +2,40 @@
 using System.Runtime.InteropServices;
 using WAYWF.Agent.Core.CorDebugApi;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+static class AppDomainExtensions
 {
-	static class AppDomainExtensions
+	public static unsafe string GetName(this ICorDebugAppDomain appDomain)
 	{
-		public static unsafe string GetName(this ICorDebugAppDomain appDomain)
+		appDomain.GetName(0, out var size, null);
+
+		if (size <= 1)
 		{
-			appDomain.GetName(0, out var size, null);
-
-			if (size <= 1)
-			{
-				return string.Empty;
-			}
-
-			var buffer = stackalloc char[size];
-			appDomain.GetName(size, out size, buffer);
-			return new string(buffer, 0, size - 1);
+			return string.Empty;
 		}
 
-		public static ICorDebugModule GetModuleFromMetaDataInterface(this ICorDebugAppDomain appDomain, object metadata)
+		var buffer = stackalloc char[size];
+		appDomain.GetName(size, out size, buffer);
+		return new string(buffer, 0, size - 1);
+	}
+
+	public static ICorDebugModule GetModuleFromMetaDataInterface(this ICorDebugAppDomain appDomain, object metadata)
+	{
+		var hr = appDomain.GetModuleFromMetaDataInterface(metadata, out var module);
+
+		if (hr < 0)
 		{
-			var hr = appDomain.GetModuleFromMetaDataInterface(metadata, out var module);
-
-			if (hr < 0)
+			if (hr == HResults.E_INVALIDARG)
 			{
-				if (hr == HResults.E_INVALIDARG)
-				{
-					// We get E_INVALIDARG if metadata belongs to an assembly not loaded into this appDomain.
-					// We return null here so the caller can look in the next AppDomain
-					return null;
-				}
-
-				Marshal.ThrowExceptionForHR(hr);
+				// We get E_INVALIDARG if metadata belongs to an assembly not loaded into this appDomain.
+				// We return null here so the caller can look in the next AppDomain
+				return null;
 			}
 
-			return module;
+			Marshal.ThrowExceptionForHR(hr);
 		}
+
+		return module;
 	}
 }

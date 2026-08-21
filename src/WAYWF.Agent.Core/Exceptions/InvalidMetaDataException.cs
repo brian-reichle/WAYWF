@@ -2,29 +2,28 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace WAYWF.Agent.Core
+namespace WAYWF.Agent.Core;
+
+[Serializable]
+sealed class InvalidMetaDataException : Exception
 {
-	[Serializable]
-	sealed class InvalidMetaDataException : Exception
+	public InvalidMetaDataException()
+		: base("Encountered invalid meta-data.")
 	{
-		public InvalidMetaDataException()
-			: base("Encountered invalid meta-data.")
-		{
-		}
+	}
 
-		public InvalidMetaDataException(string message)
-			: base(message)
-		{
-		}
+	public InvalidMetaDataException(string message)
+		: base(message)
+	{
+	}
 
-		InvalidMetaDataException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+	InvalidMetaDataException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
+	{
+	}
 
-		public InvalidMetaDataException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
+	public InvalidMetaDataException(string message, Exception innerException)
+		: base(message, innerException)
+	{
 	}
 }

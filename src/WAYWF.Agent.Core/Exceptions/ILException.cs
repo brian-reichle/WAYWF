@@ -2,28 +2,27 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace WAYWF.Agent.Core.IL
+namespace WAYWF.Agent.Core.IL;
+
+[Serializable]
+public class ILException : Exception
 {
-	[Serializable]
-	public class ILException : Exception
+	public ILException()
 	{
-		public ILException()
-		{
-		}
+	}
 
-		public ILException(string message)
-			: base(message)
-		{
-		}
+	public ILException(string message)
+		: base(message)
+	{
+	}
 
-		protected ILException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-		}
+	protected ILException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
+	{
+	}
 
-		public ILException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
+	public ILException(string message, Exception innerException)
+		: base(message, innerException)
+	{
 	}
 }

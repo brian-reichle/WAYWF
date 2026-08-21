@@ -2,39 +2,38 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace WAYWF.Agent.Core.MetaDataApi
+namespace WAYWF.Agent.Core.MetaDataApi;
+
+[StructLayout(LayoutKind.Sequential)]
+struct ASSEMBLYMETADATA
 {
-	[StructLayout(LayoutKind.Sequential)]
-	struct ASSEMBLYMETADATA
-	{
-		// USHORT  usMajorVersion;
-		public ushort usMajorVersion;
+	// USHORT  usMajorVersion;
+	public ushort usMajorVersion;
 
-		// USHORT  usMinorVersion;
-		public ushort usMinorVersion;
+	// USHORT  usMinorVersion;
+	public ushort usMinorVersion;
 
-		// USHORT  usBuildNumber;
-		public ushort usBuildNumber;
+	// USHORT  usBuildNumber;
+	public ushort usBuildNumber;
 
-		// USHORT  usRevisionNumber;
-		public ushort usRevisionNumber;
+	// USHORT  usRevisionNumber;
+	public ushort usRevisionNumber;
 
-		// LPWSTR  szLocale;
-		public IntPtr szLocale;
+	// LPWSTR  szLocale;
+	public IntPtr szLocale;
 
-		// ULONG   cbLocale;
-		public int cbLocale;
+	// ULONG   cbLocale;
+	public int cbLocale;
 
-		// DWORD*  rdwProcessor[];
-		public IntPtr rdwProcessor;
+	// DWORD*  rdwProcessor[];
+	public IntPtr rdwProcessor;
 
-		// ULONG   ulProcessor
-		public int ulProcessor;
+	// ULONG   ulProcessor
+	public int ulProcessor;
 
-		// OSINFO* rOS[];
-		public IntPtr rOS;
+	// OSINFO* rOS[];
+	public IntPtr rOS;
 
-		// ULONG   ulOS;
-		public int ulOS;
-	}
+	// ULONG   ulOS;
+	public int ulOS;
 }

@@ -4,21 +4,20 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using static WAYWF.Agent.Core.Win32.NativeMethods;
 
-namespace WAYWF.Agent.Core.Win32
+namespace WAYWF.Agent.Core.Win32;
+
+sealed class ProcessHandle : SafeHandle
 {
-	sealed class ProcessHandle : SafeHandle
+	public ProcessHandle()
+		: base(INVALID_HANDLE, true)
 	{
-		public ProcessHandle()
-			: base(INVALID_HANDLE, true)
-		{
-		}
-
-		public int Pid { get; set; }
-
-		public override bool IsInvalid => handle == INVALID_HANDLE || handle == IntPtr.Zero;
-
-		[PrePrepareMethod]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-		protected override bool ReleaseHandle() => CloseHandle(handle);
 	}
+
+	public int Pid { get; set; }
+
+	public override bool IsInvalid => handle == INVALID_HANDLE || handle == IntPtr.Zero;
+
+	[PrePrepareMethod]
+	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+	protected override bool ReleaseHandle() => CloseHandle(handle);
 }
