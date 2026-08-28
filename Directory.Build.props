@@ -1,33 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<PropertyGroup>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<!--
+  <PropertyGroup>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!--
 CS0612 - Obsolete warning witout message.
 CS0618 - Obsolete warning with message.
 CS1030 - #warning
 CS1591 - Missing XML comment.
 -->
-		<WarningsNotAsErrors>612,618,1030</WarningsNotAsErrors>
-		<NoWarn>1591</NoWarn>
-		<LangVersion>14.0</LangVersion>
+    <WarningsNotAsErrors>612,618,1030</WarningsNotAsErrors>
+    <NoWarn>1591</NoWarn>
+    <LangVersion>14.0</LangVersion>
 
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<AnalysisMode>Recommended</AnalysisMode>
-		<WTGAnalyzersWarnAll>true</WTGAnalyzersWarnAll>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>Recommended</AnalysisMode>
+    <WTGAnalyzersWarnAll>true</WTGAnalyzersWarnAll>
 
-		<Product>WAYWF</Product>
-		<Authors>Brian Reichle</Authors>
-		<Copyright>Copyright (C) Brian Reichle</Copyright>
-		<!-- If you update this version number, then don't forget to also update the app.manifest version number. -->
-		<Version>0.17.0</Version>
+    <Product>WAYWF</Product>
+    <Authors>Brian Reichle</Authors>
+    <Copyright>Copyright (C) Brian Reichle</Copyright>
+    <!-- If you update this version number, then don't forget to also update the app.manifest version number. -->
+    <Version>0.17.0</Version>
 
-		<OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
-		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-	</PropertyGroup>
-	<ItemGroup>
-		<AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="Properties\stylecop.json" />
-	</ItemGroup>
+    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="Properties\stylecop.json" />
+  </ItemGroup>
 </Project>
