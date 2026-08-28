@@ -38,7 +38,7 @@ static class ProcessExtensions
 		}
 	}
 
-	public static unsafe void GetUser(this ProcessHandle handle, out string username, out string domainname)
+	public static void GetUser(this ProcessHandle handle, out string username, out string domainname)
 	{
 		using var token = handle.OpenProcessToken();
 		using var buffer = token.GetTokenInformation(TOKEN_INFORMATION_CLASS.TokenUser);

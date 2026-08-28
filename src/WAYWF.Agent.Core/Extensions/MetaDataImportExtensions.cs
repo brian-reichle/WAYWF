@@ -381,7 +381,7 @@ static class MetaDataImportExtensions
 		return import.GetParamName(paramToken);
 	}
 
-	public static unsafe int GetTypeArgCount(this IMetaDataImport import, MetaDataToken tk)
+	public static int GetTypeArgCount(this IMetaDataImport import, MetaDataToken tk)
 	{
 		var import2 = (IMetaDataImport2)import;
 		var hEnum = IntPtr.Zero;
@@ -406,7 +406,7 @@ static class MetaDataImportExtensions
 		}
 	}
 
-	static unsafe void DistilFieldType(IntPtr sigPtr, int sigLen, out CorElementType elementType, out MetaDataToken token)
+	static void DistilFieldType(IntPtr sigPtr, int sigLen, out CorElementType elementType, out MetaDataToken token)
 	{
 		const byte FIELD = 0x06;
 
