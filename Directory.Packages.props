@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
-	<PropertyGroup>
-		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-	</PropertyGroup>
-	<ItemGroup>
-		<GlobalPackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.556">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</GlobalPackageReference>
-		<GlobalPackageReference Include="WTG.Analyzers" Version="3.7.2">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</GlobalPackageReference>
-	</ItemGroup>
-	<ItemGroup>
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-		<PackageVersion Include="NUnit" Version="4.6.1" />
-		<PackageVersion Include="NUnit.Analyzers" Version="4.14.0" />
-		<PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />
-		<PackageVersion Include="System.Collections.Immutable" Version="10.0.10" />
-	</ItemGroup>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <GlobalPackageReference Include="StyleCop.Analyzers.Unstable" Version="1.2.0.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </GlobalPackageReference>
+    <GlobalPackageReference Include="WTG.Analyzers" Version="3.7.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </GlobalPackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="NUnit" Version="4.6.1" />
+    <PackageVersion Include="NUnit.Analyzers" Version="4.14.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />
+    <PackageVersion Include="System.Collections.Immutable" Version="10.0.10" />
+  </ItemGroup>
 </Project>
