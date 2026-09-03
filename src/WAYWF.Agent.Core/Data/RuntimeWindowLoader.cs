@@ -11,7 +11,7 @@ namespace WAYWF.Agent.Core;
 
 static class RuntimeWindowLoader
 {
-	public static unsafe ImmutableArray<RuntimeWindow> Load(int pid)
+	public static ImmutableArray<RuntimeWindow> Load(int pid)
 	{
 		var host = new Host(pid);
 		var handle = default(GCHandle);

@@ -382,7 +382,7 @@ static class ModuleExtensions
 		return false;
 	}
 
-	static unsafe bool MatchesAssemblyName(ICorDebugModule module, MetaDataToken token, string assemblyName)
+	static bool MatchesAssemblyName(ICorDebugModule module, MetaDataToken token, string assemblyName)
 	{
 		if (token.IsNil)
 		{
