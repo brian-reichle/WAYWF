@@ -6,11 +6,12 @@
 <#@ import namespace="System.Linq" #>
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace WAYWF.Agent.Data
+namespace WAYWF.Agent.Data;
+
+public partial class MetaKnownType
 {
-	public unsafe partial class MetaKnownType
-	{
 <#
 foreach (var type in knownValueTypes)
 {
@@ -22,30 +23,29 @@ foreach (var type in knownValueTypes)
 	}
 
 #>
-		public static readonly MetaKnownType <#=type.Name#> = new MetaKnownType(MetaKnownTypeCode.<#=type.Name#>, "<#=type.FullName#>", sizeof(<#=shortName#>));
+	public static readonly MetaKnownType <#=type.Name#> = new MetaKnownType(MetaKnownTypeCode.<#=type.Name#>, "<#=type.FullName#>", Unsafe.SizeOf<<#=shortName#>>());
 <#
 }
 
 foreach (var type in unmarshalableTypes)
 {
 #>
-		public static readonly MetaKnownType <#=type.Name#> = new MetaKnownType(MetaKnownTypeCode.<#=type.Name#>, "<#=type.FullName#>", 0);
+	public static readonly MetaKnownType <#=type.Name#> = new MetaKnownType(MetaKnownTypeCode.<#=type.Name#>, "<#=type.FullName#>", 0);
 <#
 }
 #>
 
-		static readonly Dictionary<string, MetaKnownType> _lookup = new Dictionary<string, MetaKnownType>()
-		{
+	static readonly Dictionary<string, MetaKnownType> _lookup = new Dictionary<string, MetaKnownType>()
+	{
 <#
 foreach (var type in knownValueTypes.Concat(unmarshalableTypes))
 {
 #>
-			{ <#=type.Name#>.Name, <#=type.Name#> },
+		{ <#=type.Name#>.Name, <#=type.Name#> },
 <#
 }
 #>
-		};
-	}
+	};
 }
 <#+
 IDictionary<Type, string> shortNameLookup = new Dictionary<Type, string>()

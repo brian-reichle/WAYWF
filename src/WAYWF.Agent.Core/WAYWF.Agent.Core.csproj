@@ -17,4 +17,13 @@
       <DesignTime>True</DesignTime>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="IL\ILReader.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ILReader.g.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
 </Project>

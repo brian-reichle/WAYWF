@@ -3,53 +3,52 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace WAYWF.Agent.Data
-{
-	public partial class MetaKnownType
-	{
-		public static readonly MetaKnownType Boolean = new MetaKnownType(MetaKnownTypeCode.Boolean, "System.Boolean", Unsafe.SizeOf<bool>());
-		public static readonly MetaKnownType Char = new MetaKnownType(MetaKnownTypeCode.Char, "System.Char", Unsafe.SizeOf<char>());
-		public static readonly MetaKnownType SByte = new MetaKnownType(MetaKnownTypeCode.SByte, "System.SByte", Unsafe.SizeOf<sbyte>());
-		public static readonly MetaKnownType Int16 = new MetaKnownType(MetaKnownTypeCode.Int16, "System.Int16", Unsafe.SizeOf<short>());
-		public static readonly MetaKnownType Int32 = new MetaKnownType(MetaKnownTypeCode.Int32, "System.Int32", Unsafe.SizeOf<int>());
-		public static readonly MetaKnownType Int64 = new MetaKnownType(MetaKnownTypeCode.Int64, "System.Int64", Unsafe.SizeOf<long>());
-		public static readonly MetaKnownType IntPtr = new MetaKnownType(MetaKnownTypeCode.IntPtr, "System.IntPtr", Unsafe.SizeOf<IntPtr>());
-		public static readonly MetaKnownType Byte = new MetaKnownType(MetaKnownTypeCode.Byte, "System.Byte", Unsafe.SizeOf<byte>());
-		public static readonly MetaKnownType UInt16 = new MetaKnownType(MetaKnownTypeCode.UInt16, "System.UInt16", Unsafe.SizeOf<ushort>());
-		public static readonly MetaKnownType UInt32 = new MetaKnownType(MetaKnownTypeCode.UInt32, "System.UInt32", Unsafe.SizeOf<uint>());
-		public static readonly MetaKnownType UInt64 = new MetaKnownType(MetaKnownTypeCode.UInt64, "System.UInt64", Unsafe.SizeOf<ulong>());
-		public static readonly MetaKnownType UIntPtr = new MetaKnownType(MetaKnownTypeCode.UIntPtr, "System.UIntPtr", Unsafe.SizeOf<UIntPtr>());
-		public static readonly MetaKnownType Single = new MetaKnownType(MetaKnownTypeCode.Single, "System.Single", Unsafe.SizeOf<float>());
-		public static readonly MetaKnownType Double = new MetaKnownType(MetaKnownTypeCode.Double, "System.Double", Unsafe.SizeOf<double>());
-		public static readonly MetaKnownType Decimal = new MetaKnownType(MetaKnownTypeCode.Decimal, "System.Decimal", Unsafe.SizeOf<decimal>());
-		public static readonly MetaKnownType Guid = new MetaKnownType(MetaKnownTypeCode.Guid, "System.Guid", Unsafe.SizeOf<Guid>());
-		public static readonly MetaKnownType Void = new MetaKnownType(MetaKnownTypeCode.Void, "System.Void", 0);
-		public static readonly MetaKnownType Object = new MetaKnownType(MetaKnownTypeCode.Object, "System.Object", 0);
-		public static readonly MetaKnownType TypedReference = new MetaKnownType(MetaKnownTypeCode.TypedReference, "System.TypedReference", 0);
-		public static readonly MetaKnownType String = new MetaKnownType(MetaKnownTypeCode.String, "System.String", 0);
+namespace WAYWF.Agent.Data;
 
-		static readonly Dictionary<string, MetaKnownType> _lookup = new Dictionary<string, MetaKnownType>()
-		{
-			{ Boolean.Name, Boolean },
-			{ Char.Name, Char },
-			{ SByte.Name, SByte },
-			{ Int16.Name, Int16 },
-			{ Int32.Name, Int32 },
-			{ Int64.Name, Int64 },
-			{ IntPtr.Name, IntPtr },
-			{ Byte.Name, Byte },
-			{ UInt16.Name, UInt16 },
-			{ UInt32.Name, UInt32 },
-			{ UInt64.Name, UInt64 },
-			{ UIntPtr.Name, UIntPtr },
-			{ Single.Name, Single },
-			{ Double.Name, Double },
-			{ Decimal.Name, Decimal },
-			{ Guid.Name, Guid },
-			{ Void.Name, Void },
-			{ Object.Name, Object },
-			{ TypedReference.Name, TypedReference },
-			{ String.Name, String },
-		};
-	}
+public partial class MetaKnownType
+{
+	public static readonly MetaKnownType Boolean = new MetaKnownType(MetaKnownTypeCode.Boolean, "System.Boolean", Unsafe.SizeOf<bool>());
+	public static readonly MetaKnownType Char = new MetaKnownType(MetaKnownTypeCode.Char, "System.Char", Unsafe.SizeOf<char>());
+	public static readonly MetaKnownType SByte = new MetaKnownType(MetaKnownTypeCode.SByte, "System.SByte", Unsafe.SizeOf<sbyte>());
+	public static readonly MetaKnownType Int16 = new MetaKnownType(MetaKnownTypeCode.Int16, "System.Int16", Unsafe.SizeOf<short>());
+	public static readonly MetaKnownType Int32 = new MetaKnownType(MetaKnownTypeCode.Int32, "System.Int32", Unsafe.SizeOf<int>());
+	public static readonly MetaKnownType Int64 = new MetaKnownType(MetaKnownTypeCode.Int64, "System.Int64", Unsafe.SizeOf<long>());
+	public static readonly MetaKnownType IntPtr = new MetaKnownType(MetaKnownTypeCode.IntPtr, "System.IntPtr", Unsafe.SizeOf<IntPtr>());
+	public static readonly MetaKnownType Byte = new MetaKnownType(MetaKnownTypeCode.Byte, "System.Byte", Unsafe.SizeOf<byte>());
+	public static readonly MetaKnownType UInt16 = new MetaKnownType(MetaKnownTypeCode.UInt16, "System.UInt16", Unsafe.SizeOf<ushort>());
+	public static readonly MetaKnownType UInt32 = new MetaKnownType(MetaKnownTypeCode.UInt32, "System.UInt32", Unsafe.SizeOf<uint>());
+	public static readonly MetaKnownType UInt64 = new MetaKnownType(MetaKnownTypeCode.UInt64, "System.UInt64", Unsafe.SizeOf<ulong>());
+	public static readonly MetaKnownType UIntPtr = new MetaKnownType(MetaKnownTypeCode.UIntPtr, "System.UIntPtr", Unsafe.SizeOf<UIntPtr>());
+	public static readonly MetaKnownType Single = new MetaKnownType(MetaKnownTypeCode.Single, "System.Single", Unsafe.SizeOf<float>());
+	public static readonly MetaKnownType Double = new MetaKnownType(MetaKnownTypeCode.Double, "System.Double", Unsafe.SizeOf<double>());
+	public static readonly MetaKnownType Decimal = new MetaKnownType(MetaKnownTypeCode.Decimal, "System.Decimal", Unsafe.SizeOf<decimal>());
+	public static readonly MetaKnownType Guid = new MetaKnownType(MetaKnownTypeCode.Guid, "System.Guid", Unsafe.SizeOf<Guid>());
+	public static readonly MetaKnownType Void = new MetaKnownType(MetaKnownTypeCode.Void, "System.Void", 0);
+	public static readonly MetaKnownType Object = new MetaKnownType(MetaKnownTypeCode.Object, "System.Object", 0);
+	public static readonly MetaKnownType TypedReference = new MetaKnownType(MetaKnownTypeCode.TypedReference, "System.TypedReference", 0);
+	public static readonly MetaKnownType String = new MetaKnownType(MetaKnownTypeCode.String, "System.String", 0);
+
+	static readonly Dictionary<string, MetaKnownType> _lookup = new Dictionary<string, MetaKnownType>()
+	{
+		{ Boolean.Name, Boolean },
+		{ Char.Name, Char },
+		{ SByte.Name, SByte },
+		{ Int16.Name, Int16 },
+		{ Int32.Name, Int32 },
+		{ Int64.Name, Int64 },
+		{ IntPtr.Name, IntPtr },
+		{ Byte.Name, Byte },
+		{ UInt16.Name, UInt16 },
+		{ UInt32.Name, UInt32 },
+		{ UInt64.Name, UInt64 },
+		{ UIntPtr.Name, UIntPtr },
+		{ Single.Name, Single },
+		{ Double.Name, Double },
+		{ Decimal.Name, Decimal },
+		{ Guid.Name, Guid },
+		{ Void.Name, Void },
+		{ Object.Name, Object },
+		{ TypedReference.Name, TypedReference },
+		{ String.Name, String },
+	};
 }

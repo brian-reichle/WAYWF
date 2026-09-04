@@ -34,43 +34,42 @@ var doubleByteOpCodes = Enumerable.ToArray(
 #>
 using System.Reflection.Emit;
 
-namespace WAYWF.Agent.Core.IL
+namespace WAYWF.Agent.Core.IL;
+
+partial class ILReader
 {
-	partial class ILReader
+	Instruction Read()
 	{
-		Instruction Read()
+		switch (_buffer[_offset])
 		{
-			switch (_buffer[_offset])
-			{
 <#
 foreach (var opCode in singleByteOpCodes)
 {
 #>
-				case 0x<#=opCode.Value.ToString("X2")#>: return Read<#=GetLabel(opCode.OperandType)#>Instruction(OpCodes.<#=opCode.Field#>);
+			case 0x<#=opCode.Value.ToString("X2")#>: return Read<#=GetLabel(opCode.OperandType)#>Instruction(OpCodes.<#=opCode.Field#>);
 <#
 }
 
 foreach (var group in doubleByteOpCodes)
 {
 #>
-				case 0x<#=group.Key.ToString("X2")#>:
-					switch (_buffer[_offset + 1])
-					{
+			case 0x<#=group.Key.ToString("X2")#>:
+				switch (_buffer[_offset + 1])
+				{
 <#
 	foreach (var opCode in group)
 	{
 #>
-						case 0x<#=(opCode.Value & 0xFF).ToString("X2")#>: return Read<#=GetLabel(opCode.OperandType)#>Instruction(OpCodes.<#=opCode.Field#>);
+					case 0x<#=(opCode.Value & 0xFF).ToString("X2")#>: return Read<#=GetLabel(opCode.OperandType)#>Instruction(OpCodes.<#=opCode.Field#>);
 <#
 	}
 }
 #>
-					}
-					break;
-			}
-
-			throw new ILException();
+				}
+				break;
 		}
+
+		throw new ILException();
 	}
 }
 <#+
