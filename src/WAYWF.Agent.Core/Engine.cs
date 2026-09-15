@@ -6,6 +6,7 @@ using System.Threading;
 using System.Xml;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
+using WAYWF.Agent.Formatter;
 
 namespace WAYWF.Agent.Core;
 
