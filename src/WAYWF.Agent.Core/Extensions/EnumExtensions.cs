@@ -5,15 +5,6 @@ namespace WAYWF.Agent.Core;
 
 static class EnumExtensions
 {
-	public static bool HasImplicitThis(this CallingConventions callingConvention)
-	{
-		const CallingConventions mask =
-			CallingConventions.HasThis |
-			CallingConventions.ExplicitThis;
-
-		return (callingConvention & mask) == CallingConventions.HasThis;
-	}
-
 	public static bool IsNestedType(this TypeAttributes flags)
 	{
 		return (flags & TypeAttributes.VisibilityMask) > TypeAttributes.Public;
