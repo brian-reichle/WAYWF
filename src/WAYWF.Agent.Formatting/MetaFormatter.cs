@@ -1,11 +1,12 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System;
 using System.Collections.Immutable;
 using System.Text;
 using WAYWF.Agent.Data;
 
-namespace WAYWF.Agent.Core;
+namespace WAYWF.Agent.Formatting;
 
-sealed class MetaFormatter : IMetaTypeVisitor
+public sealed class MetaFormatter : IMetaTypeVisitor
 {
 	public ImmutableArray<MetaTypeBase> TypeArgs { get; set; } = [];
 	public int MethodArgsStart { get; set; }
@@ -181,7 +182,7 @@ sealed class MetaFormatter : IMetaTypeVisitor
 
 		if (index < lowerBound || index >= upperBound)
 		{
-			throw new ShitFanContactException("Referenced a non-existent type arg.");
+			throw new ArgumentException("Referenced a non-existent type arg.", nameof(metaType));
 		}
 
 		TypeArgs[index].Apply(this);
