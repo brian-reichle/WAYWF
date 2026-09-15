@@ -3,6 +3,7 @@ using System;
 using System.Collections.Immutable;
 using WAYWF.Agent.Core.CorDebugApi;
 using WAYWF.Agent.Data;
+using WAYWF.Agent.Formatting;
 
 namespace WAYWF.Agent.Core;
 

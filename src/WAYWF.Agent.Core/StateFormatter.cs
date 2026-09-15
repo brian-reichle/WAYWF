@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using WAYWF.Agent.Data;
+using WAYWF.Agent.Formatting;
 
 namespace WAYWF.Agent.Core;
 

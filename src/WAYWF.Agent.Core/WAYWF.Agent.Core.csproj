@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\WAYWF.Agent.Data\WAYWF.Agent.Data.csproj" />
+    <ProjectReference Include="..\WAYWF.Agent.Formatting\WAYWF.Agent.Formatting.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="IL\ILReader.tt">
