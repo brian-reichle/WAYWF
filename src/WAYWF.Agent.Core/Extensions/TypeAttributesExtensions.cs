@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace WAYWF.Agent.Core;
 
-static class EnumExtensions
+static class TypeAttributesExtensions
 {
 	public static bool IsNestedType(this TypeAttributes flags)
 	{
