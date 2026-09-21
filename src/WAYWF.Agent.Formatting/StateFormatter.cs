@@ -9,11 +9,10 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using WAYWF.Agent.Data;
-using WAYWF.Agent.Formatting;
 
-namespace WAYWF.Agent.Core;
+namespace WAYWF.Agent.Formatting;
 
-sealed class StateFormatter : IRuntimeFrameVisitor
+public sealed class StateFormatter : IRuntimeFrameVisitor
 {
 	const string TrueString = "true";
 	const string FalseString = "false";
